@@ -8,15 +8,9 @@ use PhpCsFixer\Finder;
 $paths = [__DIR__ . '/src', __DIR__ . '/tests'];
 
 if (class_exists(Blumilk\Codestyle\Config\ConfigBuilder::class)) {
-    $builder = new Blumilk\Codestyle\Config\ConfigBuilder();
-
-    if (method_exists($builder, 'in')) {
-        $builder = $builder->in($paths);
-    }
-
-    if (method_exists($builder, 'create')) {
-        return $builder->create();
-    }
+    return (new Blumilk\Codestyle\Config\ConfigBuilder())
+        ->in($paths)
+        ->create();
 }
 
 $finder = Finder::create()->in($paths);
