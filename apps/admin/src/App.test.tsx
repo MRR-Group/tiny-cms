@@ -14,6 +14,6 @@ describe('App', () => {
   it('renders dashboard', () => {
     renderApp();
 
-    expect(screen.getByText(/tiny cms admin/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /tiny cms admin/i })).toBeInTheDocument();
   });
 });
