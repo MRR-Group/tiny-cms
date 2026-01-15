@@ -27,10 +27,13 @@ services:
     build:
       context: .
       dockerfile: docker/php/Dockerfile
-    env_file:
-      - apps/api/.env.example
     environment:
-      APP_ENV: development
+      APP_ENV: ${APP_ENV:-development}
+      DB_HOST: ${DB_HOST:-db}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_NAME: ${DB_NAME:-tiny_cms}
     volumes:
       - ./:/var/www/html
     depends_on:

@@ -12,5 +12,6 @@
     "jsx": "react-jsx",
     "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
-  "include": ["src", "vite.config.ts", "tailwind.config.ts", "tsconfig.node.json", ".storybook"]
+  "include": ["src", "vite.config.ts", "vitest.config.ts", "tailwind.config.ts", ".storybook"],
+  "references": [{ "path": "./tsconfig.node.json" }]
 }

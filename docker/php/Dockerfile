@@ -12,6 +12,6 @@ WORKDIR /var/www/html/apps/api
 COPY apps/api/composer.json apps/api/composer.lock ./
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-COPY . /var/www/html
+COPY apps/api /var/www/html/apps/api
 
 CMD ["php-fpm"]
