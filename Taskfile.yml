@@ -1,0 +1,75 @@
+version: '3'
+
+tasks:
+  api:install:
+    dir: apps/api
+    cmds:
+      - composer install --no-interaction
+
+  api:lint:
+    dir: apps/api
+    cmds:
+      - composer lint
+
+  api:cs:
+    dir: apps/api
+    cmds:
+      - composer cs
+
+  api:cs:fix:
+    dir: apps/api
+    cmds:
+      - composer cs:fix
+
+  api:test:
+    dir: apps/api
+    cmds:
+      - composer test
+
+  api:mutation:
+    dir: apps/api
+    cmds:
+      - composer mutation
+
+  api:migrate:
+    dir: apps/api
+    cmds:
+      - composer migrate
+
+  admin:install:
+    dir: apps/admin
+    cmds:
+      - pnpm install
+
+  admin:lint:
+    dir: apps/admin
+    cmds:
+      - pnpm lint
+
+  admin:test:
+    dir: apps/admin
+    cmds:
+      - pnpm test
+
+  admin:mutation:
+    dir: apps/admin
+    cmds:
+      - pnpm mutation
+
+  admin:build:
+    dir: apps/admin
+    cmds:
+      - pnpm build
+
+  admin:storybook:
+    dir: apps/admin
+    cmds:
+      - pnpm storybook:build
+
+  docker:up:
+    cmds:
+      - docker compose up --build
+
+  docker:down:
+    cmds:
+      - docker compose down -v

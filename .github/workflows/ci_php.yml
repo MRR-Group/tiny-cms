@@ -1,0 +1,96 @@
+name: PHP CI
+
+on:
+  push:
+    paths:
+      - 'apps/api/**'
+      - '.github/workflows/ci_php.yml'
+  pull_request:
+    paths:
+      - 'apps/api/**'
+      - '.github/workflows/ci_php.yml'
+
+jobs:
+  php:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: tiny_cms
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: tiny_cms
+
+    steps:
+      - name: Validate PR title
+        if: github.event_name == 'pull_request'
+        run: |
+          title="${{ github.event.pull_request.title }}"
+          pattern='^(#\d+ - [A-Z].+|- [A-Z].+)'
+          if [[ ! "$title" =~ $pattern ]]; then
+            echo "PR title must match '#<number> - Title' or '- Title' starting with a capital letter." >&2
+            exit 1
+          fi
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_pgsql
+          coverage: xdebug
+          tools: composer
+          ini-values: variables_order=EGPCS
+          composer-cache: true
+
+      - name: Configure Composer authentication
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -n "$GITHUB_TOKEN" ]; then
+            composer config -g github-oauth.github.com "$GITHUB_TOKEN"
+          fi
+
+      - name: Install dependencies
+        working-directory: apps/api
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Prepare environment
+        working-directory: apps/api
+        run: cp .env.cli .env
+
+      - name: Run migrations
+        working-directory: apps/api
+        run: composer migrate
+
+      - name: Lint
+        working-directory: apps/api
+        run: composer lint
+
+      - name: Coding standards
+        working-directory: apps/api
+        run: composer cs
+
+      - name: Tests
+        working-directory: apps/api
+        run: composer test
+
+      - name: Mutation testing
+        working-directory: apps/api
+        run: composer mutation

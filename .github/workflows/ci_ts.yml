@@ -1,0 +1,66 @@
+name: TypeScript CI
+
+on:
+  push:
+    paths:
+      - 'apps/admin/**'
+      - 'packages/shared/**'
+      - 'pnpm-workspace.yaml'
+      - '.github/workflows/ci_ts.yml'
+  pull_request:
+    paths:
+      - 'apps/admin/**'
+      - 'packages/shared/**'
+      - 'pnpm-workspace.yaml'
+      - '.github/workflows/ci_ts.yml'
+
+jobs:
+  ts:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/admin
+
+    steps:
+      - name: Validate PR title
+        if: github.event_name == 'pull_request'
+        run: |
+          title="${{ github.event.pull_request.title }}"
+          pattern='^(#\d+ - [A-Z].+|- [A-Z].+)'
+          if [[ ! "$title" =~ $pattern ]]; then
+            echo "PR title must match '#<number> - Title' or '- Title' starting with a capital letter." >&2
+            exit 1
+          fi
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Tests
+        run: pnpm test
+
+      - name: Mutation testing
+        run: pnpm mutation
+
+      - name: Build
+        run: pnpm build
+
+      - name: Storybook build
+        run: pnpm storybook:build
