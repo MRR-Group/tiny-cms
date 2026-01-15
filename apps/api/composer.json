@@ -1,0 +1,33 @@
+{
+  "name": "tiny-cms/api",
+  "description": "Slim API for Tiny CMS",
+  "type": "project",
+  "require": {
+    "php": "^8.2",
+    "slim/slim": "^4.12",
+    "slim/psr7": "^1.6"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^10.5",
+    "phpstan/phpstan": "^1.11",
+    "blumilksoftware/codestyle": "^4.2",
+    "infection/infection": "^0.29"
+  },
+  "autoload": {
+    "psr-4": {
+      "TinyCMS\\Api\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "TinyCMS\\Api\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "lint": "phpstan analyse",
+    "cs": "ecs --config=ecs.php",
+    "cs:fix": "ecs --config=ecs.php --fix",
+    "test": "phpunit",
+    "mutation": "infection --threads=4"
+  }
+}

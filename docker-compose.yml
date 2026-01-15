@@ -1,0 +1,62 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: tinycms
+      POSTGRES_USER: tinycms
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: .
+      dockerfile: php/Dockerfile
+    volumes:
+      - ./apps/api:/var/www/html
+    environment:
+      APP_ENV: local
+      APP_DEBUG: 1
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: tinycms
+      DB_USER: tinycms
+      DB_PASSWORD: secret
+    depends_on:
+      - db
+
+  nginx:
+    image: nginx:1.25-alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./apps/api:/var/www/html
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - api
+
+  admin:
+    build:
+      context: .
+      dockerfile: node/Dockerfile
+    working_dir: /app/apps/admin
+    command: sh -c "pnpm install && pnpm dev --host 0.0.0.0 --port 5173"
+    volumes:
+      - ./:/app
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://localhost:8080
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+
+volumes:
+  db_data:

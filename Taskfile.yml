@@ -1,0 +1,47 @@
+version: '3'
+
+tasks:
+  docker:up:
+    desc: "Start local dev stack"
+    cmds:
+      - docker compose up --build
+
+  api:test:
+    desc: "Run API tests"
+    cmds:
+      - docker compose run --rm api composer test
+
+  api:lint:
+    desc: "Run API lint"
+    cmds:
+      - docker compose run --rm api composer lint
+
+  api:cs:
+    desc: "Run API codestyle"
+    cmds:
+      - docker compose run --rm api composer cs
+
+  api:mutation:
+    desc: "Run API mutation tests"
+    cmds:
+      - docker compose run --rm api composer mutation
+
+  admin:lint:
+    desc: "Run Admin lint"
+    cmds:
+      - docker compose run --rm admin pnpm lint
+
+  admin:test:
+    desc: "Run Admin tests"
+    cmds:
+      - docker compose run --rm admin pnpm test
+
+  admin:mutation:
+    desc: "Run Admin mutation tests"
+    cmds:
+      - docker compose run --rm admin pnpm mutation
+
+  admin:storybook:
+    desc: "Run Admin storybook"
+    cmds:
+      - docker compose run --rm admin pnpm storybook

@@ -1,0 +1,44 @@
+name: CI PHP
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  php-quality:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+
+      - name: Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache
+          key: ${{ runner.os }}-composer-${{ hashFiles('apps/api/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Lint (PHPStan)
+        run: composer lint
+
+      - name: Codestyle
+        run: composer cs
+
+      - name: Tests
+        run: composer test
+
+      - name: Mutation tests
+        run: composer mutation

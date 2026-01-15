@@ -1,0 +1,36 @@
+name: CI TS
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  ts-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Lint
+        run: pnpm -C apps/admin lint
+
+      - name: Tests
+        run: pnpm -C apps/admin test
+
+      - name: Mutation tests
+        run: pnpm -C apps/admin mutation
+
+      - name: Build
+        run: pnpm -C apps/admin build

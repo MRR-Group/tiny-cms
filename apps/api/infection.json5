@@ -1,0 +1,15 @@
+{
+  "source": {
+    "directories": ["src"]
+  },
+  "timeout": 10,
+  "logs": {
+    "text": "build/infection.log",
+    "html": "build/infection.html"
+  },
+  "mutators": {
+    "@default": true
+  },
+  "minMsi": 50,
+  "minCoveredMsi": 80
+}
