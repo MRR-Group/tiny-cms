@@ -10,6 +10,9 @@ on:
       - 'apps/api/**'
       - '.github/workflows/ci_php.yml'
 
+permissions:
+  contents: read
+
 jobs:
   php:
     runs-on: ubuntu-latest

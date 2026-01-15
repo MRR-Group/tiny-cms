@@ -14,6 +14,9 @@ on:
       - 'pnpm-workspace.yaml'
       - '.github/workflows/ci_ts.yml'
 
+permissions:
+  contents: read
+
 jobs:
   ts:
     runs-on: ubuntu-latest
