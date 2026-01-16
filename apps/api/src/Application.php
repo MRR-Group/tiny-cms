@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App;
 
 use App\Action\HealthAction;
-use DI\Container;
 use Slim\App as SlimApp;
 use Slim\Factory\AppFactory;
 
