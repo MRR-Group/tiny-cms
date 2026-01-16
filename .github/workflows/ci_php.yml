@@ -58,4 +58,3 @@ jobs:
       - name: Run mutation tests
         run: composer mutation
         working-directory: apps/api
-        continue-on-error: true
