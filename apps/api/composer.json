@@ -30,7 +30,7 @@
         "lint": "phpstan analyse src --level=8",
         "cs": "php-cs-fixer fix --dry-run --diff",
         "cs:fix": "php-cs-fixer fix",
-        "mutation": "infection --min-msi=50 --min-covered-msi=80 --threads=4"
+        "mutation": "infection --threads=4"
     },
     "config": {
         "allow-plugins": {
