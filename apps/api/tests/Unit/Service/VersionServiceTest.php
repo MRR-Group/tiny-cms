@@ -55,7 +55,7 @@ final class VersionServiceTest extends TestCase
         $minor = $this->service->getMinorVersion();
         $patch = $this->service->getPatchVersion();
 
-        $reconstructed = sprintf('%d.%d.%d', $major, $minor, $patch);
+        $reconstructed = sprintf("%d.%d.%d", $major, $minor, $patch);
 
         $this->assertEquals($fullVersion, $reconstructed);
     }

@@ -14,7 +14,7 @@ final class HealthActionTest extends TestCase
     {
         $app = Application::create();
 
-        $request = (new ServerRequestFactory())->createServerRequest('GET', '/health');
+        $request = (new ServerRequestFactory())->createServerRequest("GET", "/health");
         $response = $app->handle($request);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -24,50 +24,50 @@ final class HealthActionTest extends TestCase
     {
         $app = Application::create();
 
-        $request = (new ServerRequestFactory())->createServerRequest('GET', '/health');
+        $request = (new ServerRequestFactory())->createServerRequest("GET", "/health");
         $response = $app->handle($request);
 
-        $this->assertStringContainsString('application/json', $response->getHeaderLine('Content-Type'));
+        $this->assertStringContainsString("application/json", $response->getHeaderLine("Content-Type"));
     }
 
     public function testHealthEndpointReturnsStatusOk(): void
     {
         $app = Application::create();
 
-        $request = (new ServerRequestFactory())->createServerRequest('GET', '/health');
+        $request = (new ServerRequestFactory())->createServerRequest("GET", "/health");
         $response = $app->handle($request);
 
-        $body = (string) $response->getBody();
+        $body = (string)$response->getBody();
         $data = json_decode($body, true);
 
-        $this->assertArrayHasKey('status', $data);
-        $this->assertEquals('ok', $data['status']);
+        $this->assertArrayHasKey("status", $data);
+        $this->assertEquals("ok", $data["status"]);
     }
 
     public function testHealthEndpointReturnsTimestamp(): void
     {
         $app = Application::create();
 
-        $request = (new ServerRequestFactory())->createServerRequest('GET', '/health');
+        $request = (new ServerRequestFactory())->createServerRequest("GET", "/health");
         $response = $app->handle($request);
 
-        $body = (string) $response->getBody();
+        $body = (string)$response->getBody();
         $data = json_decode($body, true);
 
-        $this->assertArrayHasKey('timestamp', $data);
+        $this->assertArrayHasKey("timestamp", $data);
     }
 
     public function testHealthEndpointReturnsVersion(): void
     {
         $app = Application::create();
 
-        $request = (new ServerRequestFactory())->createServerRequest('GET', '/health');
+        $request = (new ServerRequestFactory())->createServerRequest("GET", "/health");
         $response = $app->handle($request);
 
-        $body = (string) $response->getBody();
+        $body = (string)$response->getBody();
         $data = json_decode($body, true);
 
-        $this->assertArrayHasKey('version', $data);
-        $this->assertMatchesRegularExpression('/^\d+\.\d+\.\d+$/', $data['version']);
+        $this->assertArrayHasKey("version", $data);
+        $this->assertMatchesRegularExpression('/^\d+\.\d+\.\d+$/', $data["version"]);
     }
 }

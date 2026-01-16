@@ -15,15 +15,15 @@ final class HealthAction
         $versionService = new VersionService();
 
         $data = [
-            'status' => 'ok',
-            'timestamp' => date('c'),
-            'version' => $versionService->getVersion(),
+            "status" => "ok",
+            "timestamp" => date("c"),
+            "version" => $versionService->getVersion(),
         ];
 
         $response->getBody()->write(json_encode($data, JSON_THROW_ON_ERROR));
 
         return $response
-            ->withHeader('Content-Type', 'application/json')
+            ->withHeader("Content-Type", "application/json")
             ->withStatus(200);
     }
 }

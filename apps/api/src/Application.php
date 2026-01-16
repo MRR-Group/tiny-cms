@@ -6,8 +6,8 @@ namespace App;
 
 use App\Action\HealthAction;
 use DI\Container;
-use Slim\Factory\AppFactory;
 use Slim\App as SlimApp;
+use Slim\Factory\AppFactory;
 
 final class Application
 {
@@ -28,7 +28,7 @@ final class Application
         $app->addErrorMiddleware(
             displayErrorDetails: true,
             logErrors: true,
-            logErrorDetails: true
+            logErrorDetails: true,
         );
 
         return $app;
@@ -39,6 +39,6 @@ final class Application
      */
     private static function registerRoutes(SlimApp $app): void
     {
-        $app->get('/health', HealthAction::class);
+        $app->get("/health", HealthAction::class);
     }
 }
