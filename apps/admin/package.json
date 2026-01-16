@@ -30,6 +30,7 @@
         "@storybook/react": "^7.6.0",
         "@storybook/react-vite": "^7.6.0",
         "@storybook/testing-library": "^0.2.2",
+        "storybook": "^7.6.0",
         "@stryker-mutator/core": "^8.0.0",
         "@stryker-mutator/vitest-runner": "^8.0.0",
         "@testing-library/jest-dom": "^6.1.0",
