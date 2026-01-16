@@ -1,0 +1,117 @@
+version: '3'
+
+tasks:
+  # === Docker ===
+  up:
+    desc: Start all services
+    cmds:
+      - docker compose up -d
+
+  down:
+    desc: Stop all services
+    cmds:
+      - docker compose down
+
+  logs:
+    desc: View logs
+    cmds:
+      - docker compose logs -f {{.CLI_ARGS}}
+
+  # === Backend ===
+  api:install:
+    desc: Install backend dependencies
+    dir: apps/api
+    cmds:
+      - composer install
+
+  api:test:
+    desc: Run backend tests
+    dir: apps/api
+    cmds:
+      - composer test
+
+  api:lint:
+    desc: Run PHPStan
+    dir: apps/api
+    cmds:
+      - composer lint
+
+  api:cs:
+    desc: Check codestyle
+    dir: apps/api
+    cmds:
+      - composer cs
+
+  api:cs:fix:
+    desc: Fix codestyle
+    dir: apps/api
+    cmds:
+      - composer cs:fix
+
+  api:mutation:
+    desc: Run mutation tests
+    dir: apps/api
+    cmds:
+      - composer mutation
+
+  # === Frontend ===
+  admin:install:
+    desc: Install frontend dependencies
+    dir: apps/admin
+    cmds:
+      - pnpm install
+
+  admin:dev:
+    desc: Start frontend dev server
+    dir: apps/admin
+    cmds:
+      - pnpm dev
+
+  admin:test:
+    desc: Run frontend tests
+    dir: apps/admin
+    cmds:
+      - pnpm test
+
+  admin:lint:
+    desc: Run ESLint
+    dir: apps/admin
+    cmds:
+      - pnpm lint
+
+  admin:build:
+    desc: Build frontend
+    dir: apps/admin
+    cmds:
+      - pnpm build
+
+  admin:storybook:
+    desc: Start Storybook
+    dir: apps/admin
+    cmds:
+      - pnpm storybook
+
+  admin:mutation:
+    desc: Run mutation tests
+    dir: apps/admin
+    cmds:
+      - pnpm mutation
+
+  # === CI ===
+  ci:api:
+    desc: Run all backend CI checks
+    dir: apps/api
+    cmds:
+      - composer install
+      - composer lint
+      - composer cs
+      - composer test
+
+  ci:admin:
+    desc: Run all frontend CI checks
+    dir: apps/admin
+    cmds:
+      - pnpm install
+      - pnpm lint
+      - pnpm test
+      - pnpm build

@@ -1,0 +1,60 @@
+name: PHP CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: tinycms_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo, pdo_pgsql
+          coverage: xdebug
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+        working-directory: apps/api
+
+      - name: Copy env
+        run: cp .env.cli .env
+        working-directory: apps/api
+
+      - name: Run PHPStan
+        run: composer lint
+        working-directory: apps/api
+
+      - name: Check code style
+        run: composer cs
+        working-directory: apps/api
+
+      - name: Run tests
+        run: composer test
+        working-directory: apps/api
+
+      - name: Run mutation tests
+        run: composer mutation
+        working-directory: apps/api

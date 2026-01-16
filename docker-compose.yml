@@ -1,0 +1,69 @@
+services:
+  # PHP Backend (nginx + php-fpm)
+  api:
+    build:
+      context: ./docker/php
+      dockerfile: Dockerfile
+    command: sh -c "composer install --no-interaction && php-fpm"
+    volumes:
+      - ./apps/api:/var/www/html
+    depends_on:
+      - db
+    networks:
+      - tiny-cms
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./apps/api:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - api
+    networks:
+      - tiny-cms
+
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: tinycms
+      POSTGRES_PASSWORD: tinycms
+      POSTGRES_DB: tinycms
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - tiny-cms
+
+  # React Admin (Vite dev server)
+  admin:
+    image: node:20-alpine
+    working_dir: /app
+    command: sh -c "npm install -g pnpm && pnpm install && pnpm dev --host"
+    ports:
+      - "5180:5173"
+    volumes:
+      - ./apps/admin:/app
+      - admin_node_modules:/app/node_modules
+    networks:
+      - tiny-cms
+
+  # Mailpit (local mail testing)
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "8025:8025"  # Web UI
+      - "1025:1025"  # SMTP
+    networks:
+      - tiny-cms
+
+networks:
+  tiny-cms:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  admin_node_modules:

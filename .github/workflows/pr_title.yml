@@ -1,0 +1,38 @@
+name: PR Title Check
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  check-title:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check PR title format
+        run: |
+          TITLE="${{ github.event.pull_request.title }}"
+          
+          # Pattern: #123 - Title or - Title
+          # First letter after dash must be uppercase
+          PATTERN='^(#[0-9]+ )?- [A-Z]'
+          
+          if [[ ! "$TITLE" =~ $PATTERN ]]; then
+            echo "❌ Invalid PR title format!"
+            echo ""
+            echo "Expected format:"
+            echo "  #123 - Title starting with uppercase"
+            echo "  - Title starting with uppercase (without issue number)"
+            echo ""
+            echo "Examples:"
+            echo "  ✅ #21 - Fix authentication bug"
+            echo "  ✅ - Add new feature"
+            echo "  ❌ fix bug"
+            echo "  ❌ #21 fix bug"
+            echo "  ❌ #21 - fix bug (lowercase)"
+            echo ""
+            echo "Your title: $TITLE"
+            exit 1
+          fi
+          
+          echo "✅ PR title format is valid: $TITLE"

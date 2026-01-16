@@ -1,0 +1,8 @@
+parameters:
+    level: 8
+    paths:
+        - src
+    tmpDir: .phpstan.cache
+    ignoreErrors:
+        - '#Method App\\Application::create\(\) return type with generic class Slim\\App does not specify its types#'
+        - '#Method App\\Application::registerRoutes\(\) has parameter \$app with generic class Slim\\App but does not specify its types#'

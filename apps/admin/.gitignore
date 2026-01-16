@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+dist/
+storybook-static/
+
+# Environment
+.env
+.env.local
+
+# Cache
+.eslintcache
+
+# Stryker
+reports/
+.stryker-tmp/
+
+# IDE
+.vscode/
+.idea/
+*.tsbuildinfo
+vite.config.d.ts
+vite.config.js
