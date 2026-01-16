@@ -1,0 +1,51 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Unit;
+
+use App\Application;
+use PHPUnit\Framework\TestCase;
+use Slim\Middleware\ErrorMiddleware;
+
+final class ApplicationTest extends TestCase
+{
+    public function testApplicationHasErrorMiddlewareConfigured(): void
+    {
+        $app = Application::create();
+
+        $middlewareDispatcher = $app->getMiddlewareDispatcher();
+
+        // MiddlewareDispatcher stores the stack tip in $tip property
+        $reflection = new \ReflectionClass($middlewareDispatcher);
+        $tipProperty = $reflection->getProperty("tip");
+        $tipProperty->setAccessible(true);
+        $tip = $tipProperty->getValue($middlewareDispatcher);
+
+        // The tip is an instance of an anonymous class wrapping the middleware
+        // It has a private property $middleware
+        $tipReflection = new \ReflectionObject($tip);
+        $middlewareProperty = $tipReflection->getProperty("middleware");
+        $middlewareProperty->setAccessible(true);
+        $middleware = $middlewareProperty->getValue($tip);
+
+        $this->assertInstanceOf(ErrorMiddleware::class, $middleware, "The last added middleware (tip) should be ErrorMiddleware");
+
+        // Verify configuration on ErrorMiddleware
+        /** @var ErrorMiddleware $middleware */
+        // ErrorMiddleware stores these settings as private properties
+        $emReflection = new \ReflectionClass($middleware);
+
+        $displayProp = $emReflection->getProperty("displayErrorDetails");
+        $displayProp->setAccessible(true);
+        $this->assertTrue($displayProp->getValue($middleware), "displayErrorDetails should be true");
+
+        $logErrorsProp = $emReflection->getProperty("logErrors");
+        $logErrorsProp->setAccessible(true);
+        $this->assertTrue($logErrorsProp->getValue($middleware), "logErrors should be true");
+
+        $logDetailsProp = $emReflection->getProperty("logErrorDetails");
+        $logDetailsProp->setAccessible(true);
+        $this->assertTrue($logDetailsProp->getValue($middleware), "logErrorDetails should be true");
+    }
+}
