@@ -13,7 +13,8 @@ final class VersionServiceTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->service = new VersionService();
+        // Use a version with distinct parts to ensure correct parsing
+        $this->service = new VersionService("1.2.3");
     }
 
     public function testGetVersionReturnsString(): void
@@ -21,40 +22,28 @@ final class VersionServiceTest extends TestCase
         $version = $this->service->getVersion();
 
         $this->assertIsString($version);
-        $this->assertMatchesRegularExpression('/^\d+\.\d+\.\d+$/', $version);
+        $this->assertSame("1.2.3", $version);
     }
 
     public function testGetMajorVersionReturnsCorrectPart(): void
     {
-        $version = $this->service->getVersion();
-        $parts = explode(".", $version);
-        $expectedMajor = (int)$parts[0];
-
         $major = $this->service->getMajorVersion();
 
-        $this->assertSame($expectedMajor, $major);
+        $this->assertSame(1, $major);
     }
 
     public function testGetMinorVersionReturnsCorrectPart(): void
     {
-        $version = $this->service->getVersion();
-        $parts = explode(".", $version);
-        $expectedMinor = (int)$parts[1];
-
         $minor = $this->service->getMinorVersion();
 
-        $this->assertSame($expectedMinor, $minor);
+        $this->assertSame(2, $minor);
     }
 
     public function testGetPatchVersionReturnsCorrectPart(): void
     {
-        $version = $this->service->getVersion();
-        $parts = explode(".", $version);
-        $expectedPatch = (int)$parts[2];
-
         $patch = $this->service->getPatchVersion();
 
-        $this->assertSame($expectedPatch, $patch);
+        $this->assertSame(3, $patch);
     }
 
     public function testVersionPartsMatchFullVersion(): void
@@ -69,16 +58,12 @@ final class VersionServiceTest extends TestCase
         $this->assertSame($fullVersion, $reconstructed);
     }
 
-    public function testMajorMinorPatchAreDifferentIndices(): void
+    public function testDefaultVersionIsHandled(): void
     {
-        $major = $this->service->getMajorVersion();
-        $minor = $this->service->getMinorVersion();
-        $patch = $this->service->getPatchVersion();
-
-        // For version 1.0.0, parts are [1, 0, 0]
-        // Major should be 1, minor and patch should be 0
-        $this->assertSame(1, $major);
-        $this->assertSame(0, $minor);
-        $this->assertSame(0, $patch);
+        $service = new VersionService();
+        $this->assertSame("1.0.0", $service->getVersion());
+        $this->assertSame(1, $service->getMajorVersion());
+        $this->assertSame(0, $service->getMinorVersion());
+        $this->assertSame(0, $service->getPatchVersion());
     }
 }
