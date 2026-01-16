@@ -1,11 +1,12 @@
 <?php
 
-$finder = PhpCsFixer\Finder::create()
-    ->in(__DIR__ . '/src')
-    ->in(__DIR__ . '/tests');
+declare(strict_types=1);
 
-$config = new Blumilk\Codestyle\Config(
-    finder: $finder,
+use Blumilk\Codestyle\Config;
+use Blumilk\Codestyle\Configuration\Defaults\Paths;
+
+$config = new Config(
+    paths: new Paths("src", "tests"),
 );
 
 return $config->config();
