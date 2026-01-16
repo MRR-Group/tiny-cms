@@ -33,7 +33,7 @@ tiny-cms/
 │   ├── api/           # PHP Slim backend
 │   └── admin/         # React admin panel
 ├── packages/
-│   └── shared/        # Wspólne typy/utils (przyszłość)
+│   └── shared/        # Wspólne typy/utils
 ├── docker/
 │   ├── nginx/         # Nginx config
 │   └── php/           # PHP Dockerfile

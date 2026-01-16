@@ -21,10 +21,8 @@ final class Application
 
         $app = AppFactory::create();
 
-        // Register routes
         self::registerRoutes($app);
 
-        // Add error middleware
         $app->addErrorMiddleware(
             displayErrorDetails: true,
             logErrors: true,

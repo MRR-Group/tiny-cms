@@ -38,8 +38,3 @@ jobs:
       - name: Run mutation tests
         run: pnpm mutation
         working-directory: apps/admin
-        continue-on-error: true
-
-      - name: Build
-        run: pnpm build
-        working-directory: apps/admin

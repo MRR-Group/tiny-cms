@@ -17,8 +17,10 @@ async function request<T>(
     const { params, ...fetchOptions } = options;
 
     let url = `${API_BASE_URL}${endpoint}`;
+
     if (params) {
         const searchParams = new URLSearchParams(params);
+
         url += `?${searchParams.toString()}`;
     }
 
@@ -60,7 +62,6 @@ export const api = {
     delete: <T>(endpoint: string, options?: RequestOptions) =>
         request<T>(endpoint, { ...options, method: 'DELETE' }),
 
-    // Health check helper
     health: () => api.get<{ status: string; timestamp: string; version: string }>('/health'),
 };
 
