@@ -32,7 +32,6 @@ final class ApplicationTest extends TestCase
         $this->assertInstanceOf(ErrorMiddleware::class, $middleware, "The last added middleware (tip) should be ErrorMiddleware");
 
         // Verify configuration on ErrorMiddleware
-        /** @var ErrorMiddleware $middleware */
         // ErrorMiddleware stores these settings as private properties
         $emReflection = new \ReflectionClass($middleware);
 
