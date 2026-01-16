@@ -4,5 +4,5 @@ parameters:
         - src
     tmpDir: .phpstan.cache
     ignoreErrors:
-        - '#Method App\\Application::create\(\) should return Slim\\App<DI\\Container> but returns Slim\\App<Psr\\Container\\ContainerInterface\|null>#'
-        - '#Parameter \#1 \$app of static method App\\Application::registerRoutes\(\) expects Slim\\App<DI\\Container>, Slim\\App<Psr\\Container\\ContainerInterface\|null> given#'
+        - '#Method App\\Application::create\(\) return type with generic class Slim\\App does not specify its types#'
+        - '#Method App\\Application::registerRoutes\(\) has parameter \$app with generic class Slim\\App but does not specify its types#'

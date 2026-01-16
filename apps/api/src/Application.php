@@ -11,9 +11,6 @@ use Slim\Factory\AppFactory;
 
 final class Application
 {
-    /**
-     * @return SlimApp<Container>
-     */
     public static function create(): SlimApp
     {
         $container = new Container();
@@ -32,9 +29,6 @@ final class Application
         return $app;
     }
 
-    /**
-     * @param SlimApp<Container> $app
-     */
     private static function registerRoutes(SlimApp $app): void
     {
         $app->get("/health", HealthAction::class);
