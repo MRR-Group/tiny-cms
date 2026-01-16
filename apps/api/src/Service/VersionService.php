@@ -24,7 +24,7 @@ final class VersionService
 
     public function getMajorVersion(): int
     {
-        return (int)($this->parts[0] ?? 0);
+        return (int)$this->parts[0];
     }
 
     public function getMinorVersion(): int
