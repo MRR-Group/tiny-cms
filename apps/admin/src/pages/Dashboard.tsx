@@ -1,7 +1,7 @@
-import { Button } from '../components/Button/Button';
-import DocumentIcon from '../assets/icons/document.svg';
-import UsersIcon from '../assets/icons/users.svg';
-import ImageIcon from '../assets/icons/image.svg';
+import { Button } from '@/components/Button/Button';
+import DocumentIcon from '@/assets/icons/document.svg?react';
+import UsersIcon from '@/assets/icons/users.svg?react';
+import ImageIcon from '@/assets/icons/image.svg?react';
 
 export function Dashboard() {
   return (
@@ -15,7 +15,7 @@ export function Dashboard() {
         <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-primary-500/20 rounded-lg flex items-center justify-center">
-              <img src={DocumentIcon} alt="" className="w-6 h-6 text-primary-400" />
+              <DocumentIcon className="w-6 h-6 text-primary-400" />
             </div>
             <div>
               <p className="text-slate-400 text-sm">Total Pages</p>
@@ -27,7 +27,7 @@ export function Dashboard() {
         <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-emerald-500/20 rounded-lg flex items-center justify-center">
-              <img src={UsersIcon} alt="" className="w-6 h-6 text-emerald-400" />
+              <UsersIcon className="w-6 h-6 text-emerald-400" />
             </div>
             <div>
               <p className="text-slate-400 text-sm">Users</p>
@@ -39,7 +39,7 @@ export function Dashboard() {
         <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-amber-500/20 rounded-lg flex items-center justify-center">
-              <img src={ImageIcon} alt="" className="w-6 h-6 text-amber-400" />
+              <ImageIcon className="w-6 h-6 text-amber-400" />
             </div>
             <div>
               <p className="text-slate-400 text-sm">Media Files</p>

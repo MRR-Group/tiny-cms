@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { capitalize, formatNumber, truncate, isValidEmail, slugify, clamp } from './utils';
+import { capitalize, formatNumber, truncate, isValidEmail, slugify, clamp } from '@/domain/utils';
 
 describe('capitalize', () => {
     it('capitalizes first letter', () => {

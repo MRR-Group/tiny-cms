@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import HomeIcon from '../assets/icons/home.svg';
+import HomeIcon from '@/assets/icons/home.svg?react';
 
 export function Layout() {
   return (
@@ -17,7 +17,7 @@ export function Layout() {
             href="/"
             className="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-primary-500/10 text-primary-400 font-medium transition-colors"
           >
-            <img src={HomeIcon} alt="" className="w-5 h-5" />
+            <HomeIcon className="w-5 h-5" />
             Dashboard
           </a>
         </nav>
