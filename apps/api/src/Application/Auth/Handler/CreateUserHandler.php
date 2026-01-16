@@ -12,7 +12,7 @@ use App\Domain\Auth\ValueObject\Email;
 use App\Domain\Auth\ValueObject\Role;
 use App\Domain\Auth\ValueObject\UserId;
 
-final class CreateUserHandler
+class CreateUserHandler
 {
     public function __construct(
         private readonly UserRepositoryInterface $userRepository,

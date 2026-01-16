@@ -8,7 +8,7 @@ use App\Application\Auth\Command\ChangePasswordCommand;
 use App\Application\Auth\Contract\PasswordHasherInterface;
 use App\Domain\Auth\Repository\UserRepositoryInterface;
 
-final class ChangePasswordHandler
+class ChangePasswordHandler
 {
     public function __construct(
         private readonly UserRepositoryInterface $userRepository,

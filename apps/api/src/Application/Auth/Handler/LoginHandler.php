@@ -11,7 +11,7 @@ use App\Application\Auth\DTO\AuthTokenView;
 use App\Domain\Auth\Repository\UserRepositoryInterface;
 use App\Domain\Auth\ValueObject\Email;
 
-final class LoginHandler
+class LoginHandler
 {
     public function __construct(
         private readonly UserRepositoryInterface $userRepository,
