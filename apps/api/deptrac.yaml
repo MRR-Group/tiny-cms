@@ -9,7 +9,7 @@ deptrac:
     - name: Application
       collectors:
         - type: directory
-          value: src/Application
+          value: src/Application/
     - name: Infrastructure
       collectors:
         - type: directory
