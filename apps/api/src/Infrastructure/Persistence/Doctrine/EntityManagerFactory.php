@@ -22,19 +22,21 @@ class EntityManagerFactory
         if (!Type::hasType(UserIdType::NAME)) {
             Type::addType(UserIdType::NAME, UserIdType::class);
         }
+
         if (!Type::hasType(EmailType::NAME)) {
             Type::addType(EmailType::NAME, EmailType::class);
         }
+
         if (!Type::hasType(RoleType::NAME)) {
             Type::addType(RoleType::NAME, RoleType::class);
         }
 
         $config = ORMSetup::createXMLMetadataConfiguration(
-            paths: [__DIR__ . '/Mapping'],
+            paths: [__DIR__ . "/Mapping"],
             isDevMode: true,
         );
 
-        $cache = ($_ENV['APP_ENV'] ?? 'dev') === 'production'
+        $cache = ($_ENV["APP_ENV"] ?? "dev") === "production"
             ? new FilesystemAdapter()
             : new ArrayAdapter();
 
@@ -43,12 +45,12 @@ class EntityManagerFactory
         $config->setResultCache($cache);
 
         $connection = DriverManager::getConnection([
-            'driver' => 'pdo_pgsql',
-            'host' => $_ENV['DB_HOST'] ?? 'db',
-            'port' => $_ENV['DB_PORT'] ?? 5432,
-            'dbname' => $_ENV['DB_DATABASE'] ?? 'tiny_cms',
-            'user' => $_ENV['DB_USERNAME'] ?? 'user',
-            'password' => $_ENV['DB_PASSWORD'] ?? 'password',
+            "driver" => "pdo_pgsql",
+            "host" => $_ENV["DB_HOST"] ?? "db",
+            "port" => $_ENV["DB_PORT"] ?? 5432,
+            "dbname" => $_ENV["DB_DATABASE"] ?? "tiny_cms",
+            "user" => $_ENV["DB_USERNAME"] ?? "user",
+            "password" => $_ENV["DB_PASSWORD"] ?? "password",
         ], $config);
 
         return new EntityManager($connection, $config);

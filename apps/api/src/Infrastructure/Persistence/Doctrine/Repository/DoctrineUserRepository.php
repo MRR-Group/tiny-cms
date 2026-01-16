@@ -13,9 +13,8 @@ use Doctrine\ORM\EntityManagerInterface;
 class DoctrineUserRepository implements UserRepositoryInterface
 {
     public function __construct(
-        private readonly EntityManagerInterface $entityManager
-    ) {
-    }
+        private readonly EntityManagerInterface $entityManager,
+    ) {}
 
     public function save(User $user): void
     {
@@ -30,6 +29,6 @@ class DoctrineUserRepository implements UserRepositoryInterface
 
     public function findByEmail(Email $email): ?User
     {
-        return $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
+        return $this->entityManager->getRepository(User::class)->findOneBy(["email" => $email]);
     }
 }

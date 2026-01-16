@@ -10,17 +10,14 @@ use App\Domain\Auth\ValueObject\UserId;
 
 class User
 {
-    private string $passwordHash;
     private bool $mustChangePassword = false;
 
     public function __construct(
         private readonly UserId $id,
         private Email $email,
         private Role $role,
-        string $passwordHash
-    ) {
-        $this->passwordHash = $passwordHash;
-    }
+        private string $passwordHash,
+    ) {}
 
     public function getId(): UserId
     {

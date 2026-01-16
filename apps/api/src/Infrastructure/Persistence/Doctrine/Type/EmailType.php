@@ -10,7 +10,7 @@ use Doctrine\DBAL\Types\StringType;
 
 class EmailType extends StringType
 {
-    public const NAME = 'email';
+    public const NAME = "email";
 
     public function convertToPHPValue($value, AbstractPlatform $platform): ?Email
     {
@@ -29,7 +29,7 @@ class EmailType extends StringType
             return null;
         }
 
-        return $value instanceof Email ? $value->toString() : (string) $value;
+        return $value instanceof Email ? $value->toString() : (string)$value;
     }
 
     public function getName(): string

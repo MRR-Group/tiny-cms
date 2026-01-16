@@ -15,22 +15,22 @@ class CreateUserControllerTest extends TestCase
     public function testReturns201OnSuccess(): void
     {
         $handler = $this->createMock(CreateUserHandler::class);
-        $handler->expects($this->once())->method('handle');
+        $handler->expects($this->once())->method("handle");
 
         $controller = new CreateUserController($handler);
 
         $request = $this->createMock(ServerRequestInterface::class);
-        $request->method('getParsedBody')->willReturn([
-            'email' => 'new@example.com',
-            'password' => 'secret',
-            'role' => 'editor'
+        $request->method("getParsedBody")->willReturn([
+            "email" => "new@example.com",
+            "password" => "secret",
+            "role" => "editor",
         ]);
 
         $response = new Response();
         $result = $controller($request, $response);
 
         $this->assertEquals(201, $result->getStatusCode());
-        $this->assertStringContainsString('User created', (string) $result->getBody());
+        $this->assertStringContainsString("User created", (string)$result->getBody());
     }
 
     public function testReturns400OnInvalidArgument(): void
@@ -40,7 +40,7 @@ class CreateUserControllerTest extends TestCase
 
         $request = $this->createMock(ServerRequestInterface::class);
         // Missing fields
-        $request->method('getParsedBody')->willReturn([]);
+        $request->method("getParsedBody")->willReturn([]);
 
         $response = new Response();
         $result = $controller($request, $response);

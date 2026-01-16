@@ -11,7 +11,6 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Slim\Psr7\Response;
-use Slim\Psr7\Stream;
 
 class JwtAuthMiddlewareTest extends TestCase
 {
@@ -30,11 +29,11 @@ class JwtAuthMiddlewareTest extends TestCase
         $handler = $this->createMock(RequestHandlerInterface::class);
 
         $request->expects($this->once())
-            ->method('getHeaderLine')
-            ->with('Authorization')
-            ->willReturn('');
+            ->method("getHeaderLine")
+            ->with("Authorization")
+            ->willReturn("");
 
-        $handler->expects($this->never())->method('handle');
+        $handler->expects($this->never())->method("handle");
 
         $response = $this->middleware->process($request, $handler);
 
@@ -46,14 +45,14 @@ class JwtAuthMiddlewareTest extends TestCase
         $request = $this->createMock(ServerRequestInterface::class);
         $handler = $this->createMock(RequestHandlerInterface::class);
 
-        $request->method('getHeaderLine')->willReturn('Bearer invalid_token');
+        $request->method("getHeaderLine")->willReturn("Bearer invalid_token");
 
         $this->validator->expects($this->once())
-            ->method('validate')
-            ->with('invalid_token')
+            ->method("validate")
+            ->with("invalid_token")
             ->willReturn(null);
 
-        $handler->expects($this->never())->method('handle');
+        $handler->expects($this->never())->method("handle");
 
         $response = $this->middleware->process($request, $handler);
         $this->assertEquals(401, $response->getStatusCode());
@@ -65,20 +64,20 @@ class JwtAuthMiddlewareTest extends TestCase
         $handler = $this->createMock(RequestHandlerInterface::class);
         $response = new Response();
 
-        $request->method('getHeaderLine')->willReturn('Bearer valid_token');
+        $request->method("getHeaderLine")->willReturn("Bearer valid_token");
 
-        $claims = ['sub' => 'user_id', 'role' => 'admin'];
+        $claims = ["sub" => "user_id", "role" => "admin"];
         $this->validator->expects($this->once())
-            ->method('validate')
-            ->with('valid_token')
+            ->method("validate")
+            ->with("valid_token")
             ->willReturn($claims);
 
         $request->expects($this->exactly(2))
-            ->method('withAttribute')
+            ->method("withAttribute")
             ->willReturnSelf();
 
         $handler->expects($this->once())
-            ->method('handle')
+            ->method("handle")
             ->with($request)
             ->willReturn($response);
 

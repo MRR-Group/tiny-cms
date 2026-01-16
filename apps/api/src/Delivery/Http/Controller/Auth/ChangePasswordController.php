@@ -12,9 +12,8 @@ use Psr\Http\Message\ServerRequestInterface;
 class ChangePasswordController
 {
     public function __construct(
-        private readonly ChangePasswordHandler $handler
-    ) {
-    }
+        private readonly ChangePasswordHandler $handler,
+    ) {}
 
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
@@ -22,15 +21,17 @@ class ChangePasswordController
             $command = ChangePasswordRequest::fromPsr7($request);
             $this->handler->handle($command);
 
-            $response->getBody()->write(json_encode(['message' => 'Password changed']));
+            $response->getBody()->write((string)json_encode(["message" => "Password changed"]));
+
             return $response
-                ->withHeader('Content-Type', 'application/json')
+                ->withHeader("Content-Type", "application/json")
                 ->withStatus(200);
         } catch (\Exception $e) {
-            $status = $e->getMessage() === 'Invalid old password' ? 400 : 500;
-            $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
+            $status = $e->getMessage() === "Invalid old password" ? 400 : 500;
+            $response->getBody()->write((string)json_encode(["error" => $e->getMessage()]));
+
             return $response
-                ->withHeader('Content-Type', 'application/json')
+                ->withHeader("Content-Type", "application/json")
                 ->withStatus($status);
         }
     }

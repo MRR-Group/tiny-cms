@@ -8,12 +8,15 @@ use App\Application\Auth\DTO\AuthTokenView;
 
 class AuthTokenResource
 {
+    /**
+     * @return array<string, mixed>
+     */
     public static function toArray(AuthTokenView $view): array
     {
         return [
-            'token' => $view->token,
-            'expires_in' => $view->expiresIn,
-            'type' => 'Bearer',
+            "token" => $view->token,
+            "expires_in" => $view->expiresIn,
+            "type" => "Bearer",
         ];
     }
 }

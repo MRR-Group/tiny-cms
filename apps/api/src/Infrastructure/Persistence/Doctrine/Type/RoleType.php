@@ -10,7 +10,7 @@ use Doctrine\DBAL\Types\StringType;
 
 class RoleType extends StringType
 {
-    public const NAME = 'role';
+    public const NAME = "role";
 
     public function convertToPHPValue($value, AbstractPlatform $platform): ?Role
     {
@@ -29,7 +29,7 @@ class RoleType extends StringType
             return null;
         }
 
-        return $value instanceof Role ? $value->toString() : (string) $value;
+        return $value instanceof Role ? $value->toString() : (string)$value;
     }
 
     public function getName(): string

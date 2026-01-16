@@ -12,9 +12,8 @@ use Psr\Http\Message\ServerRequestInterface;
 class CreateUserController
 {
     public function __construct(
-        private readonly CreateUserHandler $handler
-    ) {
-    }
+        private readonly CreateUserHandler $handler,
+    ) {}
 
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
@@ -22,21 +21,24 @@ class CreateUserController
             $command = CreateUserRequest::fromPsr7($request);
             $this->handler->handle($command);
 
-            $response->getBody()->write(json_encode(['message' => 'User created']));
+            $response->getBody()->write((string)json_encode(["message" => "User created"]));
+
             return $response
-                ->withHeader('Content-Type', 'application/json')
+                ->withHeader("Content-Type", "application/json")
                 ->withStatus(201);
         } catch (\InvalidArgumentException $e) {
-            $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
+            $response->getBody()->write((string)json_encode(["error" => $e->getMessage()]));
+
             return $response
-                ->withHeader('Content-Type', 'application/json')
+                ->withHeader("Content-Type", "application/json")
                 ->withStatus(400);
         } catch (\Exception $e) {
             // Differentiate business exception vs server error
-            $status = $e->getMessage() === 'User already exists' ? 409 : 500;
-            $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
+            $status = $e->getMessage() === "User already exists" ? 409 : 500;
+            $response->getBody()->write((string)json_encode(["error" => $e->getMessage()]));
+
             return $response
-                ->withHeader('Content-Type', 'application/json')
+                ->withHeader("Content-Type", "application/json")
                 ->withStatus($status);
         }
     }

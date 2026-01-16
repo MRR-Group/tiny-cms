@@ -33,50 +33,50 @@ class LoginHandlerTest extends TestCase
 
     public function testSuccessfulLogin(): void
     {
-        $email = 'test@example.com';
-        $password = 'secret';
-        $hash = 'hashed_secret';
+        $email = "test@example.com";
+        $password = "secret";
+        $hash = "hashed_secret";
         $user = new User(UserId::generate(), new Email($email), Role::admin(), $hash);
 
         $this->repository->expects($this->once())
-            ->method('findByEmail')
+            ->method("findByEmail")
             ->willReturn($user);
 
         $this->hasher->expects($this->once())
-            ->method('verify')
+            ->method("verify")
             ->with($password, $hash)
             ->willReturn(true);
 
         $this->issuer->expects($this->once())
-            ->method('issue')
+            ->method("issue")
             ->with($user)
-            ->willReturn('jwt_token');
+            ->willReturn("jwt_token");
 
         $result = $this->handler->handle(new LoginCommand($email, $password));
 
-        $this->assertEquals('jwt_token', $result->token);
+        $this->assertEquals("jwt_token", $result->token);
     }
 
     public function testLoginFailsIfUserNotFound(): void
     {
-        $this->repository->method('findByEmail')->willReturn(null);
+        $this->repository->method("findByEmail")->willReturn(null);
 
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Invalid credentials');
+        $this->expectExceptionMessage("Invalid credentials");
 
-        $this->handler->handle(new LoginCommand('unknown@mail.com', 'password'));
+        $this->handler->handle(new LoginCommand("unknown@mail.com", "password"));
     }
 
     public function testLoginFailsIfPasswordInvalid(): void
     {
-        $user = new User(UserId::generate(), new Email('test@example.com'), Role::admin(), 'hash');
-        $this->repository->method('findByEmail')->willReturn($user);
+        $user = new User(UserId::generate(), new Email("test@example.com"), Role::admin(), "hash");
+        $this->repository->method("findByEmail")->willReturn($user);
 
-        $this->hasher->method('verify')->willReturn(false);
+        $this->hasher->method("verify")->willReturn(false);
 
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Invalid credentials');
+        $this->expectExceptionMessage("Invalid credentials");
 
-        $this->handler->handle(new LoginCommand('test@example.com', 'wrong'));
+        $this->handler->handle(new LoginCommand("test@example.com", "wrong"));
     }
 }

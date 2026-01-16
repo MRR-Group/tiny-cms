@@ -11,16 +11,16 @@ class CreateUserRequest
 {
     public static function fromPsr7(ServerRequestInterface $request): CreateUserCommand
     {
-        $data = $request->getParsedBody();
+        $data = (array)$request->getParsedBody();
 
-        $email = $data['email'] ?? '';
-        $password = $data['password'] ?? '';
-        $role = $data['role'] ?? 'editor'; // Default role
+        $email = $data["email"] ?? "";
+        $password = $data["password"] ?? "";
+        $role = $data["role"] ?? "editor"; // Default role
 
         if (empty($email) || empty($password)) {
-            throw new \InvalidArgumentException('Email and password are required');
+            throw new \InvalidArgumentException("Email and password are required");
         }
 
-        return new CreateUserCommand((string) $email, (string) $password, (string) $role);
+        return new CreateUserCommand((string)$email, (string)$password, (string)$role);
     }
 }

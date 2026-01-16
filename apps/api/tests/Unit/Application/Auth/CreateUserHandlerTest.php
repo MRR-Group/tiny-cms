@@ -27,37 +27,35 @@ class CreateUserHandlerTest extends TestCase
 
     public function testSuccessfulCreation(): void
     {
-        $command = new CreateUserCommand('new@example.com', 'password', 'editor');
+        $command = new CreateUserCommand("new@example.com", "password", "editor");
 
         $this->repository->expects($this->once())
-            ->method('findByEmail')
+            ->method("findByEmail")
             ->willReturn(null);
 
         $this->hasher->expects($this->once())
-            ->method('hash')
-            ->with('password')
-            ->willReturn('hashed');
+            ->method("hash")
+            ->with("password")
+            ->willReturn("hashed");
 
         $this->repository->expects($this->once())
-            ->method('save')
-            ->with($this->callback(function (User $user) {
-                return $user->getEmail()->toString() === 'new@example.com'
-                    && $user->getRole()->toString() === 'editor'
-                    && $user->getPasswordHash() === 'hashed'
-                    && $user->mustChangePassword() === true;
-            }));
+            ->method("save")
+            ->with($this->callback(fn(User $user) => $user->getEmail()->toString() === "new@example.com"
+                    && $user->getRole()->toString() === "editor"
+                    && $user->getPasswordHash() === "hashed"
+                    && $user->mustChangePassword() === true));
 
         $this->handler->handle($command);
     }
 
     public function testFailsIfUserExists(): void
     {
-        $command = new CreateUserCommand('existing@example.com', 'password', 'editor');
+        $command = new CreateUserCommand("existing@example.com", "password", "editor");
 
-        $this->repository->method('findByEmail')->willReturn($this->createMock(User::class));
+        $this->repository->method("findByEmail")->willReturn($this->createMock(User::class));
 
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('User already exists');
+        $this->expectExceptionMessage("User already exists");
 
         $this->handler->handle($command);
     }

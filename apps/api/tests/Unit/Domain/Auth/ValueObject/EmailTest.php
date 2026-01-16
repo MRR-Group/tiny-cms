@@ -11,22 +11,22 @@ class EmailTest extends TestCase
 {
     public function testValidEmail(): void
     {
-        $email = new Email('test@example.com');
-        $this->assertEquals('test@example.com', $email->toString());
-        $this->assertEquals('test@example.com', (string) $email);
+        $email = new Email("test@example.com");
+        $this->assertEquals("test@example.com", $email->toString());
+        $this->assertEquals("test@example.com", (string)$email);
     }
 
     public function testInvalidEmailThrowsException(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        new Email('invalid-email');
+        new Email("invalid-email");
     }
 
     public function testEquality(): void
     {
-        $email1 = new Email('a@b.c');
-        $email2 = new Email('a@b.c');
-        $email3 = new Email('x@y.z');
+        $email1 = new Email("a@b.c");
+        $email2 = new Email("a@b.c");
+        $email3 = new Email("x@y.z");
 
         $this->assertTrue($email1->equals($email2));
         $this->assertFalse($email1->equals($email3));

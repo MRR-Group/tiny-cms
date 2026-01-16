@@ -17,8 +17,7 @@ class LoginHandler
         private readonly UserRepositoryInterface $userRepository,
         private readonly PasswordHasherInterface $passwordHasher,
         private readonly TokenIssuerInterface $tokenIssuer,
-    ) {
-    }
+    ) {}
 
     public function handle(LoginCommand $command): AuthTokenView
     {
@@ -28,11 +27,11 @@ class LoginHandler
         $user = $this->userRepository->findByEmail(new Email($command->email));
 
         if (!$user) {
-            throw new \Exception('Invalid credentials');
+            throw new \Exception("Invalid credentials");
         }
 
         if (!$this->passwordHasher->verify($command->password, $user->getPasswordHash())) {
-            throw new \Exception('Invalid credentials');
+            throw new \Exception("Invalid credentials");
         }
 
         $token = $this->tokenIssuer->issue($user);

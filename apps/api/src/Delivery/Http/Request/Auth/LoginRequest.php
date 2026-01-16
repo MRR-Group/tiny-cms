@@ -11,15 +11,15 @@ class LoginRequest
 {
     public static function fromPsr7(ServerRequestInterface $request): LoginCommand
     {
-        $data = $request->getParsedBody();
+        $data = (array)$request->getParsedBody();
 
-        $email = $data['email'] ?? '';
-        $password = $data['password'] ?? '';
+        $email = $data["email"] ?? "";
+        $password = $data["password"] ?? "";
 
         if (empty($email) || empty($password)) {
-            throw new \InvalidArgumentException('Email and password are required');
+            throw new \InvalidArgumentException("Email and password are required");
         }
 
-        return new LoginCommand((string) $email, (string) $password);
+        return new LoginCommand((string)$email, (string)$password);
     }
 }

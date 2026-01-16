@@ -6,6 +6,8 @@ namespace App\Application\Auth\Contract;
 
 interface TokenValidatorInterface
 {
-    /** @return array<string, mixed>|null Claims if valid, null otherwise */
+    /**
+     * @return array<string, mixed>|null Claims if valid, null otherwise
+     */
     public function validate(string $token): ?array;
 }

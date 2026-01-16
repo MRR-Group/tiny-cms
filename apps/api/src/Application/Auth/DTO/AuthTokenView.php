@@ -8,7 +8,6 @@ final class AuthTokenView
 {
     public function __construct(
         public readonly string $token,
-        public readonly int $expiresIn = 3600
-    ) {
-    }
+        public readonly int $expiresIn = 3600,
+    ) {}
 }

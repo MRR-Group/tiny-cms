@@ -17,15 +17,14 @@ class CreateUserHandler
     public function __construct(
         private readonly UserRepositoryInterface $userRepository,
         private readonly PasswordHasherInterface $passwordHasher,
-    ) {
-    }
+    ) {}
 
     public function handle(CreateUserCommand $command): void
     {
         $email = new Email($command->email);
 
         if ($this->userRepository->findByEmail($email)) {
-            throw new \Exception('User already exists');
+            throw new \Exception("User already exists");
         }
 
         $passwordHash = $this->passwordHasher->hash($command->password);
@@ -34,7 +33,7 @@ class CreateUserHandler
             UserId::generate(),
             $email,
             new Role($command->role),
-            $passwordHash
+            $passwordHash,
         );
         // Force password change on first login
         $user->requirePasswordChange();

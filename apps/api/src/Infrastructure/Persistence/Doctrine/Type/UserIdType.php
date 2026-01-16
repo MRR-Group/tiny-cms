@@ -10,7 +10,7 @@ use Doctrine\DBAL\Types\GuidType;
 
 class UserIdType extends GuidType
 {
-    public const NAME = 'user_id';
+    public const NAME = "user_id";
 
     public function convertToPHPValue($value, AbstractPlatform $platform): ?UserId
     {
@@ -29,7 +29,7 @@ class UserIdType extends GuidType
             return null;
         }
 
-        return $value instanceof UserId ? $value->toString() : (string) $value;
+        return $value instanceof UserId ? $value->toString() : (string)$value;
     }
 
     public function getName(): string

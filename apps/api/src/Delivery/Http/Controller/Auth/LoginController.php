@@ -13,9 +13,8 @@ use Psr\Http\Message\ServerRequestInterface;
 class LoginController
 {
     public function __construct(
-        private readonly LoginHandler $handler
-    ) {
-    }
+        private readonly LoginHandler $handler,
+    ) {}
 
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
@@ -24,21 +23,24 @@ class LoginController
             $tokenView = $this->handler->handle($command);
             $data = AuthTokenResource::toArray($tokenView);
 
-            $response->getBody()->write(json_encode($data));
+            $response->getBody()->write((string)json_encode($data));
+
             return $response
-                ->withHeader('Content-Type', 'application/json')
+                ->withHeader("Content-Type", "application/json")
                 ->withStatus(200);
         } catch (\InvalidArgumentException $e) {
-            $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
+            $response->getBody()->write((string)json_encode(["error" => $e->getMessage()]));
+
             return $response
-                ->withHeader('Content-Type', 'application/json')
+                ->withHeader("Content-Type", "application/json")
                 ->withStatus(400);
         } catch (\Exception $e) {
             // Should differentiate 401 vs 500, but for now simple
-            $status = $e->getMessage() === 'Invalid credentials' ? 401 : 500;
-            $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
+            $status = $e->getMessage() === "Invalid credentials" ? 401 : 500;
+            $response->getBody()->write((string)json_encode(["error" => $e->getMessage()]));
+
             return $response
-                ->withHeader('Content-Type', 'application/json')
+                ->withHeader("Content-Type", "application/json")
                 ->withStatus($status);
         }
     }

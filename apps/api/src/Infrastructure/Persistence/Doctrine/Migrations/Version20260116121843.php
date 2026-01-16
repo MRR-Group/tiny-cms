@@ -14,19 +14,19 @@ final class Version20260116121843 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return "";
     }
 
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE TABLE users (email VARCHAR NOT NULL, role VARCHAR(20) NOT NULL, password_hash VARCHAR(255) NOT NULL, must_change_password BOOLEAN NOT NULL, id UUID NOT NULL, PRIMARY KEY (id))');
-        $this->addSql('CREATE UNIQUE INDEX UNIQ_1483A5E9E7927C74 ON users (email)');
+        $this->addSql("CREATE TABLE users (email VARCHAR NOT NULL, role VARCHAR(20) NOT NULL, password_hash VARCHAR(255) NOT NULL, must_change_password BOOLEAN NOT NULL, id UUID NOT NULL, PRIMARY KEY (id))");
+        $this->addSql("CREATE UNIQUE INDEX UNIQ_1483A5E9E7927C74 ON users (email)");
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('DROP TABLE users');
+        $this->addSql("DROP TABLE users");
     }
 }

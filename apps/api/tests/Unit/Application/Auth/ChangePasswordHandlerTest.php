@@ -30,49 +30,49 @@ class ChangePasswordHandlerTest extends TestCase
     {
         $userId = UserId::generate();
         $user = $this->createMock(User::class);
-        $user->method('getPasswordHash')->willReturn('old_hash');
+        $user->method("getPasswordHash")->willReturn("old_hash");
 
-        $command = new ChangePasswordCommand($userId, 'old', 'new');
+        $command = new ChangePasswordCommand($userId, "old", "new");
 
-        $this->repository->method('findById')->with($userId)->willReturn($user);
+        $this->repository->method("findById")->with($userId)->willReturn($user);
 
         $this->hasher->expects($this->once())
-            ->method('verify')
-            ->with('old', 'old_hash')
+            ->method("verify")
+            ->with("old", "old_hash")
             ->willReturn(true);
 
         $this->hasher->expects($this->once())
-            ->method('hash')
-            ->with('new')
-            ->willReturn('new_hash');
+            ->method("hash")
+            ->with("new")
+            ->willReturn("new_hash");
 
-        $user->expects($this->once())->method('changePassword')->with('new_hash');
-        $this->repository->expects($this->once())->method('save')->with($user);
+        $user->expects($this->once())->method("changePassword")->with("new_hash");
+        $this->repository->expects($this->once())->method("save")->with($user);
 
         $this->handler->handle($command);
     }
 
     public function testFailsIfUserNotFound(): void
     {
-        $this->repository->method('findById')->willReturn(null);
+        $this->repository->method("findById")->willReturn(null);
 
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('User not found');
+        $this->expectExceptionMessage("User not found");
 
-        $this->handler->handle(new ChangePasswordCommand(UserId::generate(), 'old', 'new'));
+        $this->handler->handle(new ChangePasswordCommand(UserId::generate(), "old", "new"));
     }
 
     public function testFailsIfOldPasswordInvalid(): void
     {
         $user = $this->createMock(User::class);
-        $user->method('getPasswordHash')->willReturn('old_hash');
+        $user->method("getPasswordHash")->willReturn("old_hash");
 
-        $this->repository->method('findById')->willReturn($user);
-        $this->hasher->method('verify')->willReturn(false);
+        $this->repository->method("findById")->willReturn($user);
+        $this->hasher->method("verify")->willReturn(false);
 
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Invalid old password');
+        $this->expectExceptionMessage("Invalid old password");
 
-        $this->handler->handle(new ChangePasswordCommand(UserId::generate(), 'wrong', 'new'));
+        $this->handler->handle(new ChangePasswordCommand(UserId::generate(), "wrong", "new"));
     }
 }

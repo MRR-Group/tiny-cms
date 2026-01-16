@@ -18,12 +18,12 @@ class Argon2PasswordHasherTest extends TestCase
 
     public function testHashAndVerify(): void
     {
-        $password = 'secret123';
+        $password = "secret123";
         $hash = $this->hasher->hash($password);
 
         $this->assertNotEmpty($hash);
         $this->assertNotEquals($password, $hash);
         $this->assertTrue($this->hasher->verify($password, $hash));
-        $this->assertFalse($this->hasher->verify('wrong', $hash));
+        $this->assertFalse($this->hasher->verify("wrong", $hash));
     }
 }

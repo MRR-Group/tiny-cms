@@ -6,8 +6,8 @@ namespace App\Domain\Auth\ValueObject;
 
 final class Role
 {
-    public const ADMIN = 'admin';
-    public const EDITOR = 'editor';
+    public const ADMIN = "admin";
+    public const EDITOR = "editor";
 
     public function __construct(
         private readonly string $value,

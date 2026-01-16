@@ -17,27 +17,28 @@ class JwtTokenService implements TokenIssuerInterface, TokenValidatorInterface
     public function __construct()
     {
         // In real app, inject via DI from config
-        $this->key = $_ENV['JWT_SECRET'] ?? 'default_secret_change_me';
+        $this->key = $_ENV["JWT_SECRET"] ?? "default_secret_change_me";
     }
 
     public function issue(User $user): string
     {
         $payload = [
-            'iss' => 'tiny-cms',
-            'sub' => $user->getId()->toString(),
-            'role' => $user->getRole()->toString(),
-            'iat' => time(),
-            'exp' => time() + 3600, // 1 hour
+            "iss" => "tiny-cms",
+            "sub" => $user->getId()->toString(),
+            "role" => $user->getRole()->toString(),
+            "iat" => time(),
+            "exp" => time() + 3600, // 1 hour
         ];
 
-        return JWT::encode($payload, $this->key, 'HS256');
+        return JWT::encode($payload, $this->key, "HS256");
     }
 
     public function validate(string $token): ?array
     {
         try {
-            $decoded = JWT::decode($token, new Key($this->key, 'HS256'));
-            return (array) $decoded;
+            $decoded = JWT::decode($token, new Key($this->key, "HS256"));
+
+            return (array)$decoded;
         } catch (\Throwable $e) {
             return null;
         }

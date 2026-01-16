@@ -6,16 +6,19 @@ namespace App\Domain\Shared\ValueObject;
 
 use Ramsey\Uuid\Uuid as RamseyUuid;
 
-abstract class Uuid
+abstract class Uuid implements \Stringable
 {
-    protected string $value;
-
-    public function __construct(string $value)
-    {
-        if (!RamseyUuid::isValid($value)) {
-            throw new \InvalidArgumentException("Invalid UUID: {$value}");
+    final public function __construct(
+        protected string $value,
+    ) {
+        if (!RamseyUuid::isValid($this->value)) {
+            throw new \InvalidArgumentException("Invalid UUID: {$this->value}");
         }
-        $this->value = $value;
+    }
+
+    public function __toString(): string
+    {
+        return $this->value;
     }
 
     public static function generate(): static
@@ -33,12 +36,7 @@ abstract class Uuid
         return $this->value;
     }
 
-    public function __toString(): string
-    {
-        return $this->value;
-    }
-
-    public function equals(Uuid $other): bool
+    public function equals(self $other): bool
     {
         return $this->value === $other->value;
     }

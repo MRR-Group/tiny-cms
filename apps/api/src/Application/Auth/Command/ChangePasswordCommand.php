@@ -12,6 +12,5 @@ final class ChangePasswordCommand
         public readonly UserId $userId,
         public readonly string $oldPassword,
         public readonly string $newPassword,
-    ) {
-    }
+    ) {}
 }
