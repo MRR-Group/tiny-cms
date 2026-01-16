@@ -66,4 +66,17 @@ final class VersionServiceTest extends TestCase
         $this->assertSame(0, $service->getMinorVersion());
         $this->assertSame(0, $service->getPatchVersion());
     }
+
+    public function testShortVersionReturnsDefaults(): void
+    {
+        $service = new VersionService("1");
+        // "1" -> explode -> ["1"]
+        // major -> parts[0] -> "1" -> 1
+        // minor -> parts[1] missing -> 0
+        // patch -> parts[2] missing -> 0
+
+        $this->assertSame(1, $service->getMajorVersion());
+        $this->assertSame(0, $service->getMinorVersion());
+        $this->assertSame(0, $service->getPatchVersion());
+    }
 }
