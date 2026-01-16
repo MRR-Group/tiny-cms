@@ -16,14 +16,11 @@ final class ApplicationTest extends TestCase
 
         $middlewareDispatcher = $app->getMiddlewareDispatcher();
 
-        // MiddlewareDispatcher stores the stack tip in $tip property
         $reflection = new \ReflectionClass($middlewareDispatcher);
         $tipProperty = $reflection->getProperty("tip");
         $tipProperty->setAccessible(true);
         $tip = $tipProperty->getValue($middlewareDispatcher);
 
-        // The tip is an instance of an anonymous class wrapping the middleware
-        // It has a private property $middleware
         $tipReflection = new \ReflectionObject($tip);
         $middlewareProperty = $tipReflection->getProperty("middleware");
         $middlewareProperty->setAccessible(true);

@@ -13,7 +13,6 @@ final class VersionServiceTest extends TestCase
 
     protected function setUp(): void
     {
-        // Use a version with distinct parts to ensure correct parsing
         $this->service = new VersionService("1.2.3");
     }
 
@@ -70,10 +69,6 @@ final class VersionServiceTest extends TestCase
     public function testShortVersionReturnsDefaults(): void
     {
         $service = new VersionService("1");
-        // "1" -> explode -> ["1"]
-        // major -> parts[0] -> "1" -> 1
-        // minor -> parts[1] missing -> 0
-        // patch -> parts[2] missing -> 0
 
         $this->assertSame(1, $service->getMajorVersion());
         $this->assertSame(0, $service->getMinorVersion());
