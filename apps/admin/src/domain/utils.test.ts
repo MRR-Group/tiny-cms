@@ -55,6 +55,14 @@ describe('isValidEmail', () => {
     it('rejects email without domain', () => {
         expect(isValidEmail('test@')).toBe(false);
     });
+
+    it('rejects email with trailing characters', () => {
+        expect(isValidEmail('test@example.com invalid')).toBe(false);
+    });
+
+    it('rejects email with leading characters', () => {
+        expect(isValidEmail('invalid test@example.com')).toBe(false);
+    });
 });
 
 describe('slugify', () => {
@@ -68,6 +76,14 @@ describe('slugify', () => {
 
     it('handles multiple spaces', () => {
         expect(slugify('hello   world')).toBe('hello-world');
+    });
+
+    it('removes leading and trailing dashes', () => {
+        expect(slugify('---hello world---')).toBe('hello-world');
+    });
+
+    it('handles dashes only', () => {
+        expect(slugify('---')).toBe('');
     });
 });
 

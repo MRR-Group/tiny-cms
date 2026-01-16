@@ -7,7 +7,6 @@
  * Capitalizes the first letter of a string
  */
 export function capitalize(str: string): string {
-    if (!str) return '';
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
@@ -40,10 +39,9 @@ export function isValidEmail(email: string): boolean {
 export function slugify(str: string): string {
     return str
         .toLowerCase()
-        .trim()
         .replace(/[^\w\s-]/g, '')
         .replace(/[\s_-]+/g, '-')
-        .replace(/^-+|-+$/g, '');
+        .replace(/^-|-$/g, '');
 }
 
 /**
