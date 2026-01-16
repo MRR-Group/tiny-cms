@@ -1,0 +1,39 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Infrastructure\Persistence\Doctrine\Type;
+
+use App\Domain\Auth\ValueObject\Role;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\StringType;
+
+class RoleType extends StringType
+{
+    public const NAME = 'role';
+
+    public function convertToPHPValue($value, AbstractPlatform $platform): ?Role
+    {
+        $value = parent::convertToPHPValue($value, $platform);
+
+        if ($value === null) {
+            return null;
+        }
+
+        return new Role($value);
+    }
+
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        return $value instanceof Role ? $value->toString() : (string) $value;
+    }
+
+    public function getName(): string
+    {
+        return self::NAME;
+    }
+}
