@@ -3,6 +3,7 @@ const config = {
   packageManager: 'pnpm',
   reporters: ['html', 'clear-text', 'progress'],
   testRunner: 'vitest',
+  plugins: ['@stryker-mutator/vitest-runner'],
   vitest: {
     configFile: 'vitest.config.ts',
   },
