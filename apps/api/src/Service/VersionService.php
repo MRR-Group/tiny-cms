@@ -24,16 +24,16 @@ final class VersionService
 
     public function getMajorVersion(): int
     {
-        return (int) ($this->parts[0] ?? 0);
+        return (int)($this->parts[0] ?? 0);
     }
 
     public function getMinorVersion(): int
     {
-        return (int) ($this->parts[1] ?? 0);
+        return (int)($this->parts[1] ?? 0);
     }
 
     public function getPatchVersion(): int
     {
-        return (int) ($this->parts[2] ?? 0);
+        return (int)($this->parts[2] ?? 0);
     }
 }
