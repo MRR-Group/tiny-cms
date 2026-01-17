@@ -8,6 +8,7 @@ use App\Action\HealthAction;
 use App\Delivery\Http\Controller\Auth\ChangePasswordController;
 use App\Delivery\Http\Controller\Auth\CreateUserController;
 use App\Delivery\Http\Controller\Auth\LoginController;
+use App\Delivery\Http\Middleware\DomainExceptionHandler;
 use App\Delivery\Http\Middleware\JwtAuthMiddleware;
 use App\Delivery\Http\Middleware\RoleMiddleware;
 use DI\ContainerBuilder;
@@ -37,7 +38,7 @@ final class Application
             logErrorDetails: true,
         );
 
-        $domainExceptionHandler = $container->get(\App\Delivery\Http\Middleware\DomainExceptionHandler::class);
+        $domainExceptionHandler = $container->get(DomainExceptionHandler::class);
         $errorMiddleware->setDefaultErrorHandler($domainExceptionHandler);
 
         return $app;

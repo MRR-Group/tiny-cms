@@ -35,6 +35,11 @@ class JwtTokenServiceTest extends TestCase
         $this->assertNotNull($claims);
         $this->assertEquals("tiny-cms", $claims["iss"]);
         $this->assertEquals("admin", $claims["role"]);
+
+        // Kill time mutants
+        $now = time();
+        $this->assertEqualsWithDelta($now, $claims["iat"], 5);
+        $this->assertEqualsWithDelta($now + 3600, $claims["exp"], 5);
     }
 
     public function testValidateReturnsNullForInvalidToken(): void

@@ -16,7 +16,7 @@ class LoginRequestTest extends TestCase
         $request = (new ServerRequestFactory())->createServerRequest("POST", "/auth/login")
             ->withParsedBody([
                 "email" => "test@example.com",
-                "password" => "secret"
+                "password" => "secret",
             ]);
 
         $command = LoginRequest::fromPsr7($request);
@@ -30,9 +30,9 @@ class LoginRequestTest extends TestCase
     {
         $request = (new ServerRequestFactory())->createServerRequest("POST", "/")
             ->withParsedBody((object)["email" => "test@test.com", "password" => "pass"]);
-        
+
         $command = LoginRequest::fromPsr7($request);
-        
+
         $this->assertEquals("test@test.com", $command->email);
         $this->assertEquals("pass", $command->password);
     }
@@ -41,9 +41,9 @@ class LoginRequestTest extends TestCase
     {
         $request = (new ServerRequestFactory())->createServerRequest("POST", "/")
             ->withParsedBody(["email" => 12345, "password" => 67890]);
-        
+
         $command = LoginRequest::fromPsr7($request);
-        
+
         $this->assertSame("12345", $command->email);
         $this->assertSame("67890", $command->password);
     }
@@ -52,7 +52,7 @@ class LoginRequestTest extends TestCase
     {
         $request = (new ServerRequestFactory())->createServerRequest("POST", "/auth/login")
             ->withParsedBody([
-                "password" => "secret"
+                "password" => "secret",
             ]);
 
         $this->expectException(\InvalidArgumentException::class);
@@ -65,7 +65,7 @@ class LoginRequestTest extends TestCase
     {
         $request = (new ServerRequestFactory())->createServerRequest("POST", "/auth/login")
             ->withParsedBody([
-                "email" => "test@example.com"
+                "email" => "test@example.com",
             ]);
 
         $this->expectException(\InvalidArgumentException::class);
@@ -90,7 +90,7 @@ class LoginRequestTest extends TestCase
         $request = (new ServerRequestFactory())->createServerRequest("POST", "/auth/login")
             ->withParsedBody([
                 "email" => "",
-                "password" => ""
+                "password" => "",
             ]);
 
         $this->expectException(\InvalidArgumentException::class);

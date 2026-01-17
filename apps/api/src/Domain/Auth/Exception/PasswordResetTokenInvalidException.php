@@ -10,6 +10,6 @@ class PasswordResetTokenInvalidException extends Exception
 {
     public function __construct()
     {
-        parent::__construct('Password reset token is invalid');
+        parent::__construct("Password reset token is invalid");
     }
 }

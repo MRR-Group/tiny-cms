@@ -13,7 +13,6 @@ use App\Domain\Auth\Exception\WeakPasswordException;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 use Slim\Exception\HttpException;
 use Throwable;
 
@@ -35,15 +34,15 @@ class DomainExceptionHandler
 
         $response = $this->responseFactory->createResponse($statusCode);
         $payload = json_encode([
-            'error' => [
-                'message' => $message,
-                'code' => $statusCode,
+            "error" => [
+                "message" => $message,
+                "code" => $statusCode,
             ],
         ], JSON_THROW_ON_ERROR);
 
         $response->getBody()->write($payload);
 
-        return $response->withHeader('Content-Type', 'application/json');
+        return $response->withHeader("Content-Type", "application/json");
     }
 
     private function mapExceptionToStatusCode(Throwable $exception): int
@@ -51,13 +50,13 @@ class DomainExceptionHandler
         return match (get_class($exception)) {
             InvalidCredentialsException::class,
             UserNotFoundException::class => 401,
-            
+
             PasswordResetTokenExpiredException::class,
             PasswordResetTokenInvalidException::class,
             WeakPasswordException::class => 400,
-            
+
             UserAlreadyExistsException::class => 409,
-            
+
             default => $exception instanceof HttpException
                 ? $exception->getCode()
                 : 500,

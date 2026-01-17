@@ -8,7 +8,6 @@ use App\Application\Auth\Contract\TokenValidatorInterface;
 use App\Delivery\Http\Middleware\JwtAuthMiddleware;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Slim\Psr7\Factory\ResponseFactory;
@@ -41,7 +40,7 @@ class JwtAuthMiddlewareTest extends TestCase
         // Missing "Bearer"
         $request1 = (new ServerRequestFactory())->createServerRequest("GET", "/")
             ->withHeader("Authorization", "Basic user:pass");
-        
+
         // Missing space
         $request2 = (new ServerRequestFactory())->createServerRequest("GET", "/")
             ->withHeader("Authorization", "BearerToken");
@@ -60,15 +59,15 @@ class JwtAuthMiddlewareTest extends TestCase
         // Case 2: Invalid format
         $response2 = $this->middleware->process($request2, $handler);
         $this->assertEquals(401, $response2->getStatusCode());
-        
+
         // Case 3: Valid format (different case), should call validator
         $this->validator->expects($this->once())
             ->method("validate")
             ->with("token")
             ->willReturn(["sub" => "123", "role" => "admin"]);
-            
+
         $handler->expects($this->once())->method("handle")->willReturn((new ResponseFactory())->createResponse());
-        
+
         $this->middleware->process($request3, $handler);
     }
 
@@ -94,16 +93,14 @@ class JwtAuthMiddlewareTest extends TestCase
 
         $this->validator->method("validate")->with("valid_token")->willReturn([
             "sub" => "user-123",
-            "role" => "admin"
+            "role" => "admin",
         ]);
 
         $handler = $this->createMock(RequestHandlerInterface::class);
         $handler->expects($this->once())
             ->method("handle")
-            ->with($this->callback(function (ServerRequestInterface $req) {
-                return $req->getAttribute("user_id") === "user-123"
-                    && $req->getAttribute("role") === "admin";
-            }))
+            ->with($this->callback(fn(ServerRequestInterface $req) => $req->getAttribute("user_id") === "user-123"
+                    && $req->getAttribute("role") === "admin"))
             ->willReturn((new ResponseFactory())->createResponse());
 
         $this->middleware->process($request, $handler);

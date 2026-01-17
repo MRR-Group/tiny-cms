@@ -8,12 +8,12 @@ use App\Application\Auth\Command\ChangePasswordCommand;
 use App\Application\Auth\Contract\PasswordHasherInterface;
 use App\Application\Auth\Handler\ChangePasswordHandler;
 use App\Domain\Auth\Entity\User;
+use App\Domain\Auth\Exception\InvalidCredentialsException;
+use App\Domain\Auth\Exception\UserNotFoundException;
 use App\Domain\Auth\Repository\UserRepositoryInterface;
 use App\Domain\Auth\ValueObject\UserId;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use App\Domain\Auth\Exception\InvalidCredentialsException;
-use App\Domain\Auth\Exception\UserNotFoundException;
 
 class ChangePasswordHandlerTest extends TestCase
 {

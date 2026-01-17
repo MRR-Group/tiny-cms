@@ -10,6 +10,6 @@ class PasswordResetTokenExpiredException extends Exception
 {
     public function __construct()
     {
-        parent::__construct('Password reset token has expired');
+        parent::__construct("Password reset token has expired");
     }
 }

@@ -61,7 +61,7 @@ class DomainExceptionHandlerTest extends TestCase
         $request = (new ServerRequestFactory())->createServerRequest("GET", "/");
         $exception = new WeakPasswordException(); 
         // Note: WeakPasswordException constructor sets fixed message
-        
+
         $response = ($this->handler)($request, $exception, true, true, true);
 
         $this->assertEquals(400, $response->getStatusCode());
@@ -71,7 +71,7 @@ class DomainExceptionHandlerTest extends TestCase
     public function testHandlesTokenExceptions(): void
     {
         $request = (new ServerRequestFactory())->createServerRequest("GET", "/");
-        
+
         $exception1 = new PasswordResetTokenExpiredException(); 
         $response1 = ($this->handler)($request, $exception1, true, true, true);
         $this->assertEquals(400, $response1->getStatusCode());
@@ -82,14 +82,14 @@ class DomainExceptionHandlerTest extends TestCase
         $this->assertEquals(400, $response2->getStatusCode());
         $this->assertStringContainsString("Password reset token is invalid", (string)$response2->getBody());
     }
-    
+
     public function testReturns500ForUnknownException(): void
     {
         $request = (new ServerRequestFactory())->createServerRequest("GET", "/");
         $exception = new \RuntimeException("Unknown error");
-        
+
         $response = ($this->handler)($request, $exception, true, true, true);
-        
+
         $this->assertEquals(500, $response->getStatusCode());
         $this->assertStringContainsString("Unknown error", (string)$response->getBody());
     }

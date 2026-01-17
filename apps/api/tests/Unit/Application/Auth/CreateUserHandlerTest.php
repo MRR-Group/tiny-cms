@@ -8,10 +8,10 @@ use App\Application\Auth\Command\CreateUserCommand;
 use App\Application\Auth\Contract\PasswordHasherInterface;
 use App\Application\Auth\Handler\CreateUserHandler;
 use App\Domain\Auth\Entity\User;
+use App\Domain\Auth\Exception\UserAlreadyExistsException;
 use App\Domain\Auth\Repository\UserRepositoryInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use App\Domain\Auth\Exception\UserAlreadyExistsException;
 
 class CreateUserHandlerTest extends TestCase
 {

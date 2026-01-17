@@ -22,25 +22,25 @@ class AuthRoutesTest extends TestCase
         $request = (new ServerRequestFactory())->createServerRequest("POST", "/auth/login")
             ->withHeader("Content-Type", "application/json");
         $request->getBody()->write(json_encode(["email" => "test@example.com", "password" => "pass"]));
-        
+
         $response = $app->handle($request);
-        
+
         // If body parsing works, we should NOT get "Email and password are required" (which is 400).
         // We probably get 500 (DB connection) or 401.
         // If mutant removes BodyParsing, we get 400.
         $this->assertNotEquals(400, $response->getStatusCode(), "Body Parsing middleware should be active");
-        
+
         // Test Error Middleware & Handler
         // Send empty body to trigger InvalidArgumentException (400)
         $requestError = (new ServerRequestFactory())->createServerRequest("POST", "/auth/login")
             ->withHeader("Content-Type", "application/json");
-        
+
         $responseError = $app->handle($requestError);
-        
+
         // Must be JSON (DomainExceptionHandler), not HTML (Slim default)
         $this->assertEquals(400, $responseError->getStatusCode());
         $this->assertEquals("application/json", $responseError->getHeaderLine("Content-Type"));
-        $body = (string) $responseError->getBody();
+        $body = (string)$responseError->getBody();
         $this->assertStringContainsString("error", $body);
     }
 

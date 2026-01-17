@@ -17,7 +17,7 @@ class CreateUserRequestTest extends TestCase
             ->withParsedBody([
                 "email" => "new@example.com",
                 "password" => "secret",
-                "role" => "admin"
+                "role" => "admin",
             ]);
 
         $command = CreateUserRequest::fromPsr7($request);
@@ -33,7 +33,7 @@ class CreateUserRequestTest extends TestCase
         $request = (new ServerRequestFactory())->createServerRequest("POST", "/admin/users")
             ->withParsedBody([
                 "email" => "new@example.com",
-                "password" => "secret"
+                "password" => "secret",
             ]);
 
         $command = CreateUserRequest::fromPsr7($request);
@@ -45,9 +45,9 @@ class CreateUserRequestTest extends TestCase
     {
         $request = (new ServerRequestFactory())->createServerRequest("POST", "/")
             ->withParsedBody((object)["email" => "test@test.com", "password" => "pass", "role" => "admin"]);
-        
+
         $command = CreateUserRequest::fromPsr7($request);
-        
+
         $this->assertEquals("test@test.com", $command->email);
         $this->assertEquals("pass", $command->password);
         $this->assertEquals("admin", $command->role);
@@ -57,9 +57,9 @@ class CreateUserRequestTest extends TestCase
     {
         $request = (new ServerRequestFactory())->createServerRequest("POST", "/")
             ->withParsedBody(["email" => 12345, "password" => 67890, "role" => 1]);
-        
+
         $command = CreateUserRequest::fromPsr7($request);
-        
+
         $this->assertSame("12345", $command->email);
         $this->assertSame("67890", $command->password);
         $this->assertSame("1", $command->role);
@@ -69,7 +69,7 @@ class CreateUserRequestTest extends TestCase
     {
         $request = (new ServerRequestFactory())->createServerRequest("POST", "/admin/users")
             ->withParsedBody([
-                "password" => "secret"
+                "password" => "secret",
             ]);
 
         $this->expectException(\InvalidArgumentException::class);

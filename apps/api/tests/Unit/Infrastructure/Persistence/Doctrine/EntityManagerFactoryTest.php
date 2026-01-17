@@ -30,9 +30,9 @@ class EntityManagerFactoryTest extends TestCase
         $em = EntityManagerFactory::create();
         $config = $em->getConfiguration();
         $driver = $config->getMetadataDriverImpl();
-        
+
         // Ensure paths are configured correctly
-        $paths = $driver->getPaths();
+        $paths = $driver->getLocator()->getPaths();
         $this->assertCount(1, $paths);
         $this->assertStringEndsWith("/Infrastructure/Persistence/Doctrine/Mapping", $paths[0]);
     }
@@ -40,21 +40,21 @@ class EntityManagerFactoryTest extends TestCase
     public function testConfiguresConnectionFromEnv(): void
     {
         $originalEnv = $_ENV;
-        $_ENV['DB_HOST'] = 'test-db';
-        $_ENV['DB_PORT'] = '5433';
-        $_ENV['DB_DATABASE'] = 'test_cms';
-        $_ENV['DB_USERNAME'] = 'test_user';
-        $_ENV['DB_PASSWORD'] = 'test_pass';
-        
+        $_ENV["DB_HOST"] = "test-db";
+        $_ENV["DB_PORT"] = "5433";
+        $_ENV["DB_DATABASE"] = "test_cms";
+        $_ENV["DB_USERNAME"] = "test_user";
+        $_ENV["DB_PASSWORD"] = "test_pass";
+
         try {
             $em = EntityManagerFactory::create();
             $params = $em->getConnection()->getParams();
-            
-            $this->assertEquals('test-db', $params['host']);
-            $this->assertEquals(5433, $params['port']);
-            $this->assertEquals('test_cms', $params['dbname']);
-            $this->assertEquals('test_user', $params['user']);
-            $this->assertEquals('test_pass', $params['password']);
+
+            $this->assertEquals("test-db", $params["host"]);
+            $this->assertEquals(5433, $params["port"]);
+            $this->assertEquals("test_cms", $params["dbname"]);
+            $this->assertEquals("test_user", $params["user"]);
+            $this->assertEquals("test_pass", $params["password"]);
         } finally {
             $_ENV = $originalEnv;
         }
@@ -63,14 +63,14 @@ class EntityManagerFactoryTest extends TestCase
     public function testUsesDefaultEnvValues(): void
     {
         $originalEnv = $_ENV;
-        unset($_ENV['DB_HOST'], $_ENV['DB_PORT'], $_ENV['DB_DATABASE'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD']);
-        
+        unset($_ENV["DB_HOST"], $_ENV["DB_PORT"], $_ENV["DB_DATABASE"], $_ENV["DB_USERNAME"], $_ENV["DB_PASSWORD"]);
+
         try {
-           $em = EntityManagerFactory::create();
-           $params = $em->getConnection()->getParams();
-           
-           $this->assertEquals('db', $params['host']);
-           $this->assertEquals(5432, $params['port']);
+            $em = EntityManagerFactory::create();
+            $params = $em->getConnection()->getParams();
+
+            $this->assertEquals("db", $params["host"]);
+            $this->assertEquals(5432, $params["port"]);
         } finally {
             $_ENV = $originalEnv;
         }

@@ -18,7 +18,7 @@ class AuthTokenResourceTest extends TestCase
         $this->assertEquals([
             "token" => "token_abc",
             "expires_in" => 3600,
-            "type" => "Bearer"
+            "type" => "Bearer",
         ], $array);
     }
 
