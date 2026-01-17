@@ -22,7 +22,7 @@ class RoleMiddleware implements MiddlewareInterface
 
         if ($role !== $this->requiredRole) {
             $response = new Response();
-            $response->getBody()->write((string)json_encode(["error" => "Forbidden"]));
+            $response->getBody()->write(json_encode(["error" => "Forbidden"], JSON_THROW_ON_ERROR));
 
             return $response->withStatus(403)->withHeader("Content-Type", "application/json");
         }

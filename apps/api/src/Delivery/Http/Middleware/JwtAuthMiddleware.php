@@ -23,7 +23,7 @@ class JwtAuthMiddleware implements MiddlewareInterface
 
         if (!preg_match('/Bearer\s+(.*)$/i', $header, $matches)) {
             $response = new Response();
-            $response->getBody()->write((string)json_encode(["error" => "Unauthorized"]));
+            $response->getBody()->write(json_encode(["error" => "Unauthorized"], JSON_THROW_ON_ERROR));
 
             return $response->withStatus(401)->withHeader("Content-Type", "application/json");
         }
@@ -31,9 +31,9 @@ class JwtAuthMiddleware implements MiddlewareInterface
         $token = $matches[1];
         $claims = $this->tokenValidator->validate($token);
 
-        if (!$claims) {
+        if ($claims === null) {
             $response = new Response();
-            $response->getBody()->write((string)json_encode(["error" => "Invalid token"]));
+            $response->getBody()->write(json_encode(["error" => "Invalid token"], JSON_THROW_ON_ERROR));
 
             return $response->withStatus(401)->withHeader("Content-Type", "application/json");
         }

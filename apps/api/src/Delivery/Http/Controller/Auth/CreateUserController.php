@@ -21,13 +21,13 @@ class CreateUserController
             $command = CreateUserRequest::fromPsr7($request);
             $this->handler->handle($command);
 
-            $response->getBody()->write((string)json_encode(["message" => "User created"]));
+            $response->getBody()->write(json_encode(["message" => "User created"], JSON_THROW_ON_ERROR));
 
             return $response
                 ->withHeader("Content-Type", "application/json")
                 ->withStatus(201);
         } catch (\InvalidArgumentException $e) {
-            $response->getBody()->write((string)json_encode(["error" => $e->getMessage()]));
+            $response->getBody()->write(json_encode(["error" => $e->getMessage()], JSON_THROW_ON_ERROR));
 
             return $response
                 ->withHeader("Content-Type", "application/json")
@@ -35,7 +35,7 @@ class CreateUserController
         } catch (\Exception $e) {
             // Differentiate business exception vs server error
             $status = $e->getMessage() === "User already exists" ? 409 : 500;
-            $response->getBody()->write((string)json_encode(["error" => $e->getMessage()]));
+            $response->getBody()->write(json_encode(["error" => $e->getMessage()], JSON_THROW_ON_ERROR));
 
             return $response
                 ->withHeader("Content-Type", "application/json")

@@ -8,14 +8,16 @@ use App\Application\Auth\Contract\TokenValidatorInterface;
 use App\Delivery\Http\Middleware\JwtAuthMiddleware;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Slim\Psr7\Response;
+use Slim\Psr7\Factory\ResponseFactory;
+use Slim\Psr7\Factory\ServerRequestFactory;
 
 class JwtAuthMiddlewareTest extends TestCase
 {
-    private JwtAuthMiddleware $middleware;
     private TokenValidatorInterface&MockObject $validator;
+    private JwtAuthMiddleware $middleware;
 
     protected function setUp(): void
     {
@@ -23,65 +25,87 @@ class JwtAuthMiddlewareTest extends TestCase
         $this->middleware = new JwtAuthMiddleware($this->validator);
     }
 
-    public function testReturns401IfHeaderMissing(): void
+    public function testReturns401IfNoAuthHeader(): void
     {
-        $request = $this->createMock(ServerRequestInterface::class);
+        $request = (new ServerRequestFactory())->createServerRequest("GET", "/");
         $handler = $this->createMock(RequestHandlerInterface::class);
-
-        $request->expects($this->once())
-            ->method("getHeaderLine")
-            ->with("Authorization")
-            ->willReturn("");
-
-        $handler->expects($this->never())->method("handle");
 
         $response = $this->middleware->process($request, $handler);
 
         $this->assertEquals(401, $response->getStatusCode());
+        $this->assertStringContainsString("Unauthorized", (string)$response->getBody());
+    }
+
+    public function testReturns401IfHeaderFormatInvalid(): void
+    {
+        // Missing "Bearer"
+        $request1 = (new ServerRequestFactory())->createServerRequest("GET", "/")
+            ->withHeader("Authorization", "Basic user:pass");
+        
+        // Missing space
+        $request2 = (new ServerRequestFactory())->createServerRequest("GET", "/")
+            ->withHeader("Authorization", "BearerToken");
+
+        // Lowercase bearer (regex uses i flag, so this SHOULD pass)
+        // Testing that regex handles case insensitivity correctly (mutant removing 'i' flag will fail this)
+        $request3 = (new ServerRequestFactory())->createServerRequest("GET", "/")
+            ->withHeader("Authorization", "bearer token");
+
+        $handler = $this->createMock(RequestHandlerInterface::class);
+
+        // Case 1: Invalid format
+        $response1 = $this->middleware->process($request1, $handler);
+        $this->assertEquals(401, $response1->getStatusCode());
+
+        // Case 2: Invalid format
+        $response2 = $this->middleware->process($request2, $handler);
+        $this->assertEquals(401, $response2->getStatusCode());
+        
+        // Case 3: Valid format (different case), should call validator
+        $this->validator->expects($this->once())
+            ->method("validate")
+            ->with("token")
+            ->willReturn(["sub" => "123", "role" => "admin"]);
+            
+        $handler->expects($this->once())->method("handle")->willReturn((new ResponseFactory())->createResponse());
+        
+        $this->middleware->process($request3, $handler);
     }
 
     public function testReturns401IfTokenInvalid(): void
     {
-        $request = $this->createMock(ServerRequestInterface::class);
+        $request = (new ServerRequestFactory())->createServerRequest("GET", "/")
+            ->withHeader("Authorization", "Bearer invalid_token");
+
+        $this->validator->method("validate")->with("invalid_token")->willReturn(null);
+
         $handler = $this->createMock(RequestHandlerInterface::class);
 
-        $request->method("getHeaderLine")->willReturn("Bearer invalid_token");
-
-        $this->validator->expects($this->once())
-            ->method("validate")
-            ->with("invalid_token")
-            ->willReturn(null);
-
-        $handler->expects($this->never())->method("handle");
-
         $response = $this->middleware->process($request, $handler);
+
         $this->assertEquals(401, $response->getStatusCode());
+        $this->assertStringContainsString("Invalid token", (string)$response->getBody());
     }
 
     public function testPassesIfTokenValid(): void
     {
-        $request = $this->createMock(ServerRequestInterface::class);
+        $request = (new ServerRequestFactory())->createServerRequest("GET", "/")
+            ->withHeader("Authorization", "Bearer valid_token");
+
+        $this->validator->method("validate")->with("valid_token")->willReturn([
+            "sub" => "user-123",
+            "role" => "admin"
+        ]);
+
         $handler = $this->createMock(RequestHandlerInterface::class);
-        $response = new Response();
-
-        $request->method("getHeaderLine")->willReturn("Bearer valid_token");
-
-        $claims = ["sub" => "user_id", "role" => "admin"];
-        $this->validator->expects($this->once())
-            ->method("validate")
-            ->with("valid_token")
-            ->willReturn($claims);
-
-        $request->expects($this->exactly(2))
-            ->method("withAttribute")
-            ->willReturnSelf();
-
         $handler->expects($this->once())
             ->method("handle")
-            ->with($request)
-            ->willReturn($response);
+            ->with($this->callback(function (ServerRequestInterface $req) {
+                return $req->getAttribute("user_id") === "user-123"
+                    && $req->getAttribute("role") === "admin";
+            }))
+            ->willReturn((new ResponseFactory())->createResponse());
 
-        $result = $this->middleware->process($request, $handler);
-        $this->assertSame($response, $result);
+        $this->middleware->process($request, $handler);
     }
 }

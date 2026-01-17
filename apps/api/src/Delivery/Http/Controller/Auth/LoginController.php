@@ -23,13 +23,13 @@ class LoginController
             $tokenView = $this->handler->handle($command);
             $data = AuthTokenResource::toArray($tokenView);
 
-            $response->getBody()->write((string)json_encode($data));
+            $response->getBody()->write(json_encode($data, JSON_THROW_ON_ERROR));
 
             return $response
                 ->withHeader("Content-Type", "application/json")
                 ->withStatus(200);
         } catch (\InvalidArgumentException $e) {
-            $response->getBody()->write((string)json_encode(["error" => $e->getMessage()]));
+            $response->getBody()->write(json_encode(["error" => $e->getMessage()], JSON_THROW_ON_ERROR));
 
             return $response
                 ->withHeader("Content-Type", "application/json")
@@ -37,7 +37,7 @@ class LoginController
         } catch (\Exception $e) {
             // Should differentiate 401 vs 500, but for now simple
             $status = $e->getMessage() === "Invalid credentials" ? 401 : 500;
-            $response->getBody()->write((string)json_encode(["error" => $e->getMessage()]));
+            $response->getBody()->write(json_encode(["error" => $e->getMessage()], JSON_THROW_ON_ERROR));
 
             return $response
                 ->withHeader("Content-Type", "application/json")

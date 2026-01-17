@@ -21,14 +21,14 @@ class ChangePasswordController
             $command = ChangePasswordRequest::fromPsr7($request);
             $this->handler->handle($command);
 
-            $response->getBody()->write((string)json_encode(["message" => "Password changed"]));
+            $response->getBody()->write(json_encode(["message" => "Password changed"], JSON_THROW_ON_ERROR));
 
             return $response
                 ->withHeader("Content-Type", "application/json")
                 ->withStatus(200);
         } catch (\Exception $e) {
             $status = $e->getMessage() === "Invalid old password" ? 400 : 500;
-            $response->getBody()->write((string)json_encode(["error" => $e->getMessage()]));
+            $response->getBody()->write(json_encode(["error" => $e->getMessage()], JSON_THROW_ON_ERROR));
 
             return $response
                 ->withHeader("Content-Type", "application/json")
