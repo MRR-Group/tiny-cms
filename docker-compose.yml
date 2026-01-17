@@ -50,6 +50,17 @@ services:
     networks:
       - tiny-cms
 
+  storybook:
+    image: node:20-alpine
+    working_dir: /app
+    command: sh -c "npm install -g pnpm && pnpm install && pnpm storybook -- --host 0.0.0.0"
+    ports:
+      - "6006:6006"
+    volumes:
+      - ./apps/admin:/app
+    networks:
+      - tiny-cms
+
   # Mailpit (local mail testing)
   mailpit:
     image: axllent/mailpit:latest

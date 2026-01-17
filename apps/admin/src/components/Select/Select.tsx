@@ -3,11 +3,12 @@ import { SelectHTMLAttributes, forwardRef } from 'react';
 export interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
   error?: string;
+  placeholder?: string;
   options: { value: string; label: string }[];
 }
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
-  ({ label, error, options, className = '', id, ...props }, ref) => {
+  ({ label, error, placeholder, options, className = '', id, ...props }, ref) => {
     return (
       <div className="space-y-1.5 w-full">
         {label && (
@@ -32,6 +33,11 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             `}
             {...props}
           >
+            {placeholder && (
+              <option value="" disabled>
+                {placeholder}
+              </option>
+            )}
             {options.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}

@@ -65,6 +65,26 @@ tasks:
     cmds:
       - docker compose ps
 
+  # === Utilities ===
+  info:
+    desc: "Show access URLs for all services"
+    silent: true
+    cmds:
+      - 'echo "🚀 TinyCMS Access URLs:"'
+      - 'echo "---------------------------------------"'
+      - 'echo "Admin Panel:  http://localhost:5180"'
+      - 'echo "API (JSON):   http://localhost:8080"'
+      - 'echo "Mailpit:      http://localhost:8025"'
+      - 'echo "Storybook:    http://localhost:6006"'
+      - 'echo "---------------------------------------"'
+
+  open:
+    desc: "Open all services in the default browser (Linux only)"
+    cmds:
+      - 'xdg-open http://localhost:5180'
+      - 'xdg-open http://localhost:8025'
+      - 'xdg-open http://localhost:6006'
+
   # === Backend (API) ===
   api:shell:
     desc: "Enter API container shell"
@@ -159,6 +179,17 @@ tasks:
     desc: "Run mutation tests"
     cmds:
       - "{{.DOCKER_EXEC_ADMIN}} pnpm mutation"
+
+  # === Storybook ===
+  storybook:logs:
+    desc: "View Storybook logs"
+    cmds:
+      - docker compose logs -f storybook
+
+  storybook:shell:
+    desc: "Enter Storybook container shell"
+    cmds:
+      - docker compose exec storybook sh
 
   # === CI ===
   ci:api:
