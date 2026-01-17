@@ -19,7 +19,7 @@ final readonly class SymfonyMailerEmailSender implements EmailSenderInterface
 
     public function sendPasswordResetLink(Email $recipient, string $resetToken): void
     {
-        $resetLink = sprintf("%s/auth/reset-password?token=%s", $this->frontendUrl, $resetToken);
+        $resetLink = sprintf("%s/password-reset/confirm?token=%s", $this->frontendUrl, $resetToken);
 
         $email = (new SymfonyEmail())
             ->from($this->senderEmail)

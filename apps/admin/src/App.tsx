@@ -21,6 +21,7 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/password-reset" element={<RequestPasswordReset />} />
       <Route path="/password-reset/confirm" element={<SetNewPassword />} />
+      <Route path="/auth/reset-password" element={<SetNewPassword />} />
       <Route path="/change-password" element={<ForceChangePassword />} />
 
       {/* Protected routes */}

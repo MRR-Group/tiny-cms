@@ -22,7 +22,7 @@ class SymfonyMailerEmailSenderTest extends TestCase
                 $this->assertSame("no-reply@tinycms.com", $email->getFrom()[0]->getAddress());
                 $this->assertSame("recipient@example.com", $email->getTo()[0]->getAddress());
 
-                $textWithLink = "reset-password?token=token123";
+                $textWithLink = "password-reset/confirm?token=token123";
                 $this->assertStringContainsString($textWithLink, $email->getTextBody());
                 $this->assertStringContainsString($textWithLink, $email->getHtmlBody());
 
