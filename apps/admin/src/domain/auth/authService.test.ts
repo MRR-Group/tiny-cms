@@ -53,7 +53,7 @@ describe('authService', () => {
     });
 
     it('does not store token if missing in response', async () => {
-      const responseData = { requirePasswordChange: false }; // no token
+      const responseData = { requirePasswordChange: false };
       fetchMock.mockResolvedValueOnce({
         ok: true,
         json: async () => responseData,
@@ -76,7 +76,7 @@ describe('authService', () => {
     it('throws generic error if message is missing', async () => {
       fetchMock.mockResolvedValueOnce({
         ok: false,
-        json: async () => ({}), // No error message
+        json: async () => ({}),
       });
 
       await expect(authService.login(loginData)).rejects.toThrow('Request failed');
@@ -90,13 +90,11 @@ describe('authService', () => {
         },
       });
 
-      // The catch block in request method returns { error: { message: 'An error occurred' } }
       await expect(authService.login(loginData)).rejects.toThrow('An error occurred');
     });
   });
 
   describe('authenticated requests', () => {
-    // Helper to test private request method logic via a public method like changePassword
     const changePasswordData: ChangePasswordRequest = { oldPassword: 'old', newPassword: 'new' };
 
     it('includes Authorization header if token exists', async () => {
@@ -116,7 +114,6 @@ describe('authService', () => {
     });
 
     it('does not include Authorization header if token does not exist', async () => {
-      // storage is empty by default
       fetchMock.mockResolvedValueOnce({ ok: true, json: async () => ({}) });
 
       await authService.changePassword(changePasswordData);
