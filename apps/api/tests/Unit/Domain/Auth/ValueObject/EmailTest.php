@@ -13,7 +13,7 @@ class EmailTest extends TestCase
     {
         $email = new Email("test@example.com");
         $this->assertEquals("test@example.com", $email->toString());
-        $this->assertEquals("test@example.com", (string)$email);
+        $this->assertEquals("test@example.com", (string) $email);
     }
 
     public function testInvalidEmailThrowsException(): void
@@ -30,5 +30,12 @@ class EmailTest extends TestCase
 
         $this->assertTrue($email1->equals($email2));
         $this->assertFalse($email1->equals($email3));
+    }
+
+    public function testFactoryMethod(): void
+    {
+        $email = Email::fromString("test@example.com");
+        $this->assertInstanceOf(Email::class, $email);
+        $this->assertEquals("test@example.com", $email->toString());
     }
 }

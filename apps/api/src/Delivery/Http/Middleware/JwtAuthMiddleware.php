@@ -15,13 +15,14 @@ class JwtAuthMiddleware implements MiddlewareInterface
 {
     public function __construct(
         private readonly TokenValidatorInterface $tokenValidator,
-    ) {}
+    ) {
+    }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $header = $request->getHeaderLine("Authorization");
 
-        if (!preg_match('/Bearer\s+(.*)$/i', $header, $matches)) {
+        if (!preg_match('/^Bearer\s+(\S+)$/i', $header, $matches)) {
             $response = new Response();
             $response->getBody()->write(json_encode(["error" => "Unauthorized"], JSON_THROW_ON_ERROR));
 

@@ -6,42 +6,50 @@ namespace Tests\Unit;
 
 use App\Application;
 use PHPUnit\Framework\TestCase;
-use Slim\Middleware\ErrorMiddleware;
+use Slim\Psr7\Factory\ServerRequestFactory;
 
-final class ApplicationTest extends TestCase
+class ApplicationTest extends TestCase
 {
-    public function testApplicationHasErrorMiddlewareConfigured(): void
+    public function testApplicationHandlesErrorsWithJson(): void
     {
+        // Set necessary ENV vars to avoid connection errors if EntityManager tries to init
+        $_ENV['JWT_SECRET'] = 'test_secret_longer_than_32_chars_here';
+        $_ENV['APP_ENV'] = 'test';
+        $_ENV['DB_HOST'] = 'localhost'; // Dummy
+
         $app = Application::create();
 
-        $middlewareDispatcher = $app->getMiddlewareDispatcher();
+        // Request a non-existent route to trigger 404
+        $request = (new ServerRequestFactory())->createServerRequest("GET", "/non-existent-route");
 
-        $reflection = new \ReflectionClass($middlewareDispatcher);
-        $tipProperty = $reflection->getProperty("tip");
-        $tipProperty->setAccessible(true);
-        $tip = $tipProperty->getValue($middlewareDispatcher);
+        $response = $app->handle($request);
 
-        $tipReflection = new \ReflectionObject($tip);
-        $middlewareProperty = $tipReflection->getProperty("middleware");
-        $middlewareProperty->setAccessible(true);
-        $middleware = $middlewareProperty->getValue($tip);
+        // Expect 404
+        $this->assertEquals(404, $response->getStatusCode());
 
-        $this->assertInstanceOf(ErrorMiddleware::class, $middleware, "The last added middleware (tip) should be ErrorMiddleware");
+        // Expect JSON content type (DomainExceptionHandler sets this)
+        // If Default Error Handler (Slim's default) was used (Mutant), it would be text/html or application/json depending on content negotiation, 
+        // but explicit handler forces our format.
+        // Let's check body content structure if possible.
+        // Slim default 404 in JSON mode returns: {"message":"Not found"}
+        // Our DomainExceptionHandler returns: {"error": {"message": "...", "code": 404}} (Based on code reading)
 
-        // Verify configuration on ErrorMiddleware
-        // ErrorMiddleware stores these settings as private properties
-        $emReflection = new \ReflectionClass($middleware);
+        $body = (string) $response->getBody();
+        $this->assertJson($body);
+        $data = json_decode($body, true);
 
-        $displayProp = $emReflection->getProperty("displayErrorDetails");
-        $displayProp->setAccessible(true);
-        $this->assertTrue($displayProp->getValue($middleware), "displayErrorDetails should be true");
+        // Check for our custom error structure
+        $this->assertArrayHasKey('error', $data);
+        $this->assertArrayHasKey('message', $data['error']);
 
-        $logErrorsProp = $emReflection->getProperty("logErrors");
-        $logErrorsProp->setAccessible(true);
-        $this->assertTrue($logErrorsProp->getValue($middleware), "logErrors should be true");
+        // Since displayErrorDetails is true in Application configuration, we expect trace
+        $this->assertArrayHasKey('trace', $data['error']);
 
-        $logDetailsProp = $emReflection->getProperty("logErrorDetails");
-        $logDetailsProp->setAccessible(true);
-        $this->assertTrue($logDetailsProp->getValue($middleware), "logErrorDetails should be true");
+        // Slim default error handler usually returns flat JSON if Accept header is set, but Application::create doesn't force Accept header here.
+        // Without Accept header, Slim default returns HTML.
+        // So checking Content-Type is application/json is good enough proof validation logic kicked in?
+        // Let's verify Content-Type.
+
+        $this->assertEquals('application/json', $response->getHeaderLine('Content-Type'));
     }
 }

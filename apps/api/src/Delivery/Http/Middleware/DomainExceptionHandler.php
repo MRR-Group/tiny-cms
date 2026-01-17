@@ -20,7 +20,8 @@ class DomainExceptionHandler
 {
     public function __construct(
         private readonly ResponseFactoryInterface $responseFactory,
-    ) {}
+    ) {
+    }
 
     public function __invoke(
         ServerRequestInterface $request,
@@ -33,11 +34,18 @@ class DomainExceptionHandler
         $message = $exception->getMessage();
 
         $response = $this->responseFactory->createResponse($statusCode);
+
+        $error = [
+            "message" => $message,
+            "code" => $statusCode,
+        ];
+
+        if ($displayErrorDetails) {
+            $error["trace"] = $exception->getTrace();
+        }
+
         $payload = json_encode([
-            "error" => [
-                "message" => $message,
-                "code" => $statusCode,
-            ],
+            "error" => $error,
         ], JSON_THROW_ON_ERROR);
 
         $response->getBody()->write($payload);
@@ -58,8 +66,8 @@ class DomainExceptionHandler
             UserAlreadyExistsException::class => 409,
 
             default => $exception instanceof HttpException
-                ? $exception->getCode()
-                : 500,
+            ? $exception->getCode()
+            : 500,
         };
     }
 }

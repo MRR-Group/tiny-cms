@@ -75,4 +75,44 @@ class EntityManagerFactoryTest extends TestCase
             $_ENV = $originalEnv;
         }
     }
+    public function testConfiguresProductionCache(): void
+    {
+        $originalEnv = $_ENV;
+        $_ENV["APP_ENV"] = "production";
+
+        try {
+            $em = EntityManagerFactory::create();
+            $config = $em->getConfiguration();
+
+            // Check metadata cache
+            $this->assertInstanceOf(\Symfony\Component\Cache\Adapter\FilesystemAdapter::class, $config->getMetadataCache());
+            $this->assertInstanceOf(\Symfony\Component\Cache\Adapter\FilesystemAdapter::class, $config->getQueryCache());
+            $this->assertInstanceOf(\Symfony\Component\Cache\Adapter\FilesystemAdapter::class, $config->getResultCache());
+
+            // In production, auto-generate proxy classes should be false (implied by isDevMode=false, but checking specific setting if possible)
+            // But checking cache adapter is strong enough to kill the Ternary/Coalesce mutants.
+        } finally {
+            $_ENV = $originalEnv;
+        }
+    }
+
+    public function testConfiguresDevCacheByDefault(): void
+    {
+        $originalEnv = $_ENV;
+        if (isset($_ENV["APP_ENV"])) {
+            unset($_ENV["APP_ENV"]);
+        }
+
+        try {
+            $em = EntityManagerFactory::create();
+            $config = $em->getConfiguration();
+
+            // Check metadata cache
+            $this->assertInstanceOf(\Symfony\Component\Cache\Adapter\ArrayAdapter::class, $config->getMetadataCache());
+            $this->assertInstanceOf(\Symfony\Component\Cache\Adapter\ArrayAdapter::class, $config->getQueryCache());
+            $this->assertInstanceOf(\Symfony\Component\Cache\Adapter\ArrayAdapter::class, $config->getResultCache());
+        } finally {
+            $_ENV = $originalEnv;
+        }
+    }
 }

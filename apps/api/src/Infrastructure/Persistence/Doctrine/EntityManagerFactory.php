@@ -31,14 +31,10 @@ class EntityManagerFactory
             Type::addType(RoleType::NAME, RoleType::class);
         }
 
-        $config = ORMSetup::createXMLMetadataConfiguration(
-            paths: [__DIR__ . "/Mapping"],
-            isDevMode: true,
-        );
+        $isDevMode = ($_ENV["APP_ENV"] ?? "dev") !== "production";
+        $config = ORMSetup::createXMLMetadataConfiguration(paths: [__DIR__ . "/Mapping"], isDevMode: $isDevMode);
 
-        $cache = ($_ENV["APP_ENV"] ?? "dev") === "production"
-            ? new FilesystemAdapter()
-            : new ArrayAdapter();
+        $cache = $isDevMode ? new ArrayAdapter() : new FilesystemAdapter();
 
         $config->setMetadataCache($cache);
         $config->setQueryCache($cache);

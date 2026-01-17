@@ -32,7 +32,7 @@ class JwtAuthMiddlewareTest extends TestCase
         $response = $this->middleware->process($request, $handler);
 
         $this->assertEquals(401, $response->getStatusCode());
-        $this->assertStringContainsString("Unauthorized", (string)$response->getBody());
+        $this->assertStringContainsString("Unauthorized", (string) $response->getBody());
     }
 
     public function testReturns401IfHeaderFormatInvalid(): void
@@ -83,7 +83,7 @@ class JwtAuthMiddlewareTest extends TestCase
         $response = $this->middleware->process($request, $handler);
 
         $this->assertEquals(401, $response->getStatusCode());
-        $this->assertStringContainsString("Invalid token", (string)$response->getBody());
+        $this->assertStringContainsString("Invalid token", (string) $response->getBody());
     }
 
     public function testPassesIfTokenValid(): void
@@ -100,9 +100,47 @@ class JwtAuthMiddlewareTest extends TestCase
         $handler->expects($this->once())
             ->method("handle")
             ->with($this->callback(fn(ServerRequestInterface $req) => $req->getAttribute("user_id") === "user-123"
-                    && $req->getAttribute("role") === "admin"))
+                && $req->getAttribute("role") === "admin"))
             ->willReturn((new ResponseFactory())->createResponse());
 
         $this->middleware->process($request, $handler);
+    }
+
+    public function testRejectsTokenWithExtraData(): void
+    {
+        $token = "valid_token";
+
+        // Mock validator to return success if called (which happens if regex matches loosely)
+        $this->validator->method("validate")
+            ->with($token)
+            ->willReturn(["sub" => "123", "role" => "admin"]);
+
+        $request = (new ServerRequestFactory())->createServerRequest("GET", "/")
+            ->withHeader("Authorization", "Bearer " . $token . " garbage");
+
+        $handler = $this->createMock(RequestHandlerInterface::class);
+        $handler->expects($this->never())->method("handle");
+
+        $response = $this->middleware->process($request, $handler);
+
+        $this->assertEquals(401, $response->getStatusCode());
+    }
+
+    public function testRejectsTokenPrefixedWithGarbage(): void
+    {
+        $token = "valid_token";
+        $this->validator->method("validate")
+            ->with($token)
+            ->willReturn(["sub" => "123", "role" => "admin"]);
+
+        $request = (new ServerRequestFactory())->createServerRequest("GET", "/")
+            ->withHeader("Authorization", "Garbage Bearer " . $token);
+
+        $handler = $this->createMock(RequestHandlerInterface::class);
+        $handler->expects($this->never())->method("handle");
+
+        $response = $this->middleware->process($request, $handler);
+
+        $this->assertEquals(401, $response->getStatusCode());
     }
 }
