@@ -9,8 +9,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 const variantClasses = {
   primary:
     'bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white shadow-lg shadow-primary-500/25',
-  secondary:
-    'bg-slate-700 hover:bg-slate-600 text-slate-200 border border-slate-600',
+  secondary: 'bg-slate-700 hover:bg-slate-600 text-slate-200 border border-slate-600',
   danger:
     'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-lg shadow-red-500/25',
 };

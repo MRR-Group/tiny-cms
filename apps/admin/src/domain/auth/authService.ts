@@ -1,5 +1,3 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-
 export interface LoginRequest {
   email: string;
   password: string;
@@ -30,16 +28,23 @@ export interface SetNewPasswordRequest {
   password: string;
 }
 
-class AuthService {
+export class AuthService {
+  constructor(private readonly baseUrl: string) {}
+
   private async request<T>(endpoint: string, options: RequestInit): Promise<T> {
     const token = localStorage.getItem('authToken');
 
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    };
+
+    if (token) {
+      Object.assign(headers, { Authorization: `Bearer ${token}` });
+    }
+
+    const response = await fetch(`${this.baseUrl}${endpoint}`, {
       ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
+      headers,
     });
 
     if (!response.ok) {
@@ -105,5 +110,3 @@ class AuthService {
     return localStorage.getItem('authToken');
   }
 }
-
-export const authService = new AuthService();
