@@ -13,13 +13,12 @@ use Firebase\JWT\Key;
 
 class JwtTokenService implements TokenIssuerInterface, TokenValidatorInterface
 {
-    private string $key;
+
 
     public function __construct(
         private ClockInterface $clock,
+        private string $key,
     ) {
-        // In real app, inject via DI from config
-        $this->key = $_ENV["JWT_SECRET"] ?? "default_secret_change_me";
     }
 
     public function issue(User $user): string
@@ -41,7 +40,7 @@ class JwtTokenService implements TokenIssuerInterface, TokenValidatorInterface
         try {
             $decoded = JWT::decode($token, new Key($this->key, "HS256"));
 
-            return (array)$decoded;
+            return (array) $decoded;
         } catch (\Throwable $e) {
             return null;
         }

@@ -18,10 +18,10 @@ class JwtTokenServiceTest extends TestCase
 
     protected function setUp(): void
     {
-        $_ENV["JWT_SECRET"] = "12345678901234567890123456789012"; // 32 chars
+        $key = "12345678901234567890123456789012"; // 32 chars
         $clock = $this->createMock(ClockInterface::class);
         $clock->method("now")->willReturn(new \DateTimeImmutable("2024-01-01 12:00:00"));
-        $this->service = new JwtTokenService($clock);
+        $this->service = new JwtTokenService($clock, $key);
 
         // Mock JWT time
         JWT::$timestamp = (new \DateTimeImmutable("2024-01-01 12:00:00"))->getTimestamp();

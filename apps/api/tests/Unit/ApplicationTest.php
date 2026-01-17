@@ -16,6 +16,7 @@ class ApplicationTest extends TestCase
         // Set necessary ENV vars to avoid connection errors if EntityManager tries to init
         $_ENV["JWT_SECRET"] = "test_secret_longer_than_32_chars_here";
         $_ENV["APP_ENV"] = "test";
+        $_ENV["APP_DEBUG"] = "true";
         $_ENV["DB_HOST"] = "localhost"; // Dummy
 
         $app = Application::create();
@@ -35,7 +36,7 @@ class ApplicationTest extends TestCase
         // Slim default 404 in JSON mode returns: {"message":"Not found"}
         // Our DomainExceptionHandler returns: {"error": {"message": "...", "code": 404}} (Based on code reading)
 
-        $body = (string)$response->getBody();
+        $body = (string) $response->getBody();
         $this->assertJson($body);
         $data = json_decode($body, true);
 
@@ -58,6 +59,7 @@ class ApplicationTest extends TestCase
     {
         $_ENV["JWT_SECRET"] = "test_secret";
         $_ENV["APP_ENV"] = "test";
+        $_ENV["APP_DEBUG"] = "true";
         $_ENV["DB_HOST"] = "localhost";
 
         $app = Application::create();

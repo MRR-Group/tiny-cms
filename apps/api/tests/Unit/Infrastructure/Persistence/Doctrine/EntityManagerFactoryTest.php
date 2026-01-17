@@ -16,9 +16,24 @@ use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 class EntityManagerFactoryTest extends TestCase
 {
+    private function getMockSettings(array $overrides = []): array
+    {
+        return array_merge([
+            'displayErrorDetails' => true,
+            'db' => [
+                'driver' => 'pdo_pgsql',
+                'host' => 'db',
+                'port' => 5432,
+                'dbname' => 'tinycms',
+                'user' => 'user',
+                'password' => 'pass'
+            ]
+        ], $overrides);
+    }
     public function testCreatesEntityManagerAndRegistersTypes(): void
     {
-        $entityManager = EntityManagerFactory::create();
+        $settings = $this->getMockSettings();
+        $entityManager = EntityManagerFactory::create($settings);
 
         $this->assertInstanceOf(EntityManagerInterface::class, $entityManager);
 
@@ -29,7 +44,8 @@ class EntityManagerFactoryTest extends TestCase
 
     public function testConfiguresPathsCorrectly(): void
     {
-        $em = EntityManagerFactory::create();
+        $settings = $this->getMockSettings();
+        $em = EntityManagerFactory::create($settings);
         $config = $em->getConfiguration();
         $driver = $config->getMetadataDriverImpl();
 
@@ -41,82 +57,76 @@ class EntityManagerFactoryTest extends TestCase
 
     public function testConfiguresConnectionFromEnv(): void
     {
-        $originalEnv = $_ENV;
-        $_ENV["DB_HOST"] = "test-db";
-        $_ENV["DB_PORT"] = "5433";
-        $_ENV["DB_DATABASE"] = "test_cms";
-        $_ENV["DB_USERNAME"] = "test_user";
-        $_ENV["DB_PASSWORD"] = "test_pass";
+        $settings = $this->getMockSettings([
+            'db' => [
+                'driver' => 'pdo_pgsql',
+                'host' => 'test-db',
+                'port' => 5433,
+                'dbname' => 'test_cms',
+                'user' => 'test_user',
+                'password' => 'test_pass',
+            ]
+        ]);
 
-        try {
-            $em = EntityManagerFactory::create();
-            $params = $em->getConnection()->getParams();
+        $em = EntityManagerFactory::create($settings);
+        $params = $em->getConnection()->getParams();
 
-            $this->assertEquals("test-db", $params["host"]);
-            $this->assertEquals(5433, $params["port"]);
-            $this->assertEquals("test_cms", $params["dbname"]);
-            $this->assertEquals("test_user", $params["user"]);
-            $this->assertEquals("test_pass", $params["password"]);
-        } finally {
-            $_ENV = $originalEnv;
-        }
+        $this->assertEquals("test-db", $params["host"]);
+        $this->assertEquals(5433, $params["port"]);
+        $this->assertEquals("test_cms", $params["dbname"]);
+        $this->assertEquals("test_user", $params["user"]);
+        $this->assertEquals("test_pass", $params["password"]);
     }
 
     public function testUsesDefaultEnvValues(): void
     {
-        $originalEnv = $_ENV;
-        unset($_ENV["DB_HOST"], $_ENV["DB_PORT"], $_ENV["DB_DATABASE"], $_ENV["DB_USERNAME"], $_ENV["DB_PASSWORD"]);
+        // This test used to verify ENV fallback. Since we moved to creating factory with explicit settings,
+        // we essentially verify that settings are respected (which is covered by previous test).
+        // Or we could test that we can pass minimal settings if we support defaults in factory?
+        // But factory references key indices directly, so no defaults in factory.
+        // We will just verify it works with default mock settings that simulate "defaults".
+        $settings = $this->getMockSettings();
+        $em = EntityManagerFactory::create($settings);
+        $params = $em->getConnection()->getParams();
 
-        try {
-            $em = EntityManagerFactory::create();
-            $params = $em->getConnection()->getParams();
-
-            $this->assertEquals("db", $params["host"]);
-            $this->assertEquals(5432, $params["port"]);
-        } finally {
-            $_ENV = $originalEnv;
-        }
+        $this->assertEquals("db", $params["host"]);
+        $this->assertEquals(5432, $params["port"]);
     }
 
     public function testConfiguresProductionCache(): void
     {
-        $originalEnv = $_ENV;
-        $_ENV["APP_ENV"] = "production";
+        $settings = $this->getMockSettings(['displayErrorDetails' => false]);
+        $em = EntityManagerFactory::create($settings);
+        $config = $em->getConfiguration();
 
-        try {
-            $em = EntityManagerFactory::create();
-            $config = $em->getConfiguration();
-
-            // Check metadata cache
-            $this->assertInstanceOf(FilesystemAdapter::class, $config->getMetadataCache());
-            $this->assertInstanceOf(FilesystemAdapter::class, $config->getQueryCache());
-            $this->assertInstanceOf(FilesystemAdapter::class, $config->getResultCache());
-
-            // In production, auto-generate proxy classes should be false (implied by isDevMode=false, but checking specific setting if possible)
-            // But checking cache adapter is strong enough to kill the Ternary/Coalesce mutants.
-        } finally {
-            $_ENV = $originalEnv;
-        }
+        // Check metadata cache
+        $this->assertInstanceOf(FilesystemAdapter::class, $config->getMetadataCache());
+        $this->assertInstanceOf(FilesystemAdapter::class, $config->getQueryCache());
+        $this->assertInstanceOf(FilesystemAdapter::class, $config->getResultCache());
     }
 
     public function testConfiguresDevCacheByDefault(): void
     {
-        $originalEnv = $_ENV;
+        $settings = $this->getMockSettings(['displayErrorDetails' => true]);
+        $em = EntityManagerFactory::create($settings);
+        $config = $em->getConfiguration();
 
-        if (isset($_ENV["APP_ENV"])) {
-            unset($_ENV["APP_ENV"]);
-        }
+        // Check metadata cache
+        $this->assertInstanceOf(ArrayAdapter::class, $config->getMetadataCache());
+        $this->assertInstanceOf(ArrayAdapter::class, $config->getQueryCache());
+        $this->assertInstanceOf(ArrayAdapter::class, $config->getResultCache());
+    }
 
-        try {
-            $em = EntityManagerFactory::create();
-            $config = $em->getConfiguration();
+    public function testDefaultsToProductionModeWhenSettingMissing(): void
+    {
+        $settings = $this->getMockSettings();
+        // unset displayErrorDetails to trigger default value
+        unset($settings['displayErrorDetails']);
 
-            // Check metadata cache
-            $this->assertInstanceOf(ArrayAdapter::class, $config->getMetadataCache());
-            $this->assertInstanceOf(ArrayAdapter::class, $config->getQueryCache());
-            $this->assertInstanceOf(ArrayAdapter::class, $config->getResultCache());
-        } finally {
-            $_ENV = $originalEnv;
-        }
+        $em = EntityManagerFactory::create($settings);
+        $config = $em->getConfiguration();
+
+        // Should default to production (FilesystemAdapter)
+        $this->assertInstanceOf(FilesystemAdapter::class, $config->getMetadataCache());
     }
 }

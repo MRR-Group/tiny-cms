@@ -17,7 +17,7 @@ use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 class EntityManagerFactory
 {
-    public static function create(): EntityManagerInterface
+    public static function create(array $settings): EntityManagerInterface
     {
         if (!Type::hasType(UserIdType::NAME)) {
             Type::addType(UserIdType::NAME, UserIdType::class);
@@ -31,7 +31,7 @@ class EntityManagerFactory
             Type::addType(RoleType::NAME, RoleType::class);
         }
 
-        $isDevMode = ($_ENV["APP_ENV"] ?? "dev") !== "production";
+        $isDevMode = $settings['displayErrorDetails'] ?? false;
         $config = ORMSetup::createXMLMetadataConfiguration(paths: [__DIR__ . "/Mapping"], isDevMode: $isDevMode);
 
         $cache = $isDevMode ? new ArrayAdapter() : new FilesystemAdapter();
@@ -40,14 +40,7 @@ class EntityManagerFactory
         $config->setQueryCache($cache);
         $config->setResultCache($cache);
 
-        $connection = DriverManager::getConnection([
-            "driver" => "pdo_pgsql",
-            "host" => $_ENV["DB_HOST"] ?? "db",
-            "port" => $_ENV["DB_PORT"] ?? 5432,
-            "dbname" => $_ENV["DB_DATABASE"] ?? "tiny_cms",
-            "user" => $_ENV["DB_USERNAME"] ?? "user",
-            "password" => $_ENV["DB_PASSWORD"] ?? "password",
-        ], $config);
+        $connection = DriverManager::getConnection($settings['db'], $config);
 
         return new EntityManager($connection, $config);
     }
