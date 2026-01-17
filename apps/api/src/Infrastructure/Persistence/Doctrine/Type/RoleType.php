@@ -29,7 +29,11 @@ class RoleType extends StringType
             return null;
         }
 
-        return $value instanceof Role ? $value->toString() : (string)$value;
+        if ($value instanceof Role) {
+            return $value->toString();
+        }
+
+        return (string) $value;
     }
 
     public function getName(): string

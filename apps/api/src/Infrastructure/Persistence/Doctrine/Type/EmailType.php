@@ -29,7 +29,7 @@ class EmailType extends StringType
             return null;
         }
 
-        return $value instanceof Email ? $value->toString() : (string)$value;
+        return (string) $value;
     }
 
     public function getName(): string

@@ -9,7 +9,7 @@
         "@default": true
     },
     "minMsi": 60,
-    "minCoveredMsi": 70,
+    "minCoveredMsi": 95,
     "logs": {
         "html": "infection.html",
         "text": "infection.log"

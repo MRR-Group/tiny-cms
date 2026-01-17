@@ -13,21 +13,24 @@ use Firebase\JWT\Key;
 class JwtTokenService implements TokenIssuerInterface, TokenValidatorInterface
 {
     private string $key;
+    private \App\Domain\Shared\Clock\ClockInterface $clock;
 
-    public function __construct()
+    public function __construct(\App\Domain\Shared\Clock\ClockInterface $clock)
     {
         // In real app, inject via DI from config
         $this->key = $_ENV["JWT_SECRET"] ?? "default_secret_change_me";
+        $this->clock = $clock;
     }
 
     public function issue(User $user): string
     {
+        $now = $this->clock->now()->getTimestamp();
         $payload = [
             "iss" => "tiny-cms",
             "sub" => $user->getId()->toString(),
             "role" => $user->getRole()->toString(),
-            "iat" => time(),
-            "exp" => time() + 3600, // 1 hour
+            "iat" => $now,
+            "exp" => $now + 3600, // 1 hour
         ];
 
         return JWT::encode($payload, $this->key, "HS256");
@@ -38,7 +41,7 @@ class JwtTokenService implements TokenIssuerInterface, TokenValidatorInterface
         try {
             $decoded = JWT::decode($token, new Key($this->key, "HS256"));
 
-            return (array)$decoded;
+            return (array) $decoded;
         } catch (\Throwable $e) {
             return null;
         }

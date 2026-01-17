@@ -20,4 +20,5 @@ return [
     TokenIssuerInterface::class => autowire(JwtTokenService::class),
     App\Application\Auth\Contract\TokenValidatorInterface::class => autowire(JwtTokenService::class),
     Psr\Http\Message\ResponseFactoryInterface::class => autowire(Slim\Psr7\Factory\ResponseFactory::class),
+    App\Domain\Shared\Clock\ClockInterface::class => autowire(App\Infrastructure\Shared\Clock\SystemClock::class),
 ];

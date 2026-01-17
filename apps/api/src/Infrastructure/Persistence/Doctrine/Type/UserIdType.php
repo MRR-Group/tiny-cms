@@ -29,7 +29,7 @@ class UserIdType extends GuidType
             return null;
         }
 
-        return $value instanceof UserId ? $value->toString() : (string)$value;
+        return (string) $value;
     }
 
     public function getName(): string

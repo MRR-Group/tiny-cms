@@ -14,10 +14,20 @@ class JwtTokenServiceTest extends TestCase
 {
     private JwtTokenService $service;
 
+    protected function tearDown(): void
+    {
+        \Firebase\JWT\JWT::$timestamp = null;
+    }
+
     protected function setUp(): void
     {
         $_ENV["JWT_SECRET"] = "12345678901234567890123456789012"; // 32 chars
-        $this->service = new JwtTokenService();
+        $clock = $this->createMock(\App\Domain\Shared\Clock\ClockInterface::class);
+        $clock->method('now')->willReturn(new \DateTimeImmutable('2024-01-01 12:00:00'));
+        $this->service = new JwtTokenService($clock);
+
+        // Mock JWT time
+        \Firebase\JWT\JWT::$timestamp = (new \DateTimeImmutable('2024-01-01 12:00:00'))->getTimestamp();
     }
 
     public function testIssueAndValidateToken(): void
@@ -37,9 +47,9 @@ class JwtTokenServiceTest extends TestCase
         $this->assertEquals("admin", $claims["role"]);
 
         // Kill time mutants
-        $now = time();
-        $this->assertEqualsWithDelta($now, $claims["iat"], 5);
-        $this->assertEqualsWithDelta($now + 3600, $claims["exp"], 5);
+        $now = (new \DateTimeImmutable('2024-01-01 12:00:00'))->getTimestamp();
+        $this->assertEquals($now, $claims["iat"]);
+        $this->assertEquals($now + 3600, $claims["exp"]);
     }
 
     public function testValidateReturnsNullForInvalidToken(): void
