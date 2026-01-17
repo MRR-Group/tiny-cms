@@ -31,18 +31,14 @@ export interface SetNewPasswordRequest {
 }
 
 class AuthService {
-  private async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<T> {
+  private async request<T>(endpoint: string, options: RequestInit): Promise<T> {
     const token = localStorage.getItem('authToken');
-    
+
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
         ...(token && { Authorization: `Bearer ${token}` }),
-        ...options.headers,
       },
     });
 
@@ -61,11 +57,11 @@ class AuthService {
       method: 'POST',
       body: JSON.stringify(data),
     });
-    
+
     if (response.token) {
       localStorage.setItem('authToken', response.token);
     }
-    
+
     return response;
   }
 

@@ -74,7 +74,6 @@ tasks:
 
   api:cs:fix:
     desc: "Fix codestyle"
-    aliases: [fix]
     cmds:
       - "{{.DOCKER_EXEC_API}} composer cs:fix"
 
@@ -111,6 +110,12 @@ tasks:
     cmds:
       - "{{.DOCKER_EXEC_ADMIN}} pnpm lint"
 
+  admin:fix:
+    desc: "Fix linting and formatting"
+    cmds:
+      - "{{.DOCKER_EXEC_ADMIN}} pnpm lint --fix"
+      - "{{.DOCKER_EXEC_ADMIN}} pnpm format"
+
   admin:build:
     desc: "Build frontend"
     cmds:
@@ -139,3 +144,9 @@ tasks:
       - task: admin:lint
       - task: admin:test
       - task: admin:build
+
+  fix:
+    desc: "Fix all projects (backend and frontend)"
+    cmds:
+      - task: api:cs:fix
+      - task: admin:fix
