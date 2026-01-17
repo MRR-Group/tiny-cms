@@ -36,7 +36,7 @@ class ApplicationTest extends TestCase
         // Slim default 404 in JSON mode returns: {"message":"Not found"}
         // Our DomainExceptionHandler returns: {"error": {"message": "...", "code": 404}} (Based on code reading)
 
-        $body = (string) $response->getBody();
+        $body = (string)$response->getBody();
         $this->assertJson($body);
         $data = json_decode($body, true);
 

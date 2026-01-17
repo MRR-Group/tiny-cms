@@ -23,8 +23,8 @@ final class Application
     public static function create(): SlimApp
     {
         $containerBuilder = new ContainerBuilder();
-        $containerBuilder->addDefinitions(__DIR__ . '/../config/settings.php');
-        $containerBuilder->addDefinitions(__DIR__ . '/../config/dependencies.php');
+        $containerBuilder->addDefinitions(__DIR__ . "/../config/settings.php");
+        $containerBuilder->addDefinitions(__DIR__ . "/../config/dependencies.php");
         $container = $containerBuilder->build();
 
         AppFactory::setContainer($container);
@@ -35,12 +35,12 @@ final class Application
 
         self::registerRoutes($app);
 
-        $settings = $container->get('settings');
+        $settings = $container->get("settings");
 
         $errorMiddleware = $app->addErrorMiddleware(
-            displayErrorDetails: $settings['displayErrorDetails'],
-            logErrors: $settings['logErrors'],
-            logErrorDetails: $settings['logErrorDetails'],
+            displayErrorDetails: $settings["displayErrorDetails"],
+            logErrors: $settings["logErrors"],
+            logErrorDetails: $settings["logErrorDetails"],
         );
 
         $domainExceptionHandler = $container->get(DomainExceptionHandler::class);

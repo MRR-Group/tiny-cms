@@ -34,7 +34,7 @@ class EntityManagerFactory
             Type::addType(RoleType::NAME, RoleType::class);
         }
 
-        $isDevMode = $settings['displayErrorDetails'] ?? false;
+        $isDevMode = $settings["displayErrorDetails"] ?? false;
         $config = ORMSetup::createXMLMetadataConfiguration(paths: [__DIR__ . "/Mapping"], isDevMode: $isDevMode);
 
         $cache = $isDevMode ? new ArrayAdapter() : new FilesystemAdapter();
@@ -43,7 +43,7 @@ class EntityManagerFactory
         $config->setQueryCache($cache);
         $config->setResultCache($cache);
 
-        $connection = DriverManager::getConnection($settings['db'], $config);
+        $connection = DriverManager::getConnection($settings["db"], $config);
 
         return new EntityManager($connection, $config);
     }

@@ -16,20 +16,6 @@ use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 class EntityManagerFactoryTest extends TestCase
 {
-    private function getMockSettings(array $overrides = []): array
-    {
-        return array_merge([
-            'displayErrorDetails' => true,
-            'db' => [
-                'driver' => 'pdo_pgsql',
-                'host' => 'db',
-                'port' => 5432,
-                'dbname' => 'tinycms',
-                'user' => 'user',
-                'password' => 'pass'
-            ]
-        ], $overrides);
-    }
     public function testCreatesEntityManagerAndRegistersTypes(): void
     {
         $settings = $this->getMockSettings();
@@ -58,14 +44,14 @@ class EntityManagerFactoryTest extends TestCase
     public function testConfiguresConnectionFromEnv(): void
     {
         $settings = $this->getMockSettings([
-            'db' => [
-                'driver' => 'pdo_pgsql',
-                'host' => 'test-db',
-                'port' => 5433,
-                'dbname' => 'test_cms',
-                'user' => 'test_user',
-                'password' => 'test_pass',
-            ]
+            "db" => [
+                "driver" => "pdo_pgsql",
+                "host" => "test-db",
+                "port" => 5433,
+                "dbname" => "test_cms",
+                "user" => "test_user",
+                "password" => "test_pass",
+            ],
         ]);
 
         $em = EntityManagerFactory::create($settings);
@@ -95,7 +81,7 @@ class EntityManagerFactoryTest extends TestCase
 
     public function testConfiguresProductionCache(): void
     {
-        $settings = $this->getMockSettings(['displayErrorDetails' => false]);
+        $settings = $this->getMockSettings(["displayErrorDetails" => false]);
         $em = EntityManagerFactory::create($settings);
         $config = $em->getConfiguration();
 
@@ -107,7 +93,7 @@ class EntityManagerFactoryTest extends TestCase
 
     public function testConfiguresDevCacheByDefault(): void
     {
-        $settings = $this->getMockSettings(['displayErrorDetails' => true]);
+        $settings = $this->getMockSettings(["displayErrorDetails" => true]);
         $em = EntityManagerFactory::create($settings);
         $config = $em->getConfiguration();
 
@@ -121,12 +107,27 @@ class EntityManagerFactoryTest extends TestCase
     {
         $settings = $this->getMockSettings();
         // unset displayErrorDetails to trigger default value
-        unset($settings['displayErrorDetails']);
+        unset($settings["displayErrorDetails"]);
 
         $em = EntityManagerFactory::create($settings);
         $config = $em->getConfiguration();
 
         // Should default to production (FilesystemAdapter)
         $this->assertInstanceOf(FilesystemAdapter::class, $config->getMetadataCache());
+    }
+
+    private function getMockSettings(array $overrides = []): array
+    {
+        return array_merge([
+            "displayErrorDetails" => true,
+            "db" => [
+                "driver" => "pdo_pgsql",
+                "host" => "db",
+                "port" => 5432,
+                "dbname" => "tinycms",
+                "user" => "user",
+                "password" => "pass",
+            ],
+        ], $overrides);
     }
 }
