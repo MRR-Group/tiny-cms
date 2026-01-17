@@ -14,20 +14,20 @@ final class Version20260117201744 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return "";
     }
 
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE users ADD reset_token VARCHAR(100) DEFAULT NULL');
-        $this->addSql('ALTER TABLE users ADD reset_token_expires_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL');
+        $this->addSql("ALTER TABLE users ADD reset_token VARCHAR(100) DEFAULT NULL");
+        $this->addSql("ALTER TABLE users ADD reset_token_expires_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL");
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE users DROP reset_token');
-        $this->addSql('ALTER TABLE users DROP reset_token_expires_at');
+        $this->addSql("ALTER TABLE users DROP reset_token");
+        $this->addSql("ALTER TABLE users DROP reset_token_expires_at");
     }
 }

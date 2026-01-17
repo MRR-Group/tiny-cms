@@ -21,4 +21,10 @@ return [
     App\Application\Auth\Contract\TokenValidatorInterface::class => autowire(JwtTokenService::class),
     Psr\Http\Message\ResponseFactoryInterface::class => autowire(Slim\Psr7\Factory\ResponseFactory::class),
     App\Domain\Shared\Clock\ClockInterface::class => autowire(App\Infrastructure\Shared\Clock\SystemClock::class),
+    Symfony\Component\Mailer\MailerInterface::class => function (Psr\Container\ContainerInterface $c) {
+        $dsn = $_ENV['MAILER_DSN'] ?? 'null://null';
+        $transport = Symfony\Component\Mailer\Transport::fromDsn($dsn);
+        return new Symfony\Component\Mailer\Mailer($transport);
+    },
+    App\Domain\Auth\Service\EmailSenderInterface::class => autowire(App\Infrastructure\Communication\SymfonyMailerEmailSender::class),
 ];

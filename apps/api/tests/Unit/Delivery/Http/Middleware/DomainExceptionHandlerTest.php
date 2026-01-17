@@ -108,4 +108,20 @@ class DomainExceptionHandlerTest extends TestCase
 
         $this->assertEquals(403, $response->getStatusCode());
     }
+
+    public function testInvalidArgumentExceptionMappedTo400(): void
+    {
+        $request = (new ServerRequestFactory())->createServerRequest("GET", "/");
+        $exception = new \InvalidArgumentException("Invalid argument");
+
+        $response = ($this->handler)(
+            $request,
+            $exception,
+            true,
+            true,
+            true
+        );
+
+        $this->assertSame(400, $response->getStatusCode());
+    }
 }

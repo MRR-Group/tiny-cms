@@ -6,12 +6,14 @@ namespace App\Application\Auth\Handler;
 
 use App\Application\Auth\Command\RequestPasswordResetCommand;
 use App\Domain\Auth\Repository\UserRepositoryInterface;
+use App\Domain\Auth\Service\EmailSenderInterface;
 use App\Domain\Auth\ValueObject\Email;
 
 class RequestPasswordResetHandler
 {
     public function __construct(
         private readonly UserRepositoryInterface $userRepository,
+        private readonly EmailSenderInterface $emailSender,
     ) {}
 
     public function handle(RequestPasswordResetCommand $command): void
@@ -29,8 +31,6 @@ class RequestPasswordResetHandler
         $user->setResetToken($token, $expiresAt);
         $this->userRepository->save($user);
 
-        // TODO: Send email
-        // For now we just log it or it can be retrieved from DB
-        error_log("Password reset token for {$command->email}: {$token}");
+        $this->emailSender->sendPasswordResetLink($user->getEmail(), $token);
     }
 }

@@ -141,4 +141,19 @@ class ApplicationTest extends TestCase
         $logErrorDetails->setAccessible(true);
         $this->assertTrue($logErrorDetails->getValue($foundMiddleware), "logErrorDetails should be true");
     }
+
+    public function testPasswordResetRoutesRegistered(): void
+    {
+        $_ENV["JWT_SECRET"] = "x";
+        $_ENV["APP_ENV"] = "test";
+        $_ENV["DB_HOST"] = "x";
+        $app = Application::create();
+
+        $routes = $app->getRouteCollector()->getRoutes();
+        $patterns = array_map(fn($r) => $r->getPattern(), $routes);
+
+        $this->assertContains("/auth/password-reset/request", $patterns);
+        $this->assertContains("/auth/password-reset/confirm", $patterns);
+        $this->assertContains("/health", $patterns);
+    }
 }

@@ -6,9 +6,9 @@ namespace App\Application\Auth\Handler;
 
 use App\Application\Auth\Command\ConfirmPasswordResetCommand;
 use App\Application\Auth\Contract\PasswordHasherInterface;
-use App\Domain\Auth\Repository\UserRepositoryInterface;
 use App\Domain\Auth\Exception\PasswordResetTokenExpiredException;
 use App\Domain\Auth\Exception\PasswordResetTokenInvalidException;
+use App\Domain\Auth\Repository\UserRepositoryInterface;
 
 class ConfirmPasswordResetHandler
 {

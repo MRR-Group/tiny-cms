@@ -55,7 +55,7 @@ export class AuthService {
     }
 
     const text = await response.text();
-    return text ? JSON.parse(text) : {} as T;
+    return text ? JSON.parse(text) : ({} as T);
   }
 
   async login(data: LoginRequest): Promise<LoginResponse> {

@@ -58,3 +58,7 @@ jobs:
       - name: Run mutation tests
         run: composer mutation
         working-directory: apps/api
+
+      - name: Check architecture
+        run: composer deptrac
+        working-directory: apps/api
