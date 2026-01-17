@@ -35,7 +35,7 @@ describe('authService', () => {
       const responseData = { token: 'jwt-token', requirePasswordChange: false };
       fetchMock.mockResolvedValueOnce({
         ok: true,
-        json: async () => responseData,
+        text: async () => JSON.stringify(responseData),
       });
 
       const result = await authService.login(loginData);
@@ -56,7 +56,7 @@ describe('authService', () => {
       const responseData = { requirePasswordChange: false };
       fetchMock.mockResolvedValueOnce({
         ok: true,
-        json: async () => responseData,
+        text: async () => JSON.stringify(responseData),
       });
 
       await authService.login(loginData);
@@ -99,7 +99,7 @@ describe('authService', () => {
 
     it('includes Authorization header if token exists', async () => {
       localStorage.setItem('authToken', 'stored-token');
-      fetchMock.mockResolvedValueOnce({ ok: true, json: async () => ({}) });
+      fetchMock.mockResolvedValueOnce({ ok: true, text: async () => '{}' });
 
       await authService.changePassword(changePasswordData);
 
@@ -114,7 +114,7 @@ describe('authService', () => {
     });
 
     it('does not include Authorization header if token does not exist', async () => {
-      fetchMock.mockResolvedValueOnce({ ok: true, json: async () => ({}) });
+      fetchMock.mockResolvedValueOnce({ ok: true, text: async () => '{}' });
 
       await authService.changePassword(changePasswordData);
 
@@ -127,7 +127,7 @@ describe('authService', () => {
   describe('changePassword', () => {
     it('sends change password request', async () => {
       const data: ChangePasswordRequest = { oldPassword: 'old', newPassword: 'new' };
-      fetchMock.mockResolvedValueOnce({ ok: true, json: async () => ({}) });
+      fetchMock.mockResolvedValueOnce({ ok: true, text: async () => '{}' });
 
       await authService.changePassword(data);
 
@@ -144,7 +144,7 @@ describe('authService', () => {
   describe('createUser', () => {
     it('sends create user request', async () => {
       const data: CreateUserRequest = { email: 'new@example.com', password: 'pass', role: 'admin' };
-      fetchMock.mockResolvedValueOnce({ ok: true, json: async () => ({}) });
+      fetchMock.mockResolvedValueOnce({ ok: true, text: async () => '{}' });
 
       await authService.createUser(data);
 
@@ -161,7 +161,7 @@ describe('authService', () => {
   describe('requestPasswordReset', () => {
     it('sends password reset request', async () => {
       const data: PasswordResetRequest = { email: 'reset@example.com' };
-      fetchMock.mockResolvedValueOnce({ ok: true, json: async () => ({}) });
+      fetchMock.mockResolvedValueOnce({ ok: true, text: async () => '{}' });
 
       await authService.requestPasswordReset(data);
 
@@ -178,7 +178,7 @@ describe('authService', () => {
   describe('setNewPassword', () => {
     it('sends set new password request', async () => {
       const data: SetNewPasswordRequest = { token: 'reset-token', password: 'new-pass' };
-      fetchMock.mockResolvedValueOnce({ ok: true, json: async () => ({}) });
+      fetchMock.mockResolvedValueOnce({ ok: true, text: async () => '{}' });
 
       await authService.setNewPassword(data);
 
