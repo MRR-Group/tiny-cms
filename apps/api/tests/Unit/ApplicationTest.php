@@ -34,7 +34,7 @@ class ApplicationTest extends TestCase
         // Slim default 404 in JSON mode returns: {"message":"Not found"}
         // Our DomainExceptionHandler returns: {"error": {"message": "...", "code": 404}} (Based on code reading)
 
-        $body = (string)$response->getBody();
+        $body = (string) $response->getBody();
         $this->assertJson($body);
         $data = json_decode($body, true);
 
@@ -51,5 +51,91 @@ class ApplicationTest extends TestCase
         // Let's verify Content-Type.
 
         $this->assertEquals("application/json", $response->getHeaderLine("Content-Type"));
+    }
+
+    public function testErrorMiddlewareConfiguration(): void
+    {
+        $_ENV["JWT_SECRET"] = "test_secret";
+        $_ENV["APP_ENV"] = "test";
+        $_ENV["DB_HOST"] = "localhost";
+
+        $app = Application::create();
+
+        // Inspect MiddlewareDispatcher
+        $reflection = new \ReflectionClass($app);
+        $dispatcherProp = $reflection->getProperty('middlewareDispatcher');
+        $dispatcherProp->setAccessible(true);
+        $dispatcher = $dispatcherProp->getValue($app);
+
+        // Inspect middleware stack
+        // Slim stores them in a queue or we can look at "stack" if available, 
+        // usually MiddlewareDispatcher holds the tip of the stack.
+        // But Slim 4 implementation is intricate.
+        // Let's try to find ErrorMiddleware by searching.
+
+        // Wait, MiddlewareDispatcher doesn't expose the stack easily.
+        // But addErrorMiddleware returns the instance! 
+        // But Application::create drops it.
+
+        // Let's try to assume that the error middleware is in the stack. 
+        // Getting access to the queue inside MiddlewareDispatcher might be needed.
+        // MiddlewareDispatcher has protected $middleware array?
+        // Let's check MiddlewareDispatcher definition (I can view it or guess).
+        // It uses $middlewareStack usually.
+        // Actually, let's use reflection on $dispatcher.
+
+        $dispatcherReflection = new \ReflectionClass($dispatcher);
+        $tipProp = $dispatcherReflection->getProperty('tip');
+        $tipProp->setAccessible(true);
+        $tip = $tipProp->getValue($dispatcher);
+
+        // Traverse the linked list of middleware wrappers
+        $foundMiddleware = null;
+        $current = $tip;
+
+        while ($current) {
+            // Check if current is the anonymous wrapper class created by Slim
+            // We can try to get 'middleware' property
+            try {
+                $ref = new \ReflectionClass($current);
+                if (!$ref->hasProperty('middleware')) {
+                    // Might be the Kernel (RouteRunner) or something else at the bottom
+                    break;
+                }
+
+                $mwProp = $ref->getProperty('middleware');
+                $mwProp->setAccessible(true);
+                $mw = $mwProp->getValue($current);
+
+                if ($mw instanceof \Slim\Middleware\ErrorMiddleware) {
+                    $foundMiddleware = $mw;
+                    break;
+                }
+
+                // Move to next
+                if ($ref->hasProperty('next')) {
+                    $nextProp = $ref->getProperty('next');
+                    $nextProp->setAccessible(true);
+                    $current = $nextProp->getValue($current);
+                } else {
+                    break;
+                }
+            } catch (\ReflectionException $e) {
+                break;
+            }
+        }
+
+        $this->assertNotNull($foundMiddleware, "ErrorMiddleware not found in stack");
+
+        // Assert configuration
+        $mwRefl = new \ReflectionClass($foundMiddleware);
+
+        $logErrors = $mwRefl->getProperty('logErrors');
+        $logErrors->setAccessible(true);
+        $this->assertTrue($logErrors->getValue($foundMiddleware), "logErrors should be true");
+
+        $logErrorDetails = $mwRefl->getProperty('logErrorDetails');
+        $logErrorDetails->setAccessible(true);
+        $this->assertTrue($logErrorDetails->getValue($foundMiddleware), "logErrorDetails should be true");
     }
 }
