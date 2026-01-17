@@ -1,4 +1,6 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+/** @internal */
+export const _getBaseUrl = (env: Record<string, string | undefined>) => env.VITE_API_URL || 'http://localhost:8080';
+const API_BASE_URL = _getBaseUrl(import.meta.env);
 
 interface RequestOptions extends RequestInit {
   params?: Record<string, string>;
