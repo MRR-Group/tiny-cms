@@ -15,8 +15,7 @@ class JwtAuthMiddleware implements MiddlewareInterface
 {
     public function __construct(
         private readonly TokenValidatorInterface $tokenValidator,
-    ) {
-    }
+    ) {}
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {

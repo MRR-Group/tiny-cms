@@ -13,7 +13,7 @@ class EmailTest extends TestCase
     {
         $email = new Email("test@example.com");
         $this->assertEquals("test@example.com", $email->toString());
-        $this->assertEquals("test@example.com", (string) $email);
+        $this->assertEquals("test@example.com", (string)$email);
     }
 
     public function testInvalidEmailThrowsException(): void

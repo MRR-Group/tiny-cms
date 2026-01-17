@@ -11,6 +11,8 @@ use App\Infrastructure\Persistence\Doctrine\Type\UserIdType;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 class EntityManagerFactoryTest extends TestCase
 {
@@ -75,6 +77,7 @@ class EntityManagerFactoryTest extends TestCase
             $_ENV = $originalEnv;
         }
     }
+
     public function testConfiguresProductionCache(): void
     {
         $originalEnv = $_ENV;
@@ -85,9 +88,9 @@ class EntityManagerFactoryTest extends TestCase
             $config = $em->getConfiguration();
 
             // Check metadata cache
-            $this->assertInstanceOf(\Symfony\Component\Cache\Adapter\FilesystemAdapter::class, $config->getMetadataCache());
-            $this->assertInstanceOf(\Symfony\Component\Cache\Adapter\FilesystemAdapter::class, $config->getQueryCache());
-            $this->assertInstanceOf(\Symfony\Component\Cache\Adapter\FilesystemAdapter::class, $config->getResultCache());
+            $this->assertInstanceOf(FilesystemAdapter::class, $config->getMetadataCache());
+            $this->assertInstanceOf(FilesystemAdapter::class, $config->getQueryCache());
+            $this->assertInstanceOf(FilesystemAdapter::class, $config->getResultCache());
 
             // In production, auto-generate proxy classes should be false (implied by isDevMode=false, but checking specific setting if possible)
             // But checking cache adapter is strong enough to kill the Ternary/Coalesce mutants.
@@ -99,6 +102,7 @@ class EntityManagerFactoryTest extends TestCase
     public function testConfiguresDevCacheByDefault(): void
     {
         $originalEnv = $_ENV;
+
         if (isset($_ENV["APP_ENV"])) {
             unset($_ENV["APP_ENV"]);
         }
@@ -108,9 +112,9 @@ class EntityManagerFactoryTest extends TestCase
             $config = $em->getConfiguration();
 
             // Check metadata cache
-            $this->assertInstanceOf(\Symfony\Component\Cache\Adapter\ArrayAdapter::class, $config->getMetadataCache());
-            $this->assertInstanceOf(\Symfony\Component\Cache\Adapter\ArrayAdapter::class, $config->getQueryCache());
-            $this->assertInstanceOf(\Symfony\Component\Cache\Adapter\ArrayAdapter::class, $config->getResultCache());
+            $this->assertInstanceOf(ArrayAdapter::class, $config->getMetadataCache());
+            $this->assertInstanceOf(ArrayAdapter::class, $config->getQueryCache());
+            $this->assertInstanceOf(ArrayAdapter::class, $config->getResultCache());
         } finally {
             $_ENV = $originalEnv;
         }

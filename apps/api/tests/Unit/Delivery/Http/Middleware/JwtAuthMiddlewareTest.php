@@ -32,7 +32,7 @@ class JwtAuthMiddlewareTest extends TestCase
         $response = $this->middleware->process($request, $handler);
 
         $this->assertEquals(401, $response->getStatusCode());
-        $this->assertStringContainsString("Unauthorized", (string) $response->getBody());
+        $this->assertStringContainsString("Unauthorized", (string)$response->getBody());
     }
 
     public function testReturns401IfHeaderFormatInvalid(): void
@@ -83,7 +83,7 @@ class JwtAuthMiddlewareTest extends TestCase
         $response = $this->middleware->process($request, $handler);
 
         $this->assertEquals(401, $response->getStatusCode());
-        $this->assertStringContainsString("Invalid token", (string) $response->getBody());
+        $this->assertStringContainsString("Invalid token", (string)$response->getBody());
     }
 
     public function testPassesIfTokenValid(): void
