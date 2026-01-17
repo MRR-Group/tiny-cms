@@ -14,7 +14,32 @@ use PHPUnit\Framework\TestCase;
 
 class DoctrineUserRepositoryTest extends TestCase
 {
-    public function testSavePersistsAndFlushes(): void
+    public function testFindByResetToken(): void
+    {
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $repository = $this->createMock(EntityRepository::class);
+
+        $entityManager->expects($this->once())
+            ->method("getRepository")
+            ->with(User::class)
+            ->willReturn($repository);
+
+        $token = "some-token";
+        $user = $this->createMock(User::class);
+
+        $repository->expects($this->once())
+            ->method("findOneBy")
+            ->with(["resetToken" => $token])
+            ->willReturn($user);
+
+        $doctrineRepo = new DoctrineUserRepository($entityManager);
+
+        $result = $doctrineRepo->findByResetToken($token);
+
+        $this->assertSame($user, $result);
+    }
+
+    public function testSave(): void
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $user = $this->createMock(User::class);
@@ -26,48 +51,50 @@ class DoctrineUserRepositoryTest extends TestCase
         $entityManager->expects($this->once())
             ->method("flush");
 
-        $repository = new DoctrineUserRepository($entityManager);
-        $repository->save($user);
+        $doctrineRepo = new DoctrineUserRepository($entityManager);
+        $doctrineRepo->save($user);
     }
 
-    public function testFindByEmailDelegatesToRepository(): void
+    public function testFindByEmail(): void
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);
-        $objectRepository = $this->createMock(EntityRepository::class);
-        $user = $this->createMock(User::class);
-        $email = new Email("test@example.com");
+        $repository = $this->createMock(EntityRepository::class);
 
         $entityManager->expects($this->once())
             ->method("getRepository")
             ->with(User::class)
-            ->willReturn($objectRepository);
+            ->willReturn($repository);
 
-        $objectRepository->expects($this->once())
+        $email = new Email("test@example.com");
+        $user = $this->createMock(User::class);
+
+        $repository->expects($this->once())
             ->method("findOneBy")
-            // This strict expectation kills "ArrayItemRemoval" mutant which changes ["email" => $email] to []
             ->with(["email" => $email])
             ->willReturn($user);
 
-        $repository = new DoctrineUserRepository($entityManager);
-        $result = $repository->findByEmail($email);
+        $doctrineRepo = new DoctrineUserRepository($entityManager);
+
+        $result = $doctrineRepo->findByEmail($email);
 
         $this->assertSame($user, $result);
     }
 
-    public function testFindByIdDelegatesToRepository(): void
+    public function testFindById(): void
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);
-        $objectRepository = $this->createMock(EntityRepository::class);
-        $user = $this->createMock(User::class);
         $id = UserId::generate();
+        $user = $this->createMock(User::class);
 
+        // find($className, $id, ...)
         $entityManager->expects($this->once())
             ->method("find")
-            ->with(User::class, $this->callback(fn($arg) => $arg instanceof UserId && $arg->toString() === $id->toString()))
+            ->with(User::class, $id)
             ->willReturn($user);
 
-        $repository = new DoctrineUserRepository($entityManager);
-        $result = $repository->findById($id);
+        $doctrineRepo = new DoctrineUserRepository($entityManager);
+
+        $result = $doctrineRepo->findById($id);
 
         $this->assertSame($user, $result);
     }
