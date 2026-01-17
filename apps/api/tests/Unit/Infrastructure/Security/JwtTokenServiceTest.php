@@ -44,6 +44,7 @@ class JwtTokenServiceTest extends TestCase
 
         $this->assertNotNull($claims);
         $this->assertEquals("tiny-cms", $claims["iss"]);
+        $this->assertEquals($user->getId()->toString(), $claims["sub"]);
         $this->assertEquals("admin", $claims["role"]);
 
         // Kill time mutants
