@@ -2,6 +2,7 @@ import { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthLayout } from '@/components/AuthLayout';
 import { Button } from '@/components/Button/Button';
+import { Input } from '@/components/Input/Input';
 import { PasswordStrengthIndicator } from '@/components/PasswordStrengthIndicator';
 import { authService } from '@/domain/auth';
 
@@ -40,66 +41,59 @@ export function ForceChangePassword() {
   };
 
   return (
-    <AuthLayout title="Change Password" subtitle="You must change your password before continuing">
-      <div className="mb-6 bg-primary/20 border border-primary/50 text-primary-100 px-4 py-3 rounded-lg text-sm">
-        For security reasons, you must change your temporary password.
+    <AuthLayout subtitle="Security Update Required">
+      <div className="mb-6 bg-primary/5 border border-primary/10 text-primary px-4 py-3 rounded-xl text-xs font-medium italic">
+        For security reasons, you must change your temporary password before continuing.
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-5">
         {error && (
-          <div className="bg-red-500/20 border border-red-500/50 text-red-200 px-4 py-3 rounded-lg text-sm">
+          <div className="bg-red-50 border border-red-100 text-red-500 px-4 py-2.5 rounded-xl text-xs font-medium animate-in fade-in zoom-in duration-300">
             {error}
           </div>
         )}
 
-        <div>
-          <label htmlFor="oldPassword" className="block text-sm font-medium text-white mb-2">
-            Current Password
-          </label>
-          <input
-            id="oldPassword"
-            type="password"
-            value={oldPassword}
-            onChange={(e) => setOldPassword(e.target.value)}
-            required
-            className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-            placeholder="••••••••"
-          />
-        </div>
+        <Input
+          id="oldPassword"
+          label="Current Password"
+          type="password"
+          value={oldPassword}
+          onChange={(e) => setOldPassword(e.target.value)}
+          required
+          placeholder="••••••••"
+        />
 
-        <div>
-          <label htmlFor="newPassword" className="block text-sm font-medium text-white mb-2">
-            New Password
-          </label>
-          <input
+        <div className="space-y-2">
+          <Input
             id="newPassword"
+            label="New Password"
             type="password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             required
-            className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
             placeholder="••••••••"
           />
           <PasswordStrengthIndicator password={newPassword} />
         </div>
 
-        <div>
-          <label htmlFor="confirmPassword" className="block text-sm font-medium text-white mb-2">
-            Confirm New Password
-          </label>
-          <input
-            id="confirmPassword"
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-            className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-            placeholder="••••••••"
-          />
-        </div>
+        <Input
+          id="confirmPassword"
+          label="Confirm New Password"
+          type="password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          required
+          placeholder="••••••••"
+        />
 
-        <Button type="submit" variant="primary" disabled={isLoading} className="w-full">
-          {isLoading ? 'Changing password...' : 'Change Password'}
+        <Button
+          type="submit"
+          variant="primary"
+          size="md"
+          disabled={isLoading}
+          className="w-full rounded-xl py-3.5 text-sm mt-2"
+        >
+          {isLoading ? 'Updating password...' : 'Update Password'}
         </Button>
       </form>
     </AuthLayout>

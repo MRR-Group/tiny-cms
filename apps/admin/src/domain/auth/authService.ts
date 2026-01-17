@@ -54,7 +54,8 @@ export class AuthService {
       throw new Error(error.error?.message || 'Request failed');
     }
 
-    return response.json();
+    const text = await response.text();
+    return text ? JSON.parse(text) : {} as T;
   }
 
   async login(data: LoginRequest): Promise<LoginResponse> {

@@ -19,6 +19,29 @@ tasks:
     cmds:
       - task --list-all
 
+  init:
+    desc: "Initialize project"
+    cmds:
+      - task: up
+      - task: api:install
+      - task: admin:install
+      - task: api:migrate
+
+  test:
+    desc: "Run all tests"
+    cmds:
+      - task: api:test
+      - task: api:mutation
+      - task: api:deptrac
+      - task: admin:test
+      - task: admin:mutation
+
+  fix:
+    desc: "Fix all projects (backend and frontend)"
+    cmds:
+      - task: api:cs:fix
+      - task: admin:fix
+
   up:
     desc: "Start all services"
     aliases: [start, run]
@@ -89,6 +112,16 @@ tasks:
     cmds:
       - "{{.DOCKER_EXEC_API}} vendor/bin/deptrac analyse --no-cache"
 
+  api:migrate:
+    desc: "Run database migrations"
+    cmds:
+      - "{{.DOCKER_EXEC_API}} vendor/bin/doctrine-migrations migrate --no-interaction"
+
+  api:seed:admin:
+    desc: "Create a new admin user (usage: task api:seed:admin -- <email> <password>)"
+    cmds:
+      - "{{.DOCKER_EXEC_API}} php bin/create-admin.php {{.CLI_ARGS}}"
+
   # === Frontend (Admin) ===
   admin:shell:
     desc: "Enter Admin container shell"
@@ -98,6 +131,7 @@ tasks:
   admin:install:
     desc: "Install frontend dependencies"
     cmds:
+      - "docker compose exec --user root admin sh -c 'command -v pnpm >/dev/null || npm install -g pnpm'"
       - "{{.DOCKER_EXEC_ADMIN}} pnpm install"
 
   admin:test:

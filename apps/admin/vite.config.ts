@@ -4,7 +4,12 @@ import { resolve } from 'path';
 import svgr from 'vite-plugin-svgr';
 
 export default defineConfig({
-    plugins: [react(), svgr()],
+    plugins: [
+        react(), 
+        svgr({
+            include: '**/*.svg?react',
+        })
+    ],
     resolve: {
         alias: {
             '@': resolve(__dirname, './src'),
@@ -13,5 +18,12 @@ export default defineConfig({
     server: {
         host: true,
         port: 5173,
+        proxy: {
+            '/api': {
+                target: 'http://nginx',
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\/api/, ''),
+            },
+        },
     },
 });

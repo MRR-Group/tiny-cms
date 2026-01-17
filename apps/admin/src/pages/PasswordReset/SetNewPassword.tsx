@@ -2,6 +2,7 @@ import { useState, FormEvent } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { AuthLayout } from '@/components/AuthLayout';
 import { Button } from '@/components/Button/Button';
+import { Input } from '@/components/Input/Input';
 import { PasswordStrengthIndicator } from '@/components/PasswordStrengthIndicator';
 import { authService } from '@/domain/auth';
 
@@ -47,55 +48,53 @@ export function SetNewPassword() {
   };
 
   return (
-    <AuthLayout title="Set New Password" subtitle="Create a strong password for your account">
+    <AuthLayout subtitle="Secure Credentials Update">
       <form onSubmit={handleSubmit} className="space-y-6">
         {error && (
-          <div className="bg-red-500/20 border border-red-500/50 text-red-200 px-4 py-3 rounded-lg text-sm">
+          <div className="bg-red-50 border border-red-100 text-red-500 px-4 py-2.5 rounded-xl text-xs font-medium animate-in fade-in zoom-in duration-300">
             {error}
           </div>
         )}
 
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium text-white mb-2">
-            New Password
-          </label>
-          <input
+        <div className="space-y-2">
+          <Input
             id="password"
+            label="New Secure Password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
             placeholder="••••••••"
           />
           <PasswordStrengthIndicator password={password} />
         </div>
 
-        <div>
-          <label htmlFor="confirmPassword" className="block text-sm font-medium text-white mb-2">
-            Confirm Password
-          </label>
-          <input
-            id="confirmPassword"
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-            className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-            placeholder="••••••••"
-          />
-        </div>
+        <Input
+          id="confirmPassword"
+          label="Verify New Password"
+          type="password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          required
+          placeholder="••••••••"
+        />
 
-        <Button type="submit" variant="primary" disabled={isLoading} className="w-full">
-          {isLoading ? 'Setting password...' : 'Set New Password'}
+        <Button
+          type="submit"
+          variant="primary"
+          size="md"
+          disabled={isLoading}
+          className="w-full mt-2"
+        >
+          {isLoading ? 'Updating...' : 'Set New Password'}
         </Button>
 
         <div className="text-center">
           <Link
             to="/login"
-            className="text-sm text-secondary-300 hover:text-white transition-colors"
+            className="text-xs font-semibold text-slate-400 hover:text-primary transition-colors duration-300 uppercase tracking-widest"
           >
-            Back to Login
+            Return to Login
           </Link>
         </div>
       </form>

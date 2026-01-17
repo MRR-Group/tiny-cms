@@ -1,6 +1,8 @@
 import { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/Button/Button';
+import { Input } from '@/components/Input/Input';
+import { Select } from '@/components/Select/Select';
 import { PasswordStrengthIndicator } from '@/components/PasswordStrengthIndicator';
 import { authService } from '@/domain/auth';
 
@@ -29,82 +31,80 @@ export function CreateUser() {
     }
   };
 
+  const roleOptions = [
+    { value: 'user', label: 'Standard User' },
+    { value: 'admin', label: 'Administrator' },
+  ];
+
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Create User</h1>
-        <p className="text-slate-400">Add a new user to the system</p>
+    <div className="animate-in fade-in slide-in-from-left-4 duration-500">
+      <div className="mb-10">
+        <h1 className="text-3xl font-serif font-semibold text-slate-900 mb-1">Create User</h1>
+        <p className="text-slate-500 text-sm">Provision a new administrative account.</p>
       </div>
 
-      <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-8 max-w-2xl">
+      <div className="bg-white border border-slate-100 rounded-2xl p-8 max-w-xl shadow-xl shadow-slate-100/50">
         {success && (
-          <div className="mb-6 bg-green-500/20 border border-green-500/50 text-green-200 px-4 py-3 rounded-lg text-sm">
-            User created successfully! The user will be required to change their password on first
-            login.
+          <div className="mb-6 bg-emerald-50 border border-emerald-100 text-emerald-600 px-4 py-3 rounded-xl text-sm font-medium animate-in zoom-in duration-300">
+            User created successfully! Redirecting...
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
-            <div className="bg-red-500/20 border border-red-500/50 text-red-200 px-4 py-3 rounded-lg text-sm">
+            <div className="bg-red-50 border border-red-100 text-red-500 px-4 py-3 rounded-xl text-sm font-medium">
               {error}
             </div>
           )}
 
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-              placeholder="user@example.com"
-            />
-          </div>
+          <Input
+            id="email"
+            label="Email Address"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            placeholder="user@example.com"
+          />
 
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-white mb-2">
-              Temporary Password
-            </label>
-            <input
+          <div className="space-y-1.5">
+            <Input
               id="password"
+              label="Temporary Password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
               placeholder="••••••••"
             />
             <PasswordStrengthIndicator password={password} />
-            <p className="mt-2 text-xs text-slate-400">
-              The user will be required to change this password on first login.
-            </p>
           </div>
 
-          <div>
-            <label htmlFor="role" className="block text-sm font-medium text-white mb-2">
-              Role
-            </label>
-            <select
-              id="role"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+          <Select
+            id="role"
+            label="Account Role"
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            options={roleOptions}
+          />
+
+          <div className="flex gap-3 pt-2">
+            <Button
+              type="submit"
+              variant="primary"
+              size="md"
+              disabled={isLoading || success}
+              className="flex-1"
             >
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
-
-          <div className="flex gap-4">
-            <Button type="submit" variant="primary" disabled={isLoading || success}>
-              {isLoading ? 'Creating...' : success ? 'Created!' : 'Create User'}
+              {isLoading ? 'Creating...' : 'Create User'}
             </Button>
-            <Button type="button" variant="secondary" onClick={() => navigate('/')}>
+            <Button
+              type="button"
+              variant="secondary"
+              size="md"
+              onClick={() => navigate('/')}
+              className="px-6"
+            >
               Cancel
             </Button>
           </div>

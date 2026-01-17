@@ -15,4 +15,6 @@ interface UserRepositoryInterface
     public function findById(UserId $id): ?User;
 
     public function findByEmail(Email $email): ?User;
+
+    public function findByResetToken(string $token): ?User;
 }

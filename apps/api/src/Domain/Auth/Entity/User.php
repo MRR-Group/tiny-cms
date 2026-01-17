@@ -11,6 +11,8 @@ use App\Domain\Auth\ValueObject\UserId;
 class User
 {
     private bool $mustChangePassword = false;
+    private ?string $resetToken = null;
+    private ?\DateTimeImmutable $resetTokenExpiresAt = null;
 
     public function __construct(
         private readonly UserId $id,
@@ -48,6 +50,8 @@ class User
     {
         $this->passwordHash = $newPasswordHash;
         $this->mustChangePassword = false;
+        $this->resetToken = null;
+        $this->resetTokenExpiresAt = null;
     }
 
     public function requirePasswordChange(): void
@@ -58,5 +62,21 @@ class User
     public function updateEmail(Email $email): void
     {
         $this->email = $email;
+    }
+
+    public function setResetToken(string $token, \DateTimeImmutable $expiresAt): void
+    {
+        $this->resetToken = $token;
+        $this->resetTokenExpiresAt = $expiresAt;
+    }
+
+    public function getResetToken(): ?string
+    {
+        return $this->resetToken;
+    }
+
+    public function isResetTokenValid(string $token, \DateTimeImmutable $now): bool
+    {
+        return $this->resetToken === $token && $this->resetTokenExpiresAt > $now;
     }
 }

@@ -10,6 +10,8 @@
         <field name="role" type="role" column="role" length="20" />
         <field name="passwordHash" type="string" column="password_hash" length="255" />
         <field name="mustChangePassword" type="boolean" column="must_change_password" />
+        <field name="resetToken" type="string" column="reset_token" length="100" nullable="true" />
+        <field name="resetTokenExpiresAt" type="datetime_immutable" column="reset_token_expires_at" nullable="true" />
     </entity>
 
 </doctrine-mapping>

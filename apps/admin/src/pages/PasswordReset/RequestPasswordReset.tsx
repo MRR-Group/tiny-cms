@@ -2,6 +2,7 @@ import { useState, FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthLayout } from '@/components/AuthLayout';
 import { Button } from '@/components/Button/Button';
+import { Input } from '@/components/Input/Input';
 import { authService } from '@/domain/auth';
 
 export function RequestPasswordReset() {
@@ -27,17 +28,17 @@ export function RequestPasswordReset() {
 
   if (success) {
     return (
-      <AuthLayout title="Check Your Email" subtitle="Password reset instructions sent">
-        <div className="text-center space-y-4">
-          <div className="bg-green-500/20 border border-green-500/50 text-green-200 px-4 py-3 rounded-lg text-sm">
-            We've sent password reset instructions to <strong>{email}</strong>
+      <AuthLayout subtitle="Email Sent Successfully">
+        <div className="text-center space-y-6">
+          <div className="bg-emerald-50 border border-emerald-100 text-emerald-600 px-4 py-3 rounded-xl text-xs font-medium italic">
+            Instructions to reset your password have been sent to <strong>{email}</strong>.
           </div>
-          <p className="text-secondary-300 text-sm">
-            Please check your inbox and follow the instructions to reset your password.
+          <p className="text-slate-400 text-sm italic">
+            Please check your inbox and follow the link to securely update your credentials.
           </p>
-          <Link to="/login">
-            <Button variant="secondary" className="w-full">
-              Back to Login
+          <Link to="/login" className="block">
+            <Button variant="secondary" size="md" className="w-full">
+              Return to Login
             </Button>
           </Link>
         </div>
@@ -46,37 +47,32 @@ export function RequestPasswordReset() {
   }
 
   return (
-    <AuthLayout title="Reset Password" subtitle="Enter your email to receive reset instructions">
+    <AuthLayout subtitle="Password Recovery">
       <form onSubmit={handleSubmit} className="space-y-6">
         {error && (
-          <div className="bg-red-500/20 border border-red-500/50 text-red-200 px-4 py-3 rounded-lg text-sm">
+          <div className="bg-red-50 border border-red-100 text-red-500 px-4 py-2.5 rounded-xl text-xs font-medium animate-in fade-in zoom-in duration-300">
             {error}
           </div>
         )}
 
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
-            Email
-          </label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-            placeholder="your@email.com"
-          />
-        </div>
+        <Input
+          id="email"
+          label="Registered Email Address"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          placeholder="name@example.com"
+        />
 
-        <Button type="submit" variant="primary" disabled={isLoading} className="w-full">
-          {isLoading ? 'Sending...' : 'Send Reset Instructions'}
+        <Button type="submit" variant="primary" size="md" disabled={isLoading} className="w-full">
+          {isLoading ? 'Processing...' : 'Send Recovery Link'}
         </Button>
 
         <div className="text-center">
           <Link
             to="/login"
-            className="text-sm text-secondary-300 hover:text-white transition-colors"
+            className="text-xs font-semibold text-slate-400 hover:text-primary transition-colors duration-300 uppercase tracking-widest"
           >
             Back to Login
           </Link>

@@ -63,6 +63,7 @@ class DomainExceptionHandler
             WeakPasswordException::class => 400,
 
             UserAlreadyExistsException::class => 409,
+            \InvalidArgumentException::class => 400,
 
             default => $exception instanceof HttpException
             ? $exception->getCode()
