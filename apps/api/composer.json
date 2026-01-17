@@ -38,7 +38,8 @@
         "lint": "phpstan analyse src --level=8",
         "cs": "php-cs-fixer fix --dry-run --diff",
         "cs:fix": "php-cs-fixer fix",
-        "mutation": "infection --threads=4"
+        "mutation": "infection --threads=4",
+        "deptrac": "deptrac"
     },
     "config": {
         "allow-plugins": {
