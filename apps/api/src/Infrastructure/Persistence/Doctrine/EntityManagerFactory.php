@@ -17,6 +17,9 @@ use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 class EntityManagerFactory
 {
+    /**
+     * @param array<string, mixed> $settings
+     */
     public static function create(array $settings): EntityManagerInterface
     {
         if (!Type::hasType(UserIdType::NAME)) {
