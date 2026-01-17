@@ -20,7 +20,8 @@ if ($argc < 3) {
 $emailStr = $argv[1];
 $passwordStr = $argv[2];
 
-$em = EntityManagerFactory::create();
+$settings = require __DIR__ . '/../config/settings.php';
+$em = EntityManagerFactory::create($settings['settings']);
 $hasher = new Argon2PasswordHasher();
 
 $email = new Email($emailStr);

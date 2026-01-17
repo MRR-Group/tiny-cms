@@ -10,7 +10,8 @@ use Doctrine\Migrations\DependencyFactory;
 $dotenv = \Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->safeLoad();
 
-$entityManager = EntityManagerFactory::create();
+$settings = require __DIR__ . '/config/settings.php';
+$entityManager = EntityManagerFactory::create($settings['settings']);
 
 $config = new PhpFile('migrations.php'); // Or use array config
 
