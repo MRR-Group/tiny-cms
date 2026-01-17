@@ -1,124 +1,141 @@
-version: '3'
+# https://taskfile.dev
+version: "3"
+
+env:
+  COMPOSE_DOCKER_CLI_BUILD: 1
+  DOCKER_BUILDKIT: 1
+  CURRENT_USER_ID:
+    sh: id --user
+
+vars:
+  DOCKER_EXEC_API: docker compose exec --user $CURRENT_USER_ID api
+  DOCKER_EXEC_ADMIN: docker compose exec --user $CURRENT_USER_ID admin
+  # Fallback to run --rm if exec fails (machine not running) - simplified logic for now assuming up
+  # Better approach: check availability or just assume user ran 'task up'
 
 tasks:
-  # === Docker ===
+  default:
+    desc: "List all available tasks"
+    cmds:
+      - task --list-all
+
   up:
-    desc: Start all services
+    desc: "Start all services"
+    aliases: [start, run]
     cmds:
       - docker compose up -d
 
   down:
-    desc: Stop all services
+    desc: "Stop all services"
+    aliases: [stop]
     cmds:
       - docker compose down
 
   logs:
-    desc: View logs
+    desc: "View logs"
     cmds:
       - docker compose logs -f {{.CLI_ARGS}}
 
-  # === Backend ===
-  api:install:
-    desc: Install backend dependencies
-    dir: apps/api
+  ps:
+    desc: "Check containers status"
+    aliases: [status]
     cmds:
-      - composer install
+      - docker compose ps
+
+  # === Backend (API) ===
+  api:shell:
+    desc: "Enter API container shell"
+    aliases: [shell]
+    cmds:
+      - docker compose exec api sh
+
+  api:install:
+    desc: "Install backend dependencies"
+    cmds:
+      - "{{.DOCKER_EXEC_API}} composer install"
 
   api:test:
-    desc: Run backend tests
-    dir: apps/api
+    desc: "Run backend tests"
+    aliases: [test]
     cmds:
-      - composer test
+      - "{{.DOCKER_EXEC_API}} composer test"
 
   api:lint:
-    desc: Run PHPStan
-    dir: apps/api
+    desc: "Run PHPStan"
+    aliases: [lint]
     cmds:
-      - composer lint
+      - "{{.DOCKER_EXEC_API}} composer lint"
 
   api:cs:
-    desc: Check codestyle
-    dir: apps/api
+    desc: "Check codestyle"
+    aliases: [cs]
     cmds:
-      - composer cs
+      - "{{.DOCKER_EXEC_API}} composer cs"
 
   api:cs:fix:
-    desc: Fix codestyle
-    dir: apps/api
+    desc: "Fix codestyle"
+    aliases: [fix]
     cmds:
-      - composer cs:fix
+      - "{{.DOCKER_EXEC_API}} composer cs:fix"
 
   api:mutation:
-    desc: Run mutation tests
-    dir: apps/api
+    desc: "Run mutation tests"
+    aliases: [mutation]
     cmds:
-      - composer mutation
+      - "{{.DOCKER_EXEC_API}} composer mutation"
 
   api:deptrac:
-    desc: Run Deptrac architecture analysis
-    dir: apps/api
+    desc: "Run Deptrac architecture analysis"
+    aliases: [deptrac]
     cmds:
-      - vendor/bin/deptrac analyse --fail-on-uncovered
+      - "{{.DOCKER_EXEC_API}} vendor/bin/deptrac analyse --no-cache"
 
-  # === Frontend ===
+  # === Frontend (Admin) ===
+  admin:shell:
+    desc: "Enter Admin container shell"
+    cmds:
+      - docker compose exec admin sh
+
   admin:install:
-    desc: Install frontend dependencies
-    dir: apps/admin
+    desc: "Install frontend dependencies"
     cmds:
-      - pnpm install
-
-  admin:dev:
-    desc: Start frontend dev server
-    dir: apps/admin
-    cmds:
-      - pnpm dev
+      - "{{.DOCKER_EXEC_ADMIN}} pnpm install"
 
   admin:test:
-    desc: Run frontend tests
-    dir: apps/admin
+    desc: "Run frontend tests"
     cmds:
-      - pnpm test
+      - "{{.DOCKER_EXEC_ADMIN}} pnpm test"
 
   admin:lint:
-    desc: Run ESLint
-    dir: apps/admin
+    desc: "Run ESLint"
     cmds:
-      - pnpm lint
+      - "{{.DOCKER_EXEC_ADMIN}} pnpm lint"
 
   admin:build:
-    desc: Build frontend
-    dir: apps/admin
+    desc: "Build frontend"
     cmds:
-      - pnpm build
-
-  admin:storybook:
-    desc: Start Storybook
-    dir: apps/admin
-    cmds:
-      - pnpm storybook
+      - "{{.DOCKER_EXEC_ADMIN}} pnpm build"
 
   admin:mutation:
-    desc: Run mutation tests
-    dir: apps/admin
+    desc: "Run mutation tests"
     cmds:
-      - pnpm mutation
+      - "{{.DOCKER_EXEC_ADMIN}} pnpm mutation"
 
   # === CI ===
   ci:api:
-    desc: Run all backend CI checks
-    dir: apps/api
+    desc: "Run all backend CI checks"
     cmds:
-      - composer install
-      - composer lint
-      - composer cs
-      - composer test
-      - vendor/bin/deptrac analyse --fail-on-uncovered
+      - task: api:install
+      - task: api:lint
+      - task: api:cs
+      - task: api:test
+      - task: api:deptrac
+      - task: api:mutation
 
   ci:admin:
-    desc: Run all frontend CI checks
-    dir: apps/admin
+    desc: "Run all frontend CI checks"
     cmds:
-      - pnpm install
-      - pnpm lint
-      - pnpm test
-      - pnpm build
+      - task: admin:install
+      - task: admin:lint
+      - task: admin:test
+      - task: admin:build

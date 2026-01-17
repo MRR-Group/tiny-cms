@@ -19,4 +19,5 @@ return [
     PasswordHasherInterface::class => autowire(Argon2PasswordHasher::class),
     TokenIssuerInterface::class => autowire(JwtTokenService::class),
     App\Application\Auth\Contract\TokenValidatorInterface::class => autowire(JwtTokenService::class),
+    Psr\Http\Message\ResponseFactoryInterface::class => autowire(Slim\Psr7\Factory\ResponseFactory::class),
 ];

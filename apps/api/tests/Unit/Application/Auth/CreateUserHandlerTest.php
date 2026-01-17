@@ -11,6 +11,7 @@ use App\Domain\Auth\Entity\User;
 use App\Domain\Auth\Repository\UserRepositoryInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use App\Domain\Auth\Exception\UserAlreadyExistsException;
 
 class CreateUserHandlerTest extends TestCase
 {
@@ -54,8 +55,8 @@ class CreateUserHandlerTest extends TestCase
 
         $this->repository->method("findByEmail")->willReturn($this->createMock(User::class));
 
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage("User already exists");
+        $this->expectException(UserAlreadyExistsException::class);
+        $this->expectExceptionMessage("User with email 'existing@example.com' already exists");
 
         $this->handler->handle($command);
     }

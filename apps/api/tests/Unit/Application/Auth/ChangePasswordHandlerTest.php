@@ -12,6 +12,8 @@ use App\Domain\Auth\Repository\UserRepositoryInterface;
 use App\Domain\Auth\ValueObject\UserId;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use App\Domain\Auth\Exception\InvalidCredentialsException;
+use App\Domain\Auth\Exception\UserNotFoundException;
 
 class ChangePasswordHandlerTest extends TestCase
 {
@@ -56,7 +58,7 @@ class ChangePasswordHandlerTest extends TestCase
     {
         $this->repository->method("findById")->willReturn(null);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(UserNotFoundException::class);
         $this->expectExceptionMessage("User not found");
 
         $this->handler->handle(new ChangePasswordCommand(UserId::generate(), "old", "new"));
@@ -70,8 +72,8 @@ class ChangePasswordHandlerTest extends TestCase
         $this->repository->method("findById")->willReturn($user);
         $this->hasher->method("verify")->willReturn(false);
 
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage("Invalid old password");
+        $this->expectException(InvalidCredentialsException::class);
+        $this->expectExceptionMessage("Invalid credentials provided");
 
         $this->handler->handle(new ChangePasswordCommand(UserId::generate(), "wrong", "new"));
     }
