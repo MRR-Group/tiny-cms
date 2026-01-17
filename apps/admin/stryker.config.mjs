@@ -11,13 +11,14 @@ const config = {
     'src/lib/**/*.ts',
     'src/domain/**/*.ts',
     '!src/**/*.test.ts',
-    '!src/**/*.test.tsx',
+    '!src/vite-env.d.ts',
     '!src/**/*.stories.tsx',
+    '!src/**/index.ts',
   ],
   thresholds: {
-    high: 80,
-    low: 60,
-    break: 60,
+    high: 100,
+    low: 100,
+    break: 100,
   },
   htmlReporter: {
     fileName: 'reports/mutation/mutation-report.html',

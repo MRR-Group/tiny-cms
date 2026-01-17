@@ -1,0 +1,63 @@
+deptrac:
+  paths:
+    - ./src
+  layers:
+    - name: Domain
+      collectors:
+        - type: directory
+          value: src/Domain
+    - name: ApplicationLayer
+      collectors:
+        - type: directory
+          value: src/Application/
+    - name: Infrastructure
+      collectors:
+        - type: directory
+          value: src/Infrastructure
+    - name: Presentation
+      collectors:
+        - type: directory
+          value: src/Delivery
+        - type: directory
+          value: src/Action
+    - name: Shared
+      collectors:
+        - type: directory
+          value: src/Service
+    - name: Kernel
+      collectors:
+        - type: className
+          regex: ^App\\Application$
+    - name: Vendor
+      collectors:
+        - type: className
+          regex: ^(?!App\\).*
+
+  ruleset:
+    Domain:
+      - Shared
+      - Vendor
+    ApplicationLayer:
+      - Domain
+      - Shared
+      - Vendor
+    Infrastructure:
+      - ApplicationLayer
+      - Domain
+      - Shared
+      - Vendor
+    Presentation:
+      - ApplicationLayer
+      - Domain
+      - Shared
+      - Vendor
+    Shared: 
+      - Vendor
+    Kernel:
+      - Presentation
+      - Infrastructure
+      - ApplicationLayer
+      - Domain
+      - Shared
+      - Vendor
+    Vendor: ~

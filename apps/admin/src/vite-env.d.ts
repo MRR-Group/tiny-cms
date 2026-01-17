@@ -2,28 +2,28 @@
 /// <reference types="vite-plugin-svgr/client" />
 
 declare module '*.svg' {
-    const content: string;
-    export default content;
+  const content: string;
+  export default content;
 }
 
 declare module '*.svg?react' {
-    import * as React from 'react';
-    const ReactComponent: React.FunctionComponent<React.SVGProps<SVGSVGElement> & { title?: string }>;
-    export default ReactComponent;
+  import * as React from 'react';
+  const ReactComponent: React.FunctionComponent<React.SVGProps<SVGSVGElement> & { title?: string }>;
+  export default ReactComponent;
 }
 
 declare module '@/assets/*.svg' {
-    const content: string;
-    export default content;
+  const content: string;
+  export default content;
 }
 
 declare module '@/assets/*.svg?react' {
-    import * as React from 'react';
-    const ReactComponent: React.FunctionComponent<React.SVGProps<SVGSVGElement> & { title?: string }>;
-    export default ReactComponent;
+  import * as React from 'react';
+  const ReactComponent: React.FunctionComponent<React.SVGProps<SVGSVGElement> & { title?: string }>;
+  export default ReactComponent;
 }
 
 declare module '@/assets/*' {
-    const content: string;
-    export default content;
+  const content: string;
+  export default content;
 }

@@ -1,13 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;600;700&family=Mitr:wght@400;500&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --color-bg: #0f172a;
-  --color-surface: #1e293b;
-  --color-border: #334155;
-  --color-text: #f8fafc;
-  --color-text-muted: #94a3b8;
+  --color-bg: #ffffff;
+  --color-surface: #fcfcfc;
+  --color-border: #e2e8f0;
+  --color-text: #333333;
+  --color-text-muted: #64748b;
+  --color-primary: #df0036;
+  --color-primary-light: #ffebf0;
 }
 
 * {

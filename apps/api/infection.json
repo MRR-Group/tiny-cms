@@ -8,8 +8,8 @@
     "mutators": {
         "@default": true
     },
-    "minMsi": 60,
-    "minCoveredMsi": 95,
+    "minMsi": 100,
+    "minCoveredMsi": 100,
     "logs": {
         "html": "infection.html",
         "text": "infection.log"

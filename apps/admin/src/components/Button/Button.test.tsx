@@ -15,7 +15,7 @@ describe('Button', () => {
 
     const button = screen.getByRole('button');
 
-    expect(button.className).toContain('from-primary-500');
+    expect(button.className).toContain('bg-primary');
   });
 
   it('applies secondary variant classes', () => {
@@ -23,7 +23,7 @@ describe('Button', () => {
 
     const button = screen.getByRole('button');
 
-    expect(button.className).toContain('bg-slate-700');
+    expect(button.className).toContain('bg-white');
   });
 
   it('applies danger variant classes', () => {
@@ -31,7 +31,7 @@ describe('Button', () => {
 
     const button = screen.getByRole('button');
 
-    expect(button.className).toContain('from-red-500');
+    expect(button.className).toContain('bg-red-500');
   });
 
   it('handles click events', async () => {
@@ -58,6 +58,6 @@ describe('Button', () => {
 
     rerender(<Button size="lg">Large</Button>);
 
-    expect(screen.getByRole('button').className).toContain('px-6');
+    expect(screen.getByRole('button').className).toContain('px-8');
   });
 });
