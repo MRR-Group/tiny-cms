@@ -7,19 +7,19 @@ namespace App\Infrastructure\Security;
 use App\Application\Auth\Contract\TokenIssuerInterface;
 use App\Application\Auth\Contract\TokenValidatorInterface;
 use App\Domain\Auth\Entity\User;
+use App\Domain\Shared\Clock\ClockInterface;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
 class JwtTokenService implements TokenIssuerInterface, TokenValidatorInterface
 {
     private string $key;
-    private \App\Domain\Shared\Clock\ClockInterface $clock;
 
-    public function __construct(\App\Domain\Shared\Clock\ClockInterface $clock)
-    {
+    public function __construct(
+        private ClockInterface $clock,
+    ) {
         // In real app, inject via DI from config
         $this->key = $_ENV["JWT_SECRET"] ?? "default_secret_change_me";
-        $this->clock = $clock;
     }
 
     public function issue(User $user): string
@@ -41,7 +41,7 @@ class JwtTokenService implements TokenIssuerInterface, TokenValidatorInterface
         try {
             $decoded = JWT::decode($token, new Key($this->key, "HS256"));
 
-            return (array) $decoded;
+            return (array)$decoded;
         } catch (\Throwable $e) {
             return null;
         }

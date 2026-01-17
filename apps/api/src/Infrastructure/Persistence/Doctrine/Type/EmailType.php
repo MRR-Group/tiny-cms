@@ -29,7 +29,7 @@ class EmailType extends StringType
             return null;
         }
 
-        return (string) $value;
+        return (string)$value;
     }
 
     public function getName(): string

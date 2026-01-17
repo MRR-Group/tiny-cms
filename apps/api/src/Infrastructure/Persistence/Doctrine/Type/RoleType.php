@@ -33,7 +33,7 @@ class RoleType extends StringType
             return $value->toString();
         }
 
-        return (string) $value;
+        return (string)$value;
     }
 
     public function getName(): string

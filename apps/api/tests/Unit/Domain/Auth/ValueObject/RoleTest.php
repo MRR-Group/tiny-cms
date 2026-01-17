@@ -25,6 +25,6 @@ class RoleTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
         // Using reflection to bypass constructor visibility if needed, or just new Role if public
-        new Role('invalid_role');
+        new Role("invalid_role");
     }
 }

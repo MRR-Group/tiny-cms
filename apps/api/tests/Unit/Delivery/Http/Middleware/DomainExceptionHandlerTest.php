@@ -12,9 +12,10 @@ use App\Domain\Auth\Exception\UserAlreadyExistsException;
 use App\Domain\Auth\Exception\UserNotFoundException;
 use App\Domain\Auth\Exception\WeakPasswordException;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ServerRequestInterface;
+use Slim\Exception\HttpForbiddenException;
 use Slim\Psr7\Factory\ResponseFactory;
 use Slim\Psr7\Factory\ServerRequestFactory;
-use Psr\Http\Message\ServerRequestInterface;
 
 class DomainExceptionHandlerTest extends TestCase
 {
@@ -34,7 +35,7 @@ class DomainExceptionHandlerTest extends TestCase
         $response = ($this->handler)($request, $exception, true, true, true);
 
         $this->assertEquals(401, $response->getStatusCode());
-        $this->assertStringContainsString("User not found", (string) $response->getBody());
+        $this->assertStringContainsString("User not found", (string)$response->getBody());
     }
 
     public function testHandlesInvalidCredentialsException(): void
@@ -66,7 +67,7 @@ class DomainExceptionHandlerTest extends TestCase
         $response = ($this->handler)($request, $exception, true, true, true);
 
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertStringContainsString("Password does not meet security requirements", (string) $response->getBody());
+        $this->assertStringContainsString("Password does not meet security requirements", (string)$response->getBody());
     }
 
     public function testHandlesTokenExceptions(): void
@@ -76,12 +77,12 @@ class DomainExceptionHandlerTest extends TestCase
         $exception1 = new PasswordResetTokenExpiredException();
         $response1 = ($this->handler)($request, $exception1, true, true, true);
         $this->assertEquals(400, $response1->getStatusCode());
-        $this->assertStringContainsString("Password reset token has expired", (string) $response1->getBody());
+        $this->assertStringContainsString("Password reset token has expired", (string)$response1->getBody());
 
         $exception2 = new PasswordResetTokenInvalidException();
         $response2 = ($this->handler)($request, $exception2, true, true, true);
         $this->assertEquals(400, $response2->getStatusCode());
-        $this->assertStringContainsString("Password reset token is invalid", (string) $response2->getBody());
+        $this->assertStringContainsString("Password reset token is invalid", (string)$response2->getBody());
     }
 
     public function testReturns500ForUnknownException(): void
@@ -92,13 +93,13 @@ class DomainExceptionHandlerTest extends TestCase
         $response = ($this->handler)($request, $exception, true, true, true);
 
         $this->assertEquals(500, $response->getStatusCode());
-        $this->assertStringContainsString("Unknown error", (string) $response->getBody());
+        $this->assertStringContainsString("Unknown error", (string)$response->getBody());
     }
 
     public function testHandlingHttpExceptionReturnsCorrectCode(): void
     {
         $request = $this->createMock(ServerRequestInterface::class);
-        $exception = new \Slim\Exception\HttpForbiddenException($request, "Forbidden"); // Code 403
+        $exception = new HttpForbiddenException($request, "Forbidden"); // Code 403
 
         $responseFactory = new ResponseFactory();
         $handler = new DomainExceptionHandler($responseFactory);

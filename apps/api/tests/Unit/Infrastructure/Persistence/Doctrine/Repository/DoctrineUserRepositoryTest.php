@@ -10,7 +10,6 @@ use App\Domain\Auth\ValueObject\UserId;
 use App\Infrastructure\Persistence\Doctrine\Repository\DoctrineUserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use PHPUnit\Framework\TestCase;
 
 class DoctrineUserRepositoryTest extends TestCase
@@ -21,11 +20,11 @@ class DoctrineUserRepositoryTest extends TestCase
         $user = $this->createMock(User::class);
 
         $entityManager->expects($this->once())
-            ->method('persist')
+            ->method("persist")
             ->with($user);
 
         $entityManager->expects($this->once())
-            ->method('flush');
+            ->method("flush");
 
         $repository = new DoctrineUserRepository($entityManager);
         $repository->save($user);
@@ -36,17 +35,17 @@ class DoctrineUserRepositoryTest extends TestCase
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $objectRepository = $this->createMock(EntityRepository::class);
         $user = $this->createMock(User::class);
-        $email = new Email('test@example.com');
+        $email = new Email("test@example.com");
 
         $entityManager->expects($this->once())
-            ->method('getRepository')
+            ->method("getRepository")
             ->with(User::class)
             ->willReturn($objectRepository);
 
         $objectRepository->expects($this->once())
-            ->method('findOneBy')
+            ->method("findOneBy")
             // This strict expectation kills "ArrayItemRemoval" mutant which changes ["email" => $email] to []
-            ->with(['email' => $email])
+            ->with(["email" => $email])
             ->willReturn($user);
 
         $repository = new DoctrineUserRepository($entityManager);
@@ -63,7 +62,7 @@ class DoctrineUserRepositoryTest extends TestCase
         $id = UserId::generate();
 
         $entityManager->expects($this->once())
-            ->method('find')
+            ->method("find")
             ->with(User::class, $this->callback(fn($arg) => $arg instanceof UserId && $arg->toString() === $id->toString()))
             ->willReturn($user);
 

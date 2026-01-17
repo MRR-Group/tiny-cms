@@ -29,7 +29,7 @@ class UserIdType extends GuidType
             return null;
         }
 
-        return (string) $value;
+        return (string)$value;
     }
 
     public function getName(): string

@@ -15,9 +15,9 @@ class UserTest extends TestCase
     public function testUserCreationAndAccessors(): void
     {
         $id = UserId::generate();
-        $email = new Email('test@example.com');
+        $email = new Email("test@example.com");
         $role = Role::admin();
-        $hash = 'hashed_password';
+        $hash = "hashed_password";
 
         $user = new User($id, $email, $role, $hash);
 
@@ -30,20 +30,20 @@ class UserTest extends TestCase
 
     public function testChangePasswordFlow(): void
     {
-        $user = new User(UserId::generate(), new Email('test@example.com'), Role::admin(), 'hash');
+        $user = new User(UserId::generate(), new Email("test@example.com"), Role::admin(), "hash");
 
         $user->requirePasswordChange();
         $this->assertTrue($user->mustChangePassword());
 
-        $user->changePassword('new_hash');
-        $this->assertEquals('new_hash', $user->getPasswordHash());
+        $user->changePassword("new_hash");
+        $this->assertEquals("new_hash", $user->getPasswordHash());
         $this->assertFalse($user->mustChangePassword());
     }
 
     public function testUpdateEmail(): void
     {
-        $user = new User(UserId::generate(), new Email('old@example.com'), Role::admin(), 'hash');
-        $newEmail = new Email('new@example.com');
+        $user = new User(UserId::generate(), new Email("old@example.com"), Role::admin(), "hash");
+        $newEmail = new Email("new@example.com");
 
         $user->updateEmail($newEmail);
 

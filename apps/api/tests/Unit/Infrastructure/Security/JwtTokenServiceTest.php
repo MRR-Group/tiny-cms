@@ -7,27 +7,29 @@ namespace Tests\Unit\Infrastructure\Security;
 use App\Domain\Auth\Entity\User;
 use App\Domain\Auth\ValueObject\Role;
 use App\Domain\Auth\ValueObject\UserId;
+use App\Domain\Shared\Clock\ClockInterface;
 use App\Infrastructure\Security\JwtTokenService;
+use Firebase\JWT\JWT;
 use PHPUnit\Framework\TestCase;
 
 class JwtTokenServiceTest extends TestCase
 {
     private JwtTokenService $service;
 
-    protected function tearDown(): void
-    {
-        \Firebase\JWT\JWT::$timestamp = null;
-    }
-
     protected function setUp(): void
     {
         $_ENV["JWT_SECRET"] = "12345678901234567890123456789012"; // 32 chars
-        $clock = $this->createMock(\App\Domain\Shared\Clock\ClockInterface::class);
-        $clock->method('now')->willReturn(new \DateTimeImmutable('2024-01-01 12:00:00'));
+        $clock = $this->createMock(ClockInterface::class);
+        $clock->method("now")->willReturn(new \DateTimeImmutable("2024-01-01 12:00:00"));
         $this->service = new JwtTokenService($clock);
 
         // Mock JWT time
-        \Firebase\JWT\JWT::$timestamp = (new \DateTimeImmutable('2024-01-01 12:00:00'))->getTimestamp();
+        JWT::$timestamp = (new \DateTimeImmutable("2024-01-01 12:00:00"))->getTimestamp();
+    }
+
+    protected function tearDown(): void
+    {
+        JWT::$timestamp = null;
     }
 
     public function testIssueAndValidateToken(): void
@@ -48,7 +50,7 @@ class JwtTokenServiceTest extends TestCase
         $this->assertEquals("admin", $claims["role"]);
 
         // Kill time mutants
-        $now = (new \DateTimeImmutable('2024-01-01 12:00:00'))->getTimestamp();
+        $now = (new \DateTimeImmutable("2024-01-01 12:00:00"))->getTimestamp();
         $this->assertEquals($now, $claims["iat"]);
         $this->assertEquals($now + 3600, $claims["exp"]);
     }
