@@ -26,5 +26,10 @@ return [
         $transport = Symfony\Component\Mailer\Transport::fromDsn($dsn);
         return new Symfony\Component\Mailer\Mailer($transport);
     },
-    App\Domain\Auth\Service\EmailSenderInterface::class => autowire(App\Infrastructure\Communication\SymfonyMailerEmailSender::class),
+    App\Domain\Auth\Service\EmailSenderInterface::class => function (Psr\Container\ContainerInterface $c) {
+        $mailer = $c->get(Symfony\Component\Mailer\MailerInterface::class);
+        $frontendUrl = $_ENV['FRONTEND_URL'] ?? 'http://localhost:5173';
+        $senderEmail = $_ENV['MAIL_FROM_ADDRESS'] ?? 'no-reply@tinycms.com';
+        return new App\Infrastructure\Communication\SymfonyMailerEmailSender($mailer, $frontendUrl, $senderEmail);
+    },
 ];
