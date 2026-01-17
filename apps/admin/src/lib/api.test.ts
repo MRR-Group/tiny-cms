@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import api from '@/lib/api';
+import api, { _getBaseUrl } from '@/lib/api';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
@@ -17,6 +17,17 @@ describe('api client', () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+  });
+
+  describe('_getBaseUrl', () => {
+    it('returns VITE_API_URL when set', () => {
+      expect(_getBaseUrl({ VITE_API_URL: 'http://api.test' })).toBe('http://api.test');
+    });
+
+    it('returns default URL when VITE_API_URL is not set', () => {
+      expect(_getBaseUrl({})).toBe('http://localhost:8080');
+      expect(_getBaseUrl({ VITE_API_URL: '' })).toBe('http://localhost:8080');
+    });
   });
 
   it('performs a GET request with correct url', async () => {
