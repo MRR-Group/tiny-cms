@@ -31,11 +31,14 @@ final class Application
 
         self::registerRoutes($app);
 
-        $app->addErrorMiddleware(
+        $errorMiddleware = $app->addErrorMiddleware(
             displayErrorDetails: true,
             logErrors: true,
             logErrorDetails: true,
         );
+
+        $domainExceptionHandler = $container->get(\App\Delivery\Http\Middleware\DomainExceptionHandler::class);
+        $errorMiddleware->setDefaultErrorHandler($domainExceptionHandler);
 
         return $app;
     }

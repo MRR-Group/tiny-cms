@@ -6,6 +6,8 @@ namespace App\Application\Auth\Handler;
 
 use App\Application\Auth\Command\ChangePasswordCommand;
 use App\Application\Auth\Contract\PasswordHasherInterface;
+use App\Domain\Auth\Exception\InvalidCredentialsException;
+use App\Domain\Auth\Exception\UserNotFoundException;
 use App\Domain\Auth\Repository\UserRepositoryInterface;
 
 class ChangePasswordHandler
@@ -20,11 +22,11 @@ class ChangePasswordHandler
         $user = $this->userRepository->findById($command->userId);
 
         if (!$user) {
-            throw new \Exception("User not found");
+            throw new UserNotFoundException();
         }
 
         if (!$this->passwordHasher->verify($command->oldPassword, $user->getPasswordHash())) {
-            throw new \Exception("Invalid old password");
+            throw new InvalidCredentialsException();
         }
 
         $newHash = $this->passwordHasher->hash($command->newPassword);

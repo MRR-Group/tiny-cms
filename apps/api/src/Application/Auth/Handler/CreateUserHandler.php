@@ -7,6 +7,7 @@ namespace App\Application\Auth\Handler;
 use App\Application\Auth\Command\CreateUserCommand;
 use App\Application\Auth\Contract\PasswordHasherInterface;
 use App\Domain\Auth\Entity\User;
+use App\Domain\Auth\Exception\UserAlreadyExistsException;
 use App\Domain\Auth\Repository\UserRepositoryInterface;
 use App\Domain\Auth\ValueObject\Email;
 use App\Domain\Auth\ValueObject\Role;
@@ -24,7 +25,7 @@ class CreateUserHandler
         $email = new Email($command->email);
 
         if ($this->userRepository->findByEmail($email)) {
-            throw new \Exception("User already exists");
+            throw new UserAlreadyExistsException($command->email);
         }
 
         $passwordHash = $this->passwordHasher->hash($command->password);

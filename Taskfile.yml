@@ -54,6 +54,12 @@ tasks:
     cmds:
       - composer mutation
 
+  api:deptrac:
+    desc: Run Deptrac architecture analysis
+    dir: apps/api
+    cmds:
+      - vendor/bin/deptrac analyse --fail-on-uncovered
+
   # === Frontend ===
   admin:install:
     desc: Install frontend dependencies
@@ -106,6 +112,7 @@ tasks:
       - composer lint
       - composer cs
       - composer test
+      - vendor/bin/deptrac analyse --fail-on-uncovered
 
   ci:admin:
     desc: Run all frontend CI checks
