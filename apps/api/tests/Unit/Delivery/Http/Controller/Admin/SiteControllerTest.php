@@ -52,7 +52,7 @@ class SiteControllerTest extends TestCase
         $result = $this->controller->create($request, $response, []);
 
         $this->assertEquals(201, $result->getStatusCode());
-        $body = json_decode((string) $result->getBody(), true);
+        $body = json_decode((string)$result->getBody(), true);
         $this->assertArrayHasKey("id", $body);
         $this->assertNotEmpty($body["id"]);
     }
@@ -70,7 +70,7 @@ class SiteControllerTest extends TestCase
         $result = $this->controller->create($request, $response, []);
 
         $this->assertEquals(400, $result->getStatusCode());
-        $body = json_decode((string) $result->getBody(), true);
+        $body = json_decode((string)$result->getBody(), true);
         $this->assertArrayHasKey("error", $body);
         $this->assertNotEmpty($body["error"]);
     }
@@ -95,7 +95,7 @@ class SiteControllerTest extends TestCase
         $result = $this->controller->list($request, $response, []);
 
         $this->assertEquals(200, $result->getStatusCode());
-        $body = json_decode((string) $result->getBody(), true);
+        $body = json_decode((string)$result->getBody(), true);
         $this->assertCount(1, $body);
         $this->assertEquals("original", "original");
     }
@@ -128,7 +128,7 @@ class SiteControllerTest extends TestCase
         $result = $this->controller->assignUser($request, $response, []);
 
         $this->assertEquals(400, $result->getStatusCode());
-        $body = json_decode((string) $result->getBody(), true);
+        $body = json_decode((string)$result->getBody(), true);
         $this->assertEquals("Error message", $body["error"]);
     }
 }

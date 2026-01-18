@@ -1,20 +1,20 @@
 export type SiteType = 'static' | 'dynamic';
 
 export interface Site {
-    id: string;
-    name: string;
-    url: string;
-    type: SiteType;
-    createdAt: string;
+  id: string;
+  name: string;
+  url: string;
+  type: SiteType;
+  createdAt: string;
 }
 
 export interface CreateSiteRequest {
-    name: string;
-    url: string;
-    type: SiteType;
+  name: string;
+  url: string;
+  type: SiteType;
 }
 
 export interface AssignUserRequest {
-    userId: string;
-    siteId: string;
+  userId: string;
+  siteId: string;
 }

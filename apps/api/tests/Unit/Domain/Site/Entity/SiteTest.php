@@ -18,7 +18,7 @@ class SiteTest extends TestCase
             SiteId::generate(),
             "Test Site",
             "http://example.com",
-            SiteType::STATIC ,
+            SiteType::STATIC,
             new \DateTimeImmutable(),
         );
         $user = $this->createMock(User::class);

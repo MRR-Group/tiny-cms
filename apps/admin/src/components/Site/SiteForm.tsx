@@ -19,7 +19,9 @@ export const SiteForm: React.FC<SiteFormProps> = ({ onSubmit, isLoading }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
+        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+          Name
+        </label>
         <input
           id="name"
           type="text"
@@ -30,7 +32,9 @@ export const SiteForm: React.FC<SiteFormProps> = ({ onSubmit, isLoading }) => {
         />
       </div>
       <div>
-        <label htmlFor="url" className="block text-sm font-medium text-gray-700">URL</label>
+        <label htmlFor="url" className="block text-sm font-medium text-gray-700">
+          URL
+        </label>
         <input
           id="url"
           type="url"
@@ -41,7 +45,9 @@ export const SiteForm: React.FC<SiteFormProps> = ({ onSubmit, isLoading }) => {
         />
       </div>
       <div>
-        <label htmlFor="type" className="block text-sm font-medium text-gray-700">Type</label>
+        <label htmlFor="type" className="block text-sm font-medium text-gray-700">
+          Type
+        </label>
         <select
           id="type"
           value={type}

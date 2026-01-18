@@ -38,14 +38,14 @@ export const SitesPage: React.FC = () => {
   };
 
   const openAssignModal = (site: Site) => {
-      setSelectedSite(site);
-      setIsModalOpen(true);
+    setSelectedSite(site);
+    setIsModalOpen(true);
   };
 
   const handleAssignUser = async (userId: string) => {
-      if (!selectedSite) return;
-      await siteService.assignUser({ userId, siteId: selectedSite.id });
-      // Optionally show success message
+    if (!selectedSite) return;
+    await siteService.assignUser({ userId, siteId: selectedSite.id });
+    // Optionally show success message
   };
 
   return (
@@ -56,8 +56,8 @@ export const SitesPage: React.FC = () => {
         <div>
           <h2 className="text-xl font-semibold mb-4">Create New Site</h2>
           <div className="bg-white p-6 rounded-lg shadow">
-             <SiteForm onSubmit={handleCreateSite} isLoading={isLoading} />
-             {error && <p className="text-red-500 mt-2">{error}</p>}
+            <SiteForm onSubmit={handleCreateSite} isLoading={isLoading} />
+            {error && <p className="text-red-500 mt-2">{error}</p>}
           </div>
         </div>
 
@@ -66,10 +66,15 @@ export const SitesPage: React.FC = () => {
           <div className="bg-white rounded-lg shadow overflow-hidden">
             <ul className="divide-y divide-gray-200">
               {sites.map((site) => (
-                <li key={site.id} className="p-4 hover:bg-gray-50 flex justify-between items-center">
+                <li
+                  key={site.id}
+                  className="p-4 hover:bg-gray-50 flex justify-between items-center"
+                >
                   <div>
                     <h3 className="font-medium text-gray-900">{site.name}</h3>
-                    <p className="text-sm text-gray-500">{site.url} ({site.type})</p>
+                    <p className="text-sm text-gray-500">
+                      {site.url} ({site.type})
+                    </p>
                   </div>
                   <button
                     onClick={() => openAssignModal(site)}
@@ -86,13 +91,13 @@ export const SitesPage: React.FC = () => {
           </div>
         </div>
       </div>
-      
+
       {selectedSite && (
         <AssignUserModal
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-            onAssign={handleAssignUser}
-            siteName={selectedSite.name}
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onAssign={handleAssignUser}
+          siteName={selectedSite.name}
         />
       )}
     </div>

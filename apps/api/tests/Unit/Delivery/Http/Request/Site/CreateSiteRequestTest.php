@@ -60,8 +60,6 @@ class CreateSiteRequestTest extends TestCase
                 "type" => "invalid_type",
             ]);
 
-
-
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage("Invalid type");
 
