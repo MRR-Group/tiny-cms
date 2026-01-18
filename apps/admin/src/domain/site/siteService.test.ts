@@ -1,5 +1,6 @@
 
 import { SiteService } from './siteService';
+import { Site } from './types';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 describe('SiteService', () => {
@@ -79,7 +80,7 @@ describe('SiteService', () => {
 
     it('sends auth token if present', async () => {
         localStorage.setItem('authToken', 'token123');
-        const sites: any[] = [];
+        const sites: Site[] = [];
         const response = {
             ok: true,
             status: 200,
