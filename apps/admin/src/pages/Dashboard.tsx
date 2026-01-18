@@ -1,82 +1,57 @@
-import { Button } from '@/components/Button/Button';
-import DocumentIcon from '@/assets/icons/document.svg?react';
-import UsersIcon from '@/assets/icons/users.svg?react';
-import ImageIcon from '@/assets/icons/image.svg?react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Site } from '@/domain/site/types';
+import { siteService } from '@/domain/site';
 
-export function Dashboard() {
-  const navigate = useNavigate();
+export const Dashboard: React.FC = () => {
+    const [sites, setSites] = useState<Site[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchSites = async () => {
+            try {
+                const data = await siteService.getAssignedSites();
+                setSites(data);
+            } catch (error) {
+                console.error('Failed to fetch assigned sites', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchSites();
+    }, []);
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="mb-10">
-        <h1 className="text-4xl font-serif font-semibold text-slate-900 mb-2">Dashboard</h1>
-        <p className="text-slate-500 font-sans text-sm tracking-tight opacity-80">
-          System overview and statistics.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-        <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow duration-300">
-          <div className="flex items-center gap-5">
-            <div className="w-14 h-14 bg-primary/5 rounded-xl flex items-center justify-center">
-              <DocumentIcon className="w-7 h-7 text-primary/70" />
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
+      
+        {isLoading ? (
+            <p>Loading sites...</p>
+        ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {sites.map((site) => (
+                    <div key={site.id} className="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow duration-300">
+                        <div className="px-4 py-5 sm:p-6">
+                            <h3 className="text-lg leading-6 font-medium text-gray-900">{site.name}</h3>
+                            <div className="mt-2 max-w-xl text-sm text-gray-500">
+                                <p>URL: <a href={site.url} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:text-indigo-900">{site.url}</a></p>
+                                <p className="mt-1">Type: {site.type}</p>
+                            </div>
+                            <div className="mt-5">
+                                <button type="button" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    Manage Site
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+                {sites.length === 0 && (
+                    <div className="col-span-full text-center text-gray-500">
+                        No sites assigned. Contact an administrator.
+                    </div>
+                )}
             </div>
-            <div>
-              <p className="text-slate-400 text-[10px] font-sans uppercase tracking-[0.2em] font-medium mb-0.5">
-                Total Pages
-              </p>
-              <p className="text-2xl font-sans font-light text-slate-800 tracking-tighter">0</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow duration-300">
-          <div className="flex items-center gap-5">
-            <div className="w-14 h-14 bg-emerald-50 rounded-xl flex items-center justify-center">
-              <UsersIcon className="w-7 h-7 text-emerald-500/70" />
-            </div>
-            <div>
-              <p className="text-slate-400 text-[10px] font-sans uppercase tracking-[0.2em] font-medium mb-0.5">
-                Active Users
-              </p>
-              <p className="text-2xl font-sans font-light text-slate-800 tracking-tighter">0</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow duration-300">
-          <div className="flex items-center gap-5">
-            <div className="w-14 h-14 bg-amber-50 rounded-xl flex items-center justify-center">
-              <ImageIcon className="w-7 h-7 text-amber-500/70" />
-            </div>
-            <div>
-              <p className="text-slate-400 text-[10px] font-sans uppercase tracking-[0.2em] font-medium mb-0.5">
-                Media Assets
-              </p>
-              <p className="text-2xl font-sans font-light text-slate-800 tracking-tighter">0</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex gap-4">
-        <Button
-          variant="primary"
-          size="lg"
-          className="rounded-full px-8 shadow-lg shadow-primary/20 hover:scale-105 transition-transform"
-        >
-          Create Page
-        </Button>
-        <Button
-          variant="secondary"
-          size="lg"
-          className="rounded-full px-8 border-slate-200 bg-white text-slate-900 hover:bg-slate-50 transition-transform hover:scale-105 shadow-sm"
-          onClick={() => navigate('/users/create')}
-        >
-          Create User
-        </Button>
-      </div>
+        )}
     </div>
   );
-}
+};
