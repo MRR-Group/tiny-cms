@@ -10,7 +10,11 @@ use App\Domain\Site\ValueObject\SiteId;
 interface SiteRepositoryInterface
 {
     public function save(Site $site): void;
+
     public function findById(SiteId $id): ?Site;
-    /** @return Site[] */
+
+    /**
+     * @return array<Site>
+     */
     public function findAll(): array;
 }

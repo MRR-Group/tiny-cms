@@ -14,16 +14,16 @@ class SiteResource
     public static function toArray(Site $site): array
     {
         return [
-            'id' => (string) $site->getId(),
-            'name' => $site->getName(),
-            'url' => $site->getUrl(),
-            'type' => $site->getType()->value,
-            'createdAt' => $site->getCreatedAt()->format(\DateTimeInterface::ATOM),
+            "id" => (string)$site->getId(),
+            "name" => $site->getName(),
+            "url" => $site->getUrl(),
+            "type" => $site->getType()->value,
+            "createdAt" => $site->getCreatedAt()->format(\DateTimeInterface::ATOM),
         ];
     }
 
     /**
-     * @param Site[] $sites
+     * @param array<Site> $sites
      * @return array<int, array<string, mixed>>
      */
     public static function collectionToArray(array $sites): array

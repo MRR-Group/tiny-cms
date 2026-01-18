@@ -10,9 +10,9 @@ use App\Domain\Auth\Entity\User;
 use App\Domain\Auth\Repository\UserRepositoryInterface;
 use App\Domain\Auth\ValueObject\UserId;
 use App\Domain\Site\Entity\Site;
+use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Doctrine\Common\Collections\ArrayCollection;
 
 class GetUserSitesHandlerTest extends TestCase
 {
@@ -33,10 +33,10 @@ class GetUserSitesHandlerTest extends TestCase
         $user = $this->createMock(User::class);
         $site = $this->createMock(Site::class);
 
-        $this->userRepository->method('findById')->willReturn($user);
+        $this->userRepository->method("findById")->willReturn($user);
 
         // Mock getSites returning collection
-        $user->method('getSites')->willReturn(new ArrayCollection([$site]));
+        $user->method("getSites")->willReturn(new ArrayCollection([$site]));
 
         $result = $this->handler->handle($query);
 
@@ -49,7 +49,7 @@ class GetUserSitesHandlerTest extends TestCase
         $userId = UserId::generate();
         $query = new GetUserSitesQuery($userId->toString());
 
-        $this->userRepository->method('findById')->willReturn(null);
+        $this->userRepository->method("findById")->willReturn(null);
 
         $result = $this->handler->handle($query);
 

@@ -36,35 +36,35 @@ class SiteControllerTest extends TestCase
 
     public function testCreateSiteReturns201(): void
     {
-        $request = (new ServerRequestFactory())->createServerRequest('POST', '/admin/sites')
+        $request = (new ServerRequestFactory())->createServerRequest("POST", "/admin/sites")
             ->withParsedBody([
-                'name' => 'My Site',
-                'url' => 'http://example.com',
-                'type' => 'dynamic',
+                "name" => "My Site",
+                "url" => "http://example.com",
+                "type" => "dynamic",
             ]);
         $response = (new ResponseFactory())->createResponse();
 
         $this->createHandler->expects($this->once())
-            ->method('handle')
-            ->with($this->callback(fn(CreateSiteCommand $c) => $c->name === 'My Site'))
+            ->method("handle")
+            ->with($this->callback(fn(CreateSiteCommand $c) => $c->name === "My Site"))
             ->willReturn(SiteId::generate());
 
         $result = $this->controller->create($request, $response, []);
 
         $this->assertEquals(201, $result->getStatusCode());
-        $body = json_decode((string) $result->getBody(), true);
-        $this->assertArrayHasKey('id', $body);
-        $this->assertNotEmpty($body['id']);
+        $body = json_decode((string)$result->getBody(), true);
+        $this->assertArrayHasKey("id", $body);
+        $this->assertNotEmpty($body["id"]);
     }
 
     public function testCreateSiteHandlesErrors(): void
     {
-        $request = (new ServerRequestFactory())->createServerRequest('POST', '/admin/sites')
+        $request = (new ServerRequestFactory())->createServerRequest("POST", "/admin/sites")
             // Invalid type to trigger exception
             ->withParsedBody([
-                'name' => 'My Site',
-                'url' => 'http://example.com',
-                'type' => 'invalid',
+                "name" => "My Site",
+                "url" => "http://example.com",
+                "type" => "invalid",
             ]);
         $response = (new ResponseFactory())->createResponse();
 
@@ -73,44 +73,44 @@ class SiteControllerTest extends TestCase
         $result = $this->controller->create($request, $response, []);
 
         $this->assertEquals(400, $result->getStatusCode());
-        $body = json_decode((string) $result->getBody(), true);
-        $this->assertArrayHasKey('error', $body);
-        $this->assertNotEmpty($body['error']);
+        $body = json_decode((string)$result->getBody(), true);
+        $this->assertArrayHasKey("error", $body);
+        $this->assertNotEmpty($body["error"]);
     }
 
     public function testListSitesReturns200AndData(): void
     {
-        $request = (new ServerRequestFactory())->createServerRequest('GET', '/admin/sites');
+        $request = (new ServerRequestFactory())->createServerRequest("GET", "/admin/sites");
         $response = (new ResponseFactory())->createResponse();
 
         $site = $this->createMock(Site::class);
-        $site->method('getId')->willReturn(SiteId::generate());
-        $site->method('getName')->willReturn('Site 1');
-        $site->method('getUrl')->willReturn('url');
-        $site->method('getType')->willReturn(SiteType::STATIC);
-        $site->method('getCreatedAt')->willReturn(new \DateTimeImmutable());
+        $site->method("getId")->willReturn(SiteId::generate());
+        $site->method("getName")->willReturn("Site 1");
+        $site->method("getUrl")->willReturn("url");
+        $site->method("getType")->willReturn(SiteType::STATIC);
+        $site->method("getCreatedAt")->willReturn(new \DateTimeImmutable());
 
         $this->listHandler->expects($this->once())
-            ->method('handle')
+            ->method("handle")
             ->with($this->isInstanceOf(ListSitesQuery::class))
             ->willReturn([$site]);
 
         $result = $this->controller->list($request, $response, []);
 
         $this->assertEquals(200, $result->getStatusCode());
-        $body = json_decode((string) $result->getBody(), true);
+        $body = json_decode((string)$result->getBody(), true);
         $this->assertCount(1, $body);
-        $this->assertEquals('original', 'original'); // Dummy assertion or check name if exposed
+        $this->assertEquals("original", "original"); // Dummy assertion or check name if exposed
     }
 
     public function testAssignUserReturns204(): void
     {
-        $request = (new ServerRequestFactory())->createServerRequest('POST', '/admin/sites/assign')
-            ->withParsedBody(['userId' => 'uid', 'siteId' => 'sid']);
+        $request = (new ServerRequestFactory())->createServerRequest("POST", "/admin/sites/assign")
+            ->withParsedBody(["userId" => "uid", "siteId" => "sid"]);
         $response = (new ResponseFactory())->createResponse();
 
         $this->assignHandler->expects($this->once())
-            ->method('handle')
+            ->method("handle")
             ->with($this->isInstanceOf(AssignUserToSiteCommand::class));
 
         $result = $this->controller->assignUser($request, $response, []);
@@ -120,18 +120,18 @@ class SiteControllerTest extends TestCase
 
     public function testAssignUserHandlesErrors(): void
     {
-        $request = (new ServerRequestFactory())->createServerRequest('POST', '/admin/sites/assign')
-            ->withParsedBody(['userId' => 'uid', 'siteId' => 'sid']);
+        $request = (new ServerRequestFactory())->createServerRequest("POST", "/admin/sites/assign")
+            ->withParsedBody(["userId" => "uid", "siteId" => "sid"]);
         $response = (new ResponseFactory())->createResponse();
 
         $this->assignHandler->expects($this->once())
-            ->method('handle')
-            ->willThrowException(new \InvalidArgumentException('Error message'));
+            ->method("handle")
+            ->willThrowException(new \InvalidArgumentException("Error message"));
 
         $result = $this->controller->assignUser($request, $response, []);
 
         $this->assertEquals(400, $result->getStatusCode());
-        $body = json_decode((string) $result->getBody(), true);
-        $this->assertEquals('Error message', $body['error']);
+        $body = json_decode((string)$result->getBody(), true);
+        $this->assertEquals("Error message", $body["error"]);
     }
 }

@@ -20,19 +20,17 @@ class CreateSiteHandlerTest extends TestCase
         $siteRepository = $this->createMock(SiteRepositoryInterface::class);
         $clock = $this->createMock(ClockInterface::class);
         $now = new \DateTimeImmutable();
-        $clock->method('now')->willReturn($now);
+        $clock->method("now")->willReturn($now);
 
         $handler = new CreateSiteHandler($siteRepository, $clock);
-        $command = new CreateSiteCommand('My Site', 'https://example.com', 'static');
+        $command = new CreateSiteCommand("My Site", "https://example.com", "static");
 
         $siteRepository->expects($this->once())
-            ->method('save')
-            ->with($this->callback(function (Site $site) use ($now) {
-                return $site->getName() === 'My Site'
-                    && $site->getUrl() === 'https://example.com'
+            ->method("save")
+            ->with($this->callback(fn(Site $site) => $site->getName() === "My Site"
+                    && $site->getUrl() === "https://example.com"
                     && $site->getType() === SiteType::STATIC
-                    && $site->getCreatedAt() === $now;
-            }));
+                    && $site->getCreatedAt() === $now));
 
         $siteId = $handler->handle($command);
 

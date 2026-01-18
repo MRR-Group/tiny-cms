@@ -10,7 +10,7 @@ use Doctrine\DBAL\Types\StringType;
 
 class SiteTypeType extends StringType
 {
-    public const NAME = 'site_type';
+    public const NAME = "site_type";
 
     public function convertToPHPValue($value, AbstractPlatform $platform): ?SiteType
     {
@@ -33,7 +33,7 @@ class SiteTypeType extends StringType
             return $value->value;
         }
 
-        return (string) $value;
+        return (string)$value;
     }
 
     public function getName(): string

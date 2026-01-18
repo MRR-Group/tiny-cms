@@ -28,38 +28,38 @@ class SiteControllerTest extends TestCase
 
     public function testListAssignedReturns200AndData(): void
     {
-        $request = (new ServerRequestFactory())->createServerRequest('GET', '/sites')
-            ->withAttribute('userId', 'user-uuid');
+        $request = (new ServerRequestFactory())->createServerRequest("GET", "/sites")
+            ->withAttribute("userId", "user-uuid");
         $response = (new ResponseFactory())->createResponse();
 
         $site = $this->createMock(Site::class);
-        $site->method('getId')->willReturn(SiteId::generate());
-        $site->method('getName')->willReturn('My Site');
-        $site->method('getUrl')->willReturn('url');
-        $site->method('getType')->willReturn(SiteType::STATIC);
-        $site->method('getCreatedAt')->willReturn(new \DateTimeImmutable());
+        $site->method("getId")->willReturn(SiteId::generate());
+        $site->method("getName")->willReturn("My Site");
+        $site->method("getUrl")->willReturn("url");
+        $site->method("getType")->willReturn(SiteType::STATIC);
+        $site->method("getCreatedAt")->willReturn(new \DateTimeImmutable());
 
         $this->handler->expects($this->once())
-            ->method('handle')
-            ->with($this->callback(fn(GetUserSitesQuery $q) => $q->userId === 'user-uuid'))
+            ->method("handle")
+            ->with($this->callback(fn(GetUserSitesQuery $q) => $q->userId === "user-uuid"))
             ->willReturn([$site]);
 
         $result = $this->controller->listAssigned($request, $response, []);
 
         $this->assertEquals(200, $result->getStatusCode());
-        $body = json_decode((string) $result->getBody(), true);
+        $body = json_decode((string)$result->getBody(), true);
         $this->assertCount(1, $body);
     }
 
     public function testListAssignedReturns400IfUserIdMissing(): void
     {
-        $request = (new ServerRequestFactory())->createServerRequest('GET', '/sites');
+        $request = (new ServerRequestFactory())->createServerRequest("GET", "/sites");
         // No attribute
         $response = (new ResponseFactory())->createResponse();
 
         $result = $this->controller->listAssigned($request, $response, []);
 
         $this->assertEquals(401, $result->getStatusCode());
-        $this->assertStringContainsString('User ID not found', (string) $result->getBody());
+        $this->assertStringContainsString("User ID not found", (string)$result->getBody());
     }
 }

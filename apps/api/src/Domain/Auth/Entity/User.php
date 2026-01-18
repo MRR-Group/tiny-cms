@@ -88,7 +88,9 @@ class User
         return $this->resetToken === $token && $this->resetTokenExpiresAt > $now;
     }
 
-    /** @return Collection<int, Site> */
+    /**
+     * @return Collection<int, Site>
+     */
     public function getSites(): Collection
     {
         return $this->sites;

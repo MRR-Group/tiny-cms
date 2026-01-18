@@ -14,16 +14,16 @@ class SiteController
 {
     public function __construct(
         private GetUserSitesHandler $getUserSitesHandler,
-    ) {
-    }
+    ) {}
 
     public function listAssigned(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $userId = $request->getAttribute('userId'); // Assuming JwtAuthMiddleware puts userId in attribute
+        $userId = $request->getAttribute("userId"); // Assuming JwtAuthMiddleware puts userId in attribute
 
         if (!$userId) {
-            $response->getBody()->write(json_encode(['error' => 'User ID not found in request'], JSON_THROW_ON_ERROR));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(401);
+            $response->getBody()->write(json_encode(["error" => "User ID not found in request"], JSON_THROW_ON_ERROR));
+
+            return $response->withHeader("Content-Type", "application/json")->withStatus(401);
         }
 
         $query = new GetUserSitesQuery($userId);
@@ -32,6 +32,6 @@ class SiteController
 
         $response->getBody()->write(json_encode($data, JSON_THROW_ON_ERROR));
 
-        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        return $response->withHeader("Content-Type", "application/json")->withStatus(200);
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Delivery\Http\Request\Site;
 
 use App\Application\Site\Command\CreateSiteCommand;
+use App\Domain\Site\ValueObject\SiteType;
 use Psr\Http\Message\ServerRequestInterface;
 
 class CreateSiteRequest
@@ -14,21 +15,21 @@ class CreateSiteRequest
         $body = $request->getParsedBody();
 
         if (!is_array($body)) {
-            throw new \InvalidArgumentException('Invalid body');
+            throw new \InvalidArgumentException("Invalid body");
         }
 
-        if (!isset($body['name'], $body['url'], $body['type'])) {
-            throw new \InvalidArgumentException('Missing required fields: name, url, type');
+        if (!isset($body["name"], $body["url"], $body["type"])) {
+            throw new \InvalidArgumentException("Missing required fields: name, url, type");
         }
 
-        if (!\App\Domain\Site\ValueObject\SiteType::tryFrom($body['type'])) {
-            throw new \InvalidArgumentException('Invalid type');
+        if (!SiteType::tryFrom($body["type"])) {
+            throw new \InvalidArgumentException("Invalid type");
         }
 
         return new CreateSiteCommand(
-            $body['name'],
-            $body['url'],
-            $body['type']
+            $body["name"],
+            $body["url"],
+            $body["type"],
         );
     }
 }

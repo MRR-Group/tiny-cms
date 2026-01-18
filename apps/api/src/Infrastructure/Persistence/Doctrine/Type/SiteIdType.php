@@ -10,7 +10,7 @@ use Doctrine\DBAL\Types\GuidType;
 
 class SiteIdType extends GuidType
 {
-    public const NAME = 'site_id';
+    public const NAME = "site_id";
 
     public function convertToPHPValue($value, AbstractPlatform $platform): ?SiteId
     {
@@ -29,7 +29,7 @@ class SiteIdType extends GuidType
             return null;
         }
 
-        return (string) $value;
+        return (string)$value;
     }
 
     public function getName(): string

@@ -20,8 +20,7 @@ class SiteController
         private CreateSiteHandler $createHandler,
         private ListSitesHandler $listHandler,
         private AssignUserToSiteHandler $assignHandler,
-    ) {
-    }
+    ) {}
 
     public function create(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
@@ -29,14 +28,15 @@ class SiteController
             $command = CreateSiteRequest::fromPsr7($request);
             $siteId = $this->createHandler->handle($command);
 
-            $response->getBody()->write(json_encode(['id' => (string) $siteId], JSON_THROW_ON_ERROR));
+            $response->getBody()->write(json_encode(["id" => (string)$siteId], JSON_THROW_ON_ERROR));
 
             return $response
-                ->withHeader('Content-Type', 'application/json')
+                ->withHeader("Content-Type", "application/json")
                 ->withStatus(201);
         } catch (\InvalidArgumentException $e) {
-            $response->getBody()->write(json_encode(['error' => $e->getMessage()], JSON_THROW_ON_ERROR));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            $response->getBody()->write(json_encode(["error" => $e->getMessage()], JSON_THROW_ON_ERROR));
+
+            return $response->withHeader("Content-Type", "application/json")->withStatus(400);
         }
     }
 
@@ -47,7 +47,7 @@ class SiteController
 
         $response->getBody()->write(json_encode($data, JSON_THROW_ON_ERROR));
 
-        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        return $response->withHeader("Content-Type", "application/json")->withStatus(200);
     }
 
     public function assignUser(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
@@ -56,10 +56,11 @@ class SiteController
             $command = AssignUserToSiteRequest::fromPsr7($request);
             $this->assignHandler->handle($command);
 
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(204);
+            return $response->withHeader("Content-Type", "application/json")->withStatus(204);
         } catch (\InvalidArgumentException $e) {
-            $response->getBody()->write(json_encode(['error' => $e->getMessage()], JSON_THROW_ON_ERROR));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            $response->getBody()->write(json_encode(["error" => $e->getMessage()], JSON_THROW_ON_ERROR));
+
+            return $response->withHeader("Content-Type", "application/json")->withStatus(400);
         }
     }
 }

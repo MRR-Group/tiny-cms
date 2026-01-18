@@ -12,9 +12,8 @@ use Doctrine\ORM\EntityManagerInterface;
 class DoctrineSiteRepository implements SiteRepositoryInterface
 {
     public function __construct(
-        private EntityManagerInterface $entityManager
-    ) {
-    }
+        private EntityManagerInterface $entityManager,
+    ) {}
 
     public function save(Site $site): void
     {
@@ -27,7 +26,9 @@ class DoctrineSiteRepository implements SiteRepositoryInterface
         return $this->entityManager->find(Site::class, $id);
     }
 
-    /** @return Site[] */
+    /**
+     * @return array<Site>
+     */
     public function findAll(): array
     {
         return $this->entityManager->getRepository(Site::class)->findAll();

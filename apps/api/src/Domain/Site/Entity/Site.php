@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Site\Entity;
 
+use App\Domain\Auth\Entity\User;
 use App\Domain\Site\ValueObject\SiteId;
 use App\Domain\Site\ValueObject\SiteType;
-use App\Domain\Auth\Entity\User;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
@@ -50,7 +50,9 @@ class Site
         return $this->createdAt;
     }
 
-    /** @return Collection<int, User> */
+    /**
+     * @return Collection<int, User>
+     */
     public function getUsers(): Collection
     {
         return $this->users;

@@ -8,6 +8,5 @@ class GetUserSitesQuery
 {
     public function __construct(
         public readonly string $userId,
-    ) {
-    }
+    ) {}
 }

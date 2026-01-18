@@ -18,7 +18,7 @@ class ListSitesHandlerTest extends TestCase
         $handler = new ListSitesHandler($repository);
 
         $site = $this->createMock(Site::class);
-        $repository->expects($this->once())->method('findAll')->willReturn([$site]);
+        $repository->expects($this->once())->method("findAll")->willReturn([$site]);
 
         $result = $handler->handle(new ListSitesQuery());
 

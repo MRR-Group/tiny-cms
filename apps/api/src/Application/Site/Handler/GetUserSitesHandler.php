@@ -13,11 +13,10 @@ class GetUserSitesHandler
 {
     public function __construct(
         private UserRepositoryInterface $userRepository,
-    ) {
-    }
+    ) {}
 
     /**
-     * @return Site[]
+     * @return array<Site>
      */
     public function handle(GetUserSitesQuery $query): array
     {

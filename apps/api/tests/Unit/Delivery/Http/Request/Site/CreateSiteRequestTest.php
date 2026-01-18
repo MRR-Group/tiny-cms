@@ -13,52 +13,52 @@ class CreateSiteRequestTest extends TestCase
 {
     public function testFromPsr7ReturnsCommand(): void
     {
-        $request = (new ServerRequestFactory())->createServerRequest('POST', '/admin/sites')
+        $request = (new ServerRequestFactory())->createServerRequest("POST", "/admin/sites")
             ->withParsedBody([
-                'name' => 'My Site',
-                'url' => 'http://example.com',
-                'type' => SiteType::DYNAMIC->value,
+                "name" => "My Site",
+                "url" => "http://example.com",
+                "type" => SiteType::DYNAMIC->value,
             ]);
 
         $command = CreateSiteRequest::fromPsr7($request);
 
-        $this->assertEquals('My Site', $command->name);
-        $this->assertEquals('http://example.com', $command->url);
+        $this->assertEquals("My Site", $command->name);
+        $this->assertEquals("http://example.com", $command->url);
         $this->assertEquals(SiteType::DYNAMIC->value, $command->type);
     }
 
     public function testFromPsr7ThrowsOnInvalidBodyType(): void
     {
-        $request = (new ServerRequestFactory())->createServerRequest('POST', '/admin/sites')
+        $request = (new ServerRequestFactory())->createServerRequest("POST", "/admin/sites")
             ->withParsedBody(null);
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid body');
+        $this->expectExceptionMessage("Invalid body");
 
         CreateSiteRequest::fromPsr7($request);
     }
 
     public function testFromPsr7ThrowsOnMissingFields(): void
     {
-        $request = (new ServerRequestFactory())->createServerRequest('POST', '/admin/sites')
+        $request = (new ServerRequestFactory())->createServerRequest("POST", "/admin/sites")
             ->withParsedBody([
-                'name' => 'My Site',
+                "name" => "My Site",
                 // missing url, type
             ]);
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Missing required fields: name, url, type');
+        $this->expectExceptionMessage("Missing required fields: name, url, type");
 
         CreateSiteRequest::fromPsr7($request);
     }
 
     public function testFromPsr7ThrowsOnInvalidSiteType(): void
     {
-        $request = (new ServerRequestFactory())->createServerRequest('POST', '/admin/sites')
+        $request = (new ServerRequestFactory())->createServerRequest("POST", "/admin/sites")
             ->withParsedBody([
-                'name' => 'My Site',
-                'url' => 'http://example.com',
-                'type' => 'invalid_type',
+                "name" => "My Site",
+                "url" => "http://example.com",
+                "type" => "invalid_type",
             ]);
 
         // Enum backing error or logic error if validation happens before enum cast?
@@ -69,7 +69,7 @@ class CreateSiteRequestTest extends TestCase
         // If conversion fails, ValueError (PHP 8)
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid type');
+        $this->expectExceptionMessage("Invalid type");
 
         CreateSiteRequest::fromPsr7($request);
     }

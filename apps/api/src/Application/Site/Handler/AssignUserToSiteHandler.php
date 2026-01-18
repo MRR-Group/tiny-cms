@@ -15,19 +15,20 @@ class AssignUserToSiteHandler
     public function __construct(
         private SiteRepositoryInterface $siteRepository,
         private UserRepositoryInterface $userRepository,
-    ) {
-    }
+    ) {}
 
     public function handle(AssignUserToSiteCommand $command): void
     {
         $site = $this->siteRepository->findById(new SiteId($command->siteId));
+
         if ($site === null) {
-            throw new \InvalidArgumentException('Site not found');
+            throw new \InvalidArgumentException("Site not found");
         }
 
         $user = $this->userRepository->findById(new UserId($command->userId));
+
         if ($user === null) {
-            throw new \InvalidArgumentException('User not found');
+            throw new \InvalidArgumentException("User not found");
         }
 
         $site->addUser($user);

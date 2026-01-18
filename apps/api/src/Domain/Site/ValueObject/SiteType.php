@@ -6,6 +6,6 @@ namespace App\Domain\Site\ValueObject;
 
 enum SiteType: string
 {
-    case STATIC = 'static';
-    case DYNAMIC = 'dynamic';
+    case STATIC = "static";
+    case DYNAMIC = "dynamic";
 }

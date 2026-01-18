@@ -8,6 +8,7 @@ use App\Domain\Auth\Entity\User;
 use App\Domain\Auth\ValueObject\Email;
 use App\Domain\Auth\ValueObject\Role;
 use App\Domain\Auth\ValueObject\UserId;
+use App\Domain\Site\Entity\Site;
 use PHPUnit\Framework\TestCase;
 
 class UserTest extends TestCase
@@ -90,10 +91,10 @@ class UserTest extends TestCase
     public function testAddSite(): void
     {
         $user = new User(UserId::generate(), new Email("test@example.com"), new Role("admin"), "hash");
-        $site = $this->createMock(\App\Domain\Site\Entity\Site::class);
+        $site = $this->createMock(Site::class);
 
         $site->expects($this->once())
-            ->method('addUser')
+            ->method("addUser")
             ->with($user);
 
         $user->addSite($site);
@@ -106,14 +107,14 @@ class UserTest extends TestCase
     public function testRemoveSite(): void
     {
         $user = new User(UserId::generate(), new Email("test@example.com"), new Role("admin"), "hash");
-        $site = $this->createMock(\App\Domain\Site\Entity\Site::class);
+        $site = $this->createMock(Site::class);
 
         $site->expects($this->once())
-            ->method('addUser')
+            ->method("addUser")
             ->with($user);
 
         $site->expects($this->once())
-            ->method('removeUser')
+            ->method("removeUser")
             ->with($user);
 
         $user->addSite($site);

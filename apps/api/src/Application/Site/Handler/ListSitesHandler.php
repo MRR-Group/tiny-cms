@@ -12,11 +12,10 @@ class ListSitesHandler
 {
     public function __construct(
         private SiteRepositoryInterface $siteRepository,
-    ) {
-    }
+    ) {}
 
     /**
-     * @return Site[]
+     * @return array<Site>
      */
     public function handle(ListSitesQuery $query): array
     {

@@ -12,39 +12,39 @@ class AssignUserToSiteRequestTest extends TestCase
 {
     public function testFromPsr7ReturnsCommand(): void
     {
-        $request = (new ServerRequestFactory())->createServerRequest('POST', '/admin/sites/assign')
+        $request = (new ServerRequestFactory())->createServerRequest("POST", "/admin/sites/assign")
             ->withParsedBody([
-                'userId' => 'user-uuid',
-                'siteId' => 'site-uuid',
+                "userId" => "user-uuid",
+                "siteId" => "site-uuid",
             ]);
 
         $command = AssignUserToSiteRequest::fromPsr7($request);
 
-        $this->assertEquals('user-uuid', $command->userId);
-        $this->assertEquals('site-uuid', $command->siteId);
+        $this->assertEquals("user-uuid", $command->userId);
+        $this->assertEquals("site-uuid", $command->siteId);
     }
 
     public function testFromPsr7ThrowsOnInvalidBodyType(): void
     {
-        $request = (new ServerRequestFactory())->createServerRequest('POST', '/admin/sites/assign')
+        $request = (new ServerRequestFactory())->createServerRequest("POST", "/admin/sites/assign")
             ->withParsedBody(null);
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid body');
+        $this->expectExceptionMessage("Invalid body");
 
         AssignUserToSiteRequest::fromPsr7($request);
     }
 
     public function testFromPsr7ThrowsOnMissingFields(): void
     {
-        $request = (new ServerRequestFactory())->createServerRequest('POST', '/admin/sites/assign')
+        $request = (new ServerRequestFactory())->createServerRequest("POST", "/admin/sites/assign")
             ->withParsedBody([
-                'userId' => 'user-uuid',
+                "userId" => "user-uuid",
                 // missing siteId
             ]);
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Missing required fields: userId, siteId');
+        $this->expectExceptionMessage("Missing required fields: userId, siteId");
 
         AssignUserToSiteRequest::fromPsr7($request);
     }

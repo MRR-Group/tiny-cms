@@ -28,11 +28,11 @@ class DoctrineSiteRepositoryTest extends TestCase
         $site = $this->createMock(Site::class);
 
         $this->entityManager->expects($this->once())
-            ->method('persist')
+            ->method("persist")
             ->with($site);
 
         $this->entityManager->expects($this->once())
-            ->method('flush');
+            ->method("flush");
 
         $this->repository->save($site);
     }
@@ -43,7 +43,7 @@ class DoctrineSiteRepositoryTest extends TestCase
         $site = $this->createMock(Site::class);
 
         $this->entityManager->expects($this->once())
-            ->method('find')
+            ->method("find")
             ->with(Site::class, $id)
             ->willReturn($site);
 
@@ -58,12 +58,12 @@ class DoctrineSiteRepositoryTest extends TestCase
         $sites = [$this->createMock(Site::class)];
 
         $this->entityManager->expects($this->once())
-            ->method('getRepository')
+            ->method("getRepository")
             ->with(Site::class)
             ->willReturn($doctrineRepository);
 
         $doctrineRepository->expects($this->once())
-            ->method('findAll')
+            ->method("findAll")
             ->willReturn($sites);
 
         $result = $this->repository->findAll();

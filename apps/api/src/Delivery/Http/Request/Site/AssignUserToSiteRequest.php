@@ -14,16 +14,16 @@ class AssignUserToSiteRequest
         $body = $request->getParsedBody();
 
         if (!is_array($body)) {
-            throw new \InvalidArgumentException('Invalid body');
+            throw new \InvalidArgumentException("Invalid body");
         }
 
-        if (!isset($body['userId'], $body['siteId'])) {
-            throw new \InvalidArgumentException('Missing required fields: userId, siteId');
+        if (!isset($body["userId"], $body["siteId"])) {
+            throw new \InvalidArgumentException("Missing required fields: userId, siteId");
         }
 
         return new AssignUserToSiteCommand(
-            $body['userId'],
-            $body['siteId']
+            $body["userId"],
+            $body["siteId"],
         );
     }
 }
