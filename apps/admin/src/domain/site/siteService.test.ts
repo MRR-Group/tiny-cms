@@ -8,6 +8,7 @@ describe('SiteService', () => {
     const fetchMock = vi.fn();
 
     beforeEach(() => {
+        fetchMock.mockClear();
         vi.stubGlobal('fetch', fetchMock);
         service = new SiteService(baseUrl);
         localStorage.clear();
@@ -30,9 +31,10 @@ describe('SiteService', () => {
         await service.getSites();
 
         const callArgs = fetchMock.mock.calls[0];
-        const headers = callArgs[1].headers;
-        expect(headers['Content-Type']).toBe('application/json');
-        expect(headers['Authorization']).toBeUndefined();
+        expect(callArgs[0]).toBe(`${baseUrl}/admin/sites`);
+        expect(callArgs[1].method).toBe('GET');
+        expect(callArgs[1].headers['Content-Type']).toBe('application/json');
+        expect(callArgs[1].headers['Authorization']).toBeUndefined();
     });
 
     it('createSite sends post request', async () => {
@@ -48,34 +50,36 @@ describe('SiteService', () => {
 
         const result = await service.createSite(data);
 
-        expect(fetchMock).toHaveBeenCalledWith(`${baseUrl}/admin/sites`, expect.objectContaining({
-            method: 'POST',
-            body: JSON.stringify(data),
-        }));
+        const callArgs = fetchMock.mock.calls[0];
+        expect(callArgs[0]).toBe(`${baseUrl}/admin/sites`);
+        expect(callArgs[1].method).toBe('POST');
+        expect(callArgs[1].body).toBe(JSON.stringify(data));
         expect(result).toEqual(responseData);
     });
 
-    it('assignUser sends post request', async () => {
+    it('assignUser returns early on 204', async () => {
         const data = { userId: 'uid', siteId: 'sid' };
+        const textSpy = vi.fn();
         const response = {
             ok: true,
             status: 204,
-            text: async () => '',
+            text: textSpy,
             json: async () => ({}),
         };
         fetchMock.mockResolvedValue(response);
 
         await service.assignUser(data);
 
-        expect(fetchMock).toHaveBeenCalledWith(`${baseUrl}/admin/sites/assign`, expect.objectContaining({
-            method: 'POST',
-            body: JSON.stringify(data),
-        }));
+        const callArgs = fetchMock.mock.calls[0];
+        expect(callArgs[0]).toBe(`${baseUrl}/admin/sites/assign`);
+        expect(callArgs[1].method).toBe('POST');
+        expect(callArgs[1].body).toBe(JSON.stringify(data));
+        expect(textSpy).not.toHaveBeenCalled();
     });
 
     it('sends auth token if present', async () => {
         localStorage.setItem('authToken', 'token123');
-        const sites = [];
+        const sites: any[] = [];
         const response = {
             ok: true,
             status: 200,
@@ -86,11 +90,8 @@ describe('SiteService', () => {
 
         await service.getSites();
 
-        expect(fetchMock).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({
-            headers: expect.objectContaining({
-                'Authorization': 'Bearer token123'
-            })
-        }));
+        const callArgs = fetchMock.mock.calls[0];
+        expect(callArgs[1].headers['Authorization']).toBe('Bearer token123');
     });
 
     it('throws error if response not ok', async () => {
@@ -101,6 +102,47 @@ describe('SiteService', () => {
         };
         fetchMock.mockResolvedValue(response);
 
+
         await expect(service.getSites()).rejects.toThrow('Some Error');
+    });
+
+    it('throws "Request failed" if error body is empty', async () => {
+        const response = {
+            ok: false,
+            status: 500,
+            json: async () => ({}),
+        };
+        fetchMock.mockResolvedValue(response);
+
+        await expect(service.getSites()).rejects.toThrow('Request failed');
+    });
+
+    it('handles json parsing error gracefully', async () => {
+        const response = {
+            ok: false,
+            status: 500,
+            json: async () => { throw new Error('Invalid JSON'); },
+        };
+        fetchMock.mockResolvedValue(response);
+
+        await expect(service.getSites()).rejects.toThrow('An error occurred');
+    });
+
+    it('getAssignedSites fetches list of sites', async () => {
+        const sites = [{ id: '1', name: 'Site 1', url: 'u', type: 'static' }];
+        const response = {
+            ok: true,
+            status: 200,
+            text: async () => JSON.stringify(sites),
+            json: async () => sites,
+        };
+        fetchMock.mockResolvedValue(response);
+
+        const result = await service.getAssignedSites();
+
+        expect(fetchMock).toHaveBeenCalledWith(`${baseUrl}/sites`, expect.objectContaining({
+            method: 'GET',
+        }));
+        expect(result).toEqual(sites);
     });
 });
