@@ -43,7 +43,6 @@ class CreateSiteRequestTest extends TestCase
         $request = (new ServerRequestFactory())->createServerRequest("POST", "/admin/sites")
             ->withParsedBody([
                 "name" => "My Site",
-                // missing url, type
             ]);
 
         $this->expectException(\InvalidArgumentException::class);
@@ -61,12 +60,7 @@ class CreateSiteRequestTest extends TestCase
                 "type" => "invalid_type",
             ]);
 
-        // Enum backing error or logic error if validation happens before enum cast?
-        // In CreateSiteRequest it passes $body['type'] directly to Command which expects SiteType.
-        // Actually CreateSiteCommand expects string?
-        // Let's check CreateSiteCommand. If it expects strings, then Handler converts it.
-        // If it expects SiteType enum, then conversion happens in Request construction line '...'
-        // If conversion fails, ValueError (PHP 8)
+
 
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage("Invalid type");

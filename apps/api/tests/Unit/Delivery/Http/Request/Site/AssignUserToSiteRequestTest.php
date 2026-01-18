@@ -40,7 +40,6 @@ class AssignUserToSiteRequestTest extends TestCase
         $request = (new ServerRequestFactory())->createServerRequest("POST", "/admin/sites/assign")
             ->withParsedBody([
                 "userId" => "user-uuid",
-                // missing siteId
             ]);
 
         $this->expectException(\InvalidArgumentException::class);

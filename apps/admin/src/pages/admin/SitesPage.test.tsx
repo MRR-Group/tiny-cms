@@ -41,15 +41,6 @@ describe('SitesPage', () => {
 
         await waitFor(() => {
             expect(screen.getByText('No sites found.')).toBeInTheDocument(); 
-            // Or validation of error message if displayed somewhere?
-            // Code: {error && <p className="text-red-500 mt-2">{error}</p>} is only in Create form area?
-            // "Existing Sites" section just shows list or "No sites found".
-            // Actually useEffect sets 'error' if fetch fails.
-            // But where is 'error' rendered?
-            // Line 60: inside "Create New Site" block.
-            // So if fetch fails, error shows there?
-            // Let's check logic: fetchSites sets 'error'. Return renders 'error' at line 60.
-            // So yes.
         });
         // Check if error message is present
         // Wait, fetchSites error sets error state.
@@ -78,10 +69,5 @@ describe('SitesPage', () => {
             });
         });
 
-        // Verify list outdated?
-        // Actually fetchSites called again?
-        await waitFor(() => {
-             // expect(screen.getByText('New Site')).toBeInTheDocument();
-        });
     });
 });

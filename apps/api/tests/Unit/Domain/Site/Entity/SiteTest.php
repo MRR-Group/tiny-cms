@@ -18,7 +18,7 @@ class SiteTest extends TestCase
             SiteId::generate(),
             "Test Site",
             "http://example.com",
-            SiteType::STATIC,
+            SiteType::STATIC ,
             new \DateTimeImmutable(),
         );
         $user = $this->createMock(User::class);
@@ -28,15 +28,6 @@ class SiteTest extends TestCase
             ->method("removeSite")
             ->with($site);
 
-        // We need to simulate the collection behavior if possible, but since it's a Doctrine Collection interface,
-        // and initialized in constructor, we might need a real User or mock the collection.
-        // However, Site initializes ArrayCollection.
-        // Let's use a real User entity for this test to ensure bidirectional relationship works,
-        // or just rely on the fact that we can add the mock to the collection.
-
-        // Since User::removeSite is expected, we need the site to actually contain the user first.
-
-        // But Site::addUser calls $user->addSite($this).
         $user->expects($this->once())
             ->method("addSite")
             ->with($site);

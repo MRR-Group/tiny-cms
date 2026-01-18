@@ -52,7 +52,7 @@ class SiteControllerTest extends TestCase
         $result = $this->controller->create($request, $response, []);
 
         $this->assertEquals(201, $result->getStatusCode());
-        $body = json_decode((string)$result->getBody(), true);
+        $body = json_decode((string) $result->getBody(), true);
         $this->assertArrayHasKey("id", $body);
         $this->assertNotEmpty($body["id"]);
     }
@@ -60,7 +60,6 @@ class SiteControllerTest extends TestCase
     public function testCreateSiteHandlesErrors(): void
     {
         $request = (new ServerRequestFactory())->createServerRequest("POST", "/admin/sites")
-            // Invalid type to trigger exception
             ->withParsedBody([
                 "name" => "My Site",
                 "url" => "http://example.com",
@@ -68,12 +67,10 @@ class SiteControllerTest extends TestCase
             ]);
         $response = (new ResponseFactory())->createResponse();
 
-        // Expect ValueError or similar if processed, but here Request processing happens inside controller method calls Request::fromPsr7
-
         $result = $this->controller->create($request, $response, []);
 
         $this->assertEquals(400, $result->getStatusCode());
-        $body = json_decode((string)$result->getBody(), true);
+        $body = json_decode((string) $result->getBody(), true);
         $this->assertArrayHasKey("error", $body);
         $this->assertNotEmpty($body["error"]);
     }
@@ -98,9 +95,9 @@ class SiteControllerTest extends TestCase
         $result = $this->controller->list($request, $response, []);
 
         $this->assertEquals(200, $result->getStatusCode());
-        $body = json_decode((string)$result->getBody(), true);
+        $body = json_decode((string) $result->getBody(), true);
         $this->assertCount(1, $body);
-        $this->assertEquals("original", "original"); // Dummy assertion or check name if exposed
+        $this->assertEquals("original", "original");
     }
 
     public function testAssignUserReturns204(): void
@@ -131,7 +128,7 @@ class SiteControllerTest extends TestCase
         $result = $this->controller->assignUser($request, $response, []);
 
         $this->assertEquals(400, $result->getStatusCode());
-        $body = json_decode((string)$result->getBody(), true);
+        $body = json_decode((string) $result->getBody(), true);
         $this->assertEquals("Error message", $body["error"]);
     }
 }
