@@ -86,4 +86,39 @@ class UserTest extends TestCase
 
         $this->assertFalse($user->isResetTokenValid("wrong_token", $now));
     }
+
+    public function testAddSite(): void
+    {
+        $user = new User(UserId::generate(), new Email("test@example.com"), new Role("admin"), "hash");
+        $site = $this->createMock(\App\Domain\Site\Entity\Site::class);
+
+        $site->expects($this->once())
+            ->method('addUser')
+            ->with($user);
+
+        $user->addSite($site);
+
+        // Verification of state (collection contains) is tricky with private property and no getter for simple property check without exposing it.
+        // But getSites() returns the collection.
+        $this->assertTrue($user->getSites()->contains($site));
+    }
+
+    public function testRemoveSite(): void
+    {
+        $user = new User(UserId::generate(), new Email("test@example.com"), new Role("admin"), "hash");
+        $site = $this->createMock(\App\Domain\Site\Entity\Site::class);
+
+        $site->expects($this->once())
+            ->method('addUser')
+            ->with($user);
+
+        $site->expects($this->once())
+            ->method('removeUser')
+            ->with($user);
+
+        $user->addSite($site);
+        $user->removeSite($site);
+
+        $this->assertFalse($user->getSites()->contains($site));
+    }
 }

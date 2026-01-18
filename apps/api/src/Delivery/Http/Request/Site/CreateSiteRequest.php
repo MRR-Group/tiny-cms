@@ -21,6 +21,10 @@ class CreateSiteRequest
             throw new \InvalidArgumentException('Missing required fields: name, url, type');
         }
 
+        if (!\App\Domain\Site\ValueObject\SiteType::tryFrom($body['type'])) {
+            throw new \InvalidArgumentException('Invalid type');
+        }
+
         return new CreateSiteCommand(
             $body['name'],
             $body['url'],
