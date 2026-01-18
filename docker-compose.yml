@@ -42,7 +42,7 @@ services:
   admin:
     image: node:20-alpine
     working_dir: /app
-    command: sh -c "npm install -g pnpm && pnpm install && pnpm dev --host"
+    command: sh -c "corepack enable && pnpm install && pnpm dev --host"
     ports:
       - "5180:5173"
     volumes:
@@ -53,7 +53,7 @@ services:
   storybook:
     image: node:20-alpine
     working_dir: /app
-    command: sh -c "npm install -g pnpm && pnpm install && pnpm storybook -- --host 0.0.0.0"
+    command: sh -c "corepack enable && pnpm install && pnpm storybook -- --host 0.0.0.0"
     ports:
       - "6006:6006"
     volumes:

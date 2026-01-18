@@ -5,6 +5,7 @@ import { Login } from '@/pages/Login';
 import { ForceChangePassword } from '@/pages/ChangePassword';
 import { RequestPasswordReset, SetNewPassword } from '@/pages/PasswordReset';
 import { CreateUser } from '@/pages/UserManagement';
+import { SitesPage } from '@/pages/admin/SitesPage';
 import { authService } from '@/domain/auth';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -35,6 +36,7 @@ function App() {
       >
         <Route index element={<Dashboard />} />
         <Route path="users/create" element={<CreateUser />} />
+        <Route path="admin/sites" element={<SitesPage />} />
       </Route>
     </Routes>
   );

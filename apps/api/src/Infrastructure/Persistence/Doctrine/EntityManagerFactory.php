@@ -6,6 +6,8 @@ namespace App\Infrastructure\Persistence\Doctrine;
 
 use App\Infrastructure\Persistence\Doctrine\Type\EmailType;
 use App\Infrastructure\Persistence\Doctrine\Type\RoleType;
+use App\Infrastructure\Persistence\Doctrine\Type\SiteIdType;
+use App\Infrastructure\Persistence\Doctrine\Type\SiteTypeType;
 use App\Infrastructure\Persistence\Doctrine\Type\UserIdType;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Types\Type;
@@ -32,6 +34,14 @@ class EntityManagerFactory
 
         if (!Type::hasType(RoleType::NAME)) {
             Type::addType(RoleType::NAME, RoleType::class);
+        }
+
+        if (!Type::hasType(SiteIdType::NAME)) {
+            Type::addType(SiteIdType::NAME, SiteIdType::class);
+        }
+
+        if (!Type::hasType(SiteTypeType::NAME)) {
+            Type::addType(SiteTypeType::NAME, SiteTypeType::class);
         }
 
         $isDevMode = $settings["displayErrorDetails"] ?? false;
