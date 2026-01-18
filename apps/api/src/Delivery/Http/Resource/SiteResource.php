@@ -8,6 +8,9 @@ use App\Domain\Site\Entity\Site;
 
 class SiteResource
 {
+    /**
+     * @return array<string, mixed>
+     */
     public static function toArray(Site $site): array
     {
         return [
@@ -21,6 +24,7 @@ class SiteResource
 
     /**
      * @param Site[] $sites
+     * @return array<int, array<string, mixed>>
      */
     public static function collectionToArray(array $sites): array
     {

@@ -13,6 +13,10 @@ class CreateSiteRequest
     {
         $body = $request->getParsedBody();
 
+        if (!is_array($body)) {
+            throw new \InvalidArgumentException('Invalid body');
+        }
+
         if (!isset($body['name'], $body['url'], $body['type'])) {
             throw new \InvalidArgumentException('Missing required fields: name, url, type');
         }

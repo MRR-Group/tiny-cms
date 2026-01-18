@@ -27,6 +27,7 @@ class DoctrineSiteRepository implements SiteRepositoryInterface
         return $this->entityManager->find(Site::class, $id);
     }
 
+    /** @return Site[] */
     public function findAll(): array
     {
         return $this->entityManager->getRepository(Site::class)->findAll();

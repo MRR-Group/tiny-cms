@@ -11,5 +11,6 @@ interface SiteRepositoryInterface
 {
     public function save(Site $site): void;
     public function findById(SiteId $id): ?Site;
+    /** @return Site[] */
     public function findAll(): array;
 }
