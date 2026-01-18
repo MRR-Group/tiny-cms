@@ -7,6 +7,9 @@ namespace App\Domain\Auth\Entity;
 use App\Domain\Auth\ValueObject\Email;
 use App\Domain\Auth\ValueObject\Role;
 use App\Domain\Auth\ValueObject\UserId;
+use App\Domain\Site\Entity\Site;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 class User
 {
@@ -14,12 +17,17 @@ class User
     private ?string $resetToken = null;
     private ?\DateTimeImmutable $resetTokenExpiresAt = null;
 
+    /** @var Collection<int, Site> */
+    private Collection $sites;
+
     public function __construct(
         private readonly UserId $id,
         private Email $email,
         private Role $role,
         private string $passwordHash,
-    ) {}
+    ) {
+        $this->sites = new ArrayCollection();
+    }
 
     public function getId(): UserId
     {
@@ -78,5 +86,26 @@ class User
     public function isResetTokenValid(string $token, \DateTimeImmutable $now): bool
     {
         return $this->resetToken === $token && $this->resetTokenExpiresAt > $now;
+    }
+
+    /** @return Collection<int, Site> */
+    public function getSites(): Collection
+    {
+        return $this->sites;
+    }
+
+    public function addSite(Site $site): void
+    {
+        if (!$this->sites->contains($site)) {
+            $this->sites->add($site);
+            $site->addUser($this);
+        }
+    }
+
+    public function removeSite(Site $site): void
+    {
+        if ($this->sites->removeElement($site)) {
+            $site->removeUser($this);
+        }
     }
 }
