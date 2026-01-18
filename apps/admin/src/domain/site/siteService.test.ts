@@ -27,7 +27,7 @@ describe('SiteService', () => {
         };
         fetchMock.mockResolvedValue(response);
 
-        const result = await service.getSites();
+        await service.getSites();
 
         const callArgs = fetchMock.mock.calls[0];
         const headers = callArgs[1].headers;
