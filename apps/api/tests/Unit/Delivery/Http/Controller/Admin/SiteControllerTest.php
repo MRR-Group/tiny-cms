@@ -143,6 +143,7 @@ class SiteControllerTest extends TestCase
         $body = json_decode((string)$result->getBody(), true);
         $this->assertEquals("Error message", $body["error"]);
     }
+
     public function testUpdateSiteReturns200(): void
     {
         $id = SiteId::generate()->toString();

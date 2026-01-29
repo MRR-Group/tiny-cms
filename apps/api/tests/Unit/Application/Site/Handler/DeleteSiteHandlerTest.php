@@ -9,12 +9,11 @@ use App\Application\Site\Handler\DeleteSiteHandler;
 use App\Domain\Site\Entity\Site;
 use App\Domain\Site\Repository\SiteRepositoryInterface;
 use App\Domain\Site\ValueObject\SiteId;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \App\Application\Site\Handler\DeleteSiteHandler
- */
+#[CoversClass(DeleteSiteHandler::class)]
 class DeleteSiteHandlerTest extends TestCase
 {
     private SiteRepositoryInterface&MockObject $repository;

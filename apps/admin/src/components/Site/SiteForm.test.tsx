@@ -1,4 +1,3 @@
-
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SiteForm } from './SiteForm';
@@ -6,7 +5,7 @@ import { describe, it, expect, vi } from 'vitest';
 
 describe('SiteForm', () => {
   it('renders correctly', () => {
-    render(<SiteForm onSubmit={async () => { }} />);
+    render(<SiteForm onSubmit={async () => {}} />);
     expect(screen.getByLabelText(/Name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/URL/i)).toBeInTheDocument();
     expect(screen.getByText(/Type/i)).toBeInTheDocument();
@@ -31,7 +30,7 @@ describe('SiteForm', () => {
   });
 
   it('shows loading state', () => {
-    render(<SiteForm onSubmit={async () => { }} isLoading={true} />);
+    render(<SiteForm onSubmit={async () => {}} isLoading={true} />);
     expect(screen.getByRole('button')).toBeDisabled();
     expect(screen.getByRole('button')).toHaveTextContent('Saving...');
   });

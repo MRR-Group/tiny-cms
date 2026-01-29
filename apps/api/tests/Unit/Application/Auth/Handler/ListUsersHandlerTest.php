@@ -8,12 +8,11 @@ use App\Application\Auth\Handler\ListUsersHandler;
 use App\Application\Auth\Query\ListUsersQuery;
 use App\Domain\Auth\Entity\User;
 use App\Domain\Auth\Repository\UserRepositoryInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \App\Application\Auth\Handler\ListUsersHandler
- */
+#[CoversClass(ListUsersHandler::class)]
 class ListUsersHandlerTest extends TestCase
 {
     private UserRepositoryInterface&MockObject $repository;

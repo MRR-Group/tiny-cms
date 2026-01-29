@@ -11,14 +11,13 @@ use App\Domain\Auth\Entity\User;
 use App\Domain\Auth\ValueObject\Email;
 use App\Domain\Auth\ValueObject\Role;
 use App\Domain\Auth\ValueObject\UserId;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Slim\Psr7\Factory\ResponseFactory;
 use Slim\Psr7\Factory\ServerRequestFactory;
 
-/**
- * @covers \App\Delivery\Http\Controller\Admin\UserController
- */
+#[CoversClass(UserController::class)]
 class UserControllerTest extends TestCase
 {
     private ListUsersHandler&MockObject $handler;

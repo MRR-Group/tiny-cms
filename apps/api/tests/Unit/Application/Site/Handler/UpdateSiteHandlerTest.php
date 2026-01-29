@@ -10,12 +10,11 @@ use App\Domain\Site\Entity\Site;
 use App\Domain\Site\Repository\SiteRepositoryInterface;
 use App\Domain\Site\ValueObject\SiteId;
 use App\Domain\Site\ValueObject\SiteType;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \App\Application\Site\Handler\UpdateSiteHandler
- */
+#[CoversClass(UpdateSiteHandler::class)]
 class UpdateSiteHandlerTest extends TestCase
 {
     private SiteRepositoryInterface&MockObject $repository;
@@ -34,7 +33,7 @@ class UpdateSiteHandlerTest extends TestCase
             $id->toString(),
             "New Name",
             "http://new-url.com",
-            SiteType::DYNAMIC
+            SiteType::DYNAMIC,
         );
 
         $site = $this->createMock(Site::class);
@@ -59,7 +58,7 @@ class UpdateSiteHandlerTest extends TestCase
             $id->toString(),
             "New Name",
             "http://new-url.com",
-            SiteType::DYNAMIC
+            SiteType::DYNAMIC,
         );
 
         $this->repository->expects($this->once())
