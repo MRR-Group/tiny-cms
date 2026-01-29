@@ -1,70 +1,89 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CreateSiteRequest, SiteType } from '@/domain/site/types';
+import { Button } from '../Button/Button';
+import { Input } from '../Input/Input';
+import { Select } from '../Select/Select';
 
 interface SiteFormProps {
   onSubmit: (data: CreateSiteRequest) => Promise<void>;
   isLoading?: boolean;
+  initialData?: CreateSiteRequest | null;
+  onCancel?: () => void;
+  submitLabel?: string;
 }
 
-export const SiteForm: React.FC<SiteFormProps> = ({ onSubmit, isLoading }) => {
+export const SiteForm: React.FC<SiteFormProps> = ({
+  onSubmit,
+  isLoading,
+  initialData,
+  onCancel,
+  submitLabel = 'Create Site',
+}) => {
   const [name, setName] = useState('');
   const [url, setUrl] = useState('');
   const [type, setType] = useState<SiteType>('static');
 
+  useEffect(() => {
+    if (initialData) {
+      setName(initialData.name);
+      setUrl(initialData.url);
+      setType(initialData.type);
+    } else {
+      setName('');
+      setUrl('');
+      setType('static');
+    }
+  }, [initialData]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await onSubmit({ name, url, type });
+    if (!initialData) {
+      setName('');
+      setUrl('');
+      setType('static');
+    }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-          Name
-        </label>
-        <input
-          id="name"
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
-        />
+      <Input
+        id="name"
+        label="Name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        required
+        placeholder="My Awesome Site"
+      />
+      <Input
+        id="url"
+        label="URL"
+        type="url"
+        value={url}
+        onChange={(e) => setUrl(e.target.value)}
+        required
+        placeholder="https://example.com"
+      />
+      <Select
+        id="type"
+        label="Type"
+        value={type}
+        onChange={(e) => setType(e.target.value as SiteType)}
+        options={[
+          { value: 'static', label: 'Static' },
+          { value: 'dynamic', label: 'Dynamic' },
+        ]}
+      />
+      <div className="flex items-center gap-2 pt-2">
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? 'Saving...' : submitLabel}
+        </Button>
+        {onCancel && (
+          <Button type="button" variant="ghost" onClick={onCancel}>
+            Cancel
+          </Button>
+        )}
       </div>
-      <div>
-        <label htmlFor="url" className="block text-sm font-medium text-gray-700">
-          URL
-        </label>
-        <input
-          id="url"
-          type="url"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          required
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
-        />
-      </div>
-      <div>
-        <label htmlFor="type" className="block text-sm font-medium text-gray-700">
-          Type
-        </label>
-        <select
-          id="type"
-          value={type}
-          onChange={(e) => setType(e.target.value as SiteType)}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
-        >
-          <option value="static">Static</option>
-          <option value="dynamic">Dynamic</option>
-        </select>
-      </div>
-      <button
-        type="submit"
-        disabled={isLoading}
-        className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
-      >
-        {isLoading ? 'Creating...' : 'Create Site'}
-      </button>
     </form>
   );
 };

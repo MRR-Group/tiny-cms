@@ -5,6 +5,7 @@ export interface Site {
   name: string;
   url: string;
   type: SiteType;
+  editorCount: number;
   createdAt: string;
 }
 
@@ -14,7 +15,15 @@ export interface CreateSiteRequest {
   type: SiteType;
 }
 
+export interface UpdateSiteRequest extends CreateSiteRequest {}
+
 export interface AssignUserRequest {
   userId: string;
   siteId: string;
+}
+
+export interface User {
+  id: string;
+  email: string;
+  role: string;
 }

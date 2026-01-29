@@ -33,6 +33,6 @@ describe('SiteForm', () => {
   it('shows loading state', () => {
     render(<SiteForm onSubmit={async () => {}} isLoading={true} />);
     expect(screen.getByRole('button')).toBeDisabled();
-    expect(screen.getByRole('button')).toHaveTextContent('Creating...');
+    expect(screen.getByRole('button')).toHaveTextContent('Saving...');
   });
 });

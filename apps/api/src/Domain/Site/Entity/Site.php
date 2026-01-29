@@ -72,4 +72,24 @@ class Site
             $user->removeSite($this);
         }
     }
+
+    public function updateName(string $name): void
+    {
+        $this->name = $name;
+    }
+
+    public function updateUrl(string $url): void
+    {
+        $this->url = $url;
+    }
+
+    public function updateType(SiteType $type): void
+    {
+        $this->type = $type;
+    }
+
+    public function getEditorCount(): int
+    {
+        return $this->users->count();
+    }
 }

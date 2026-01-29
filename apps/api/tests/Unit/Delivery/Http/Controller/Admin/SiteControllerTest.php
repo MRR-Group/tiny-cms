@@ -8,7 +8,9 @@ use App\Application\Site\Command\AssignUserToSiteCommand;
 use App\Application\Site\Command\CreateSiteCommand;
 use App\Application\Site\Handler\AssignUserToSiteHandler;
 use App\Application\Site\Handler\CreateSiteHandler;
+use App\Application\Site\Handler\DeleteSiteHandler;
 use App\Application\Site\Handler\ListSitesHandler;
+use App\Application\Site\Handler\UpdateSiteHandler;
 use App\Application\Site\Query\ListSitesQuery;
 use App\Delivery\Http\Controller\Admin\SiteController;
 use App\Domain\Site\Entity\Site;
@@ -24,6 +26,8 @@ class SiteControllerTest extends TestCase
     private CreateSiteHandler&MockObject $createHandler;
     private AssignUserToSiteHandler&MockObject $assignHandler;
     private ListSitesHandler&MockObject $listHandler;
+    private UpdateSiteHandler&MockObject $updateHandler;
+    private DeleteSiteHandler&MockObject $deleteHandler;
     private SiteController $controller;
 
     protected function setUp(): void
@@ -31,7 +35,15 @@ class SiteControllerTest extends TestCase
         $this->createHandler = $this->createMock(CreateSiteHandler::class);
         $this->assignHandler = $this->createMock(AssignUserToSiteHandler::class);
         $this->listHandler = $this->createMock(ListSitesHandler::class);
-        $this->controller = new SiteController($this->createHandler, $this->listHandler, $this->assignHandler);
+        $this->updateHandler = $this->createMock(UpdateSiteHandler::class);
+        $this->deleteHandler = $this->createMock(DeleteSiteHandler::class);
+        $this->controller = new SiteController(
+            $this->createHandler,
+            $this->listHandler,
+            $this->assignHandler,
+            $this->updateHandler,
+            $this->deleteHandler,
+        );
     }
 
     public function testCreateSiteReturns201(): void

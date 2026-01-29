@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace App\Delivery\Http\Controller\Admin;
 
+use App\Application\Site\Command\DeleteSiteCommand;
 use App\Application\Site\Handler\AssignUserToSiteHandler;
 use App\Application\Site\Handler\CreateSiteHandler;
+use App\Application\Site\Handler\DeleteSiteHandler;
 use App\Application\Site\Handler\ListSitesHandler;
+use App\Application\Site\Handler\UpdateSiteHandler;
 use App\Application\Site\Query\ListSitesQuery;
 use App\Delivery\Http\Request\Site\AssignUserToSiteRequest;
 use App\Delivery\Http\Request\Site\CreateSiteRequest;
+use App\Delivery\Http\Request\Site\UpdateSiteRequest;
 use App\Delivery\Http\Resource\SiteResource;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -20,6 +24,8 @@ class SiteController
         private CreateSiteHandler $createHandler,
         private ListSitesHandler $listHandler,
         private AssignUserToSiteHandler $assignHandler,
+        private UpdateSiteHandler $updateHandler,
+        private DeleteSiteHandler $deleteHandler,
     ) {}
 
     public function create(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
@@ -55,6 +61,40 @@ class SiteController
         try {
             $command = AssignUserToSiteRequest::fromPsr7($request);
             $this->assignHandler->handle($command);
+
+            return $response->withHeader("Content-Type", "application/json")->withStatus(204);
+        } catch (\InvalidArgumentException $e) {
+            $response->getBody()->write(json_encode(["error" => $e->getMessage()], JSON_THROW_ON_ERROR));
+
+            return $response->withHeader("Content-Type", "application/json")->withStatus(400);
+        }
+    }
+
+    public function update(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    {
+        try {
+            $command = UpdateSiteRequest::fromPsr7($request);
+            $this->updateHandler->handle($command);
+
+            return $response->withHeader("Content-Type", "application/json")->withStatus(204);
+        } catch (\InvalidArgumentException $e) {
+            $response->getBody()->write(json_encode(["error" => $e->getMessage()], JSON_THROW_ON_ERROR));
+
+            return $response->withHeader("Content-Type", "application/json")->withStatus(400);
+        }
+    }
+
+    public function delete(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    {
+        try {
+            $siteId = $request->getAttribute("id");
+
+            if (!is_string($siteId) || empty($siteId)) {
+                throw new \InvalidArgumentException("Site ID is required");
+            }
+
+            $command = new DeleteSiteCommand($siteId);
+            $this->deleteHandler->handle($command);
 
             return $response->withHeader("Content-Type", "application/json")->withStatus(204);
         } catch (\InvalidArgumentException $e) {

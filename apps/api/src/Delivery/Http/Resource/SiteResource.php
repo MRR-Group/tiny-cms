@@ -18,6 +18,7 @@ class SiteResource
             "name" => $site->getName(),
             "url" => $site->getUrl(),
             "type" => $site->getType()->value,
+            "editorCount" => $site->getEditorCount(),
             "createdAt" => $site->getCreatedAt()->format(\DateTimeInterface::ATOM),
         ];
     }

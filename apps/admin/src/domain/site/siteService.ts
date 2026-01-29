@@ -1,4 +1,4 @@
-import { AssignUserRequest, CreateSiteRequest, Site } from './types';
+import { AssignUserRequest, CreateSiteRequest, Site, UpdateSiteRequest } from './types';
 
 export class SiteService {
   constructor(private readonly baseUrl: string) {}
@@ -23,7 +23,7 @@ export class SiteService {
       const error = await response.json().catch(() => ({
         error: { message: 'An error occurred' },
       }));
-      throw new Error(error.error?.message || 'Request failed');
+      throw new Error(error.error?.message || error.error || 'Request failed');
     }
 
     // Some 204 responses might have no content
@@ -39,6 +39,19 @@ export class SiteService {
     return this.request<{ id: string }>('/admin/sites', {
       method: 'POST',
       body: JSON.stringify(data),
+    });
+  }
+
+  async updateSite(id: string, data: UpdateSiteRequest): Promise<void> {
+    await this.request(`/admin/sites/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteSite(id: string): Promise<void> {
+    await this.request(`/admin/sites/${id}`, {
+      method: 'DELETE',
     });
   }
 

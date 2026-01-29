@@ -6,6 +6,7 @@ namespace App;
 
 use App\Action\HealthAction;
 use App\Delivery\Http\Controller\Admin\SiteController as AdminSiteController;
+use App\Delivery\Http\Controller\Admin\UserController;
 use App\Delivery\Http\Controller\Auth\ChangePasswordController;
 use App\Delivery\Http\Controller\Auth\ConfirmPasswordResetController;
 use App\Delivery\Http\Controller\Auth\CreateUserController;
@@ -63,8 +64,11 @@ final class Application
 
         $app->group("/admin", function (RouteCollectorProxy $group): void {
             $group->post("/users", CreateUserController::class);
+            $group->get("/users", [UserController::class, "list"]);
             $group->post("/sites", [AdminSiteController::class, "create"]);
             $group->get("/sites", [AdminSiteController::class, "list"]);
+            $group->put("/sites/{id}", [AdminSiteController::class, "update"]);
+            $group->delete("/sites/{id}", [AdminSiteController::class, "delete"]);
             $group->post("/sites/assign", [AdminSiteController::class, "assignUser"]);
         })->add(new RoleMiddleware("admin"))
             ->add(JwtAuthMiddleware::class);

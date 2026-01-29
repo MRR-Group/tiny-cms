@@ -17,4 +17,6 @@ interface SiteRepositoryInterface
      * @return array<Site>
      */
     public function findAll(): array;
+
+    public function delete(Site $site): void;
 }

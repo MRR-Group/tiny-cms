@@ -33,4 +33,10 @@ class DoctrineSiteRepository implements SiteRepositoryInterface
     {
         return $this->entityManager->getRepository(Site::class)->findAll();
     }
+
+    public function delete(Site $site): void
+    {
+        $this->entityManager->remove($site);
+        $this->entityManager->flush();
+    }
 }

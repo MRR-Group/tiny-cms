@@ -36,4 +36,9 @@ class DoctrineUserRepository implements UserRepositoryInterface
     {
         return $this->entityManager->getRepository(User::class)->findOneBy(["resetToken" => $token]);
     }
+
+    public function findAll(): array
+    {
+        return $this->entityManager->getRepository(User::class)->findAll();
+    }
 }

@@ -23,7 +23,18 @@ export function Login() {
       if (response.requirePasswordChange) {
         navigate('/change-password');
       } else {
-        navigate('/');
+        // Decode token to get role
+        try {
+          const payload = JSON.parse(atob(response.token.split('.')[1]));
+          if (payload.role === 'admin') {
+            navigate('/admin/sites');
+          } else {
+            navigate('/');
+          }
+        } catch (e) {
+          // Fallback to dashboard if token parsing fails
+          navigate('/');
+        }
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');

@@ -34,6 +34,7 @@ class SiteResourceTest extends TestCase
             "name" => $name,
             "url" => $url,
             "type" => $type->value,
+            "editorCount" => 0,
             "createdAt" => $createdAt->format(\DateTimeInterface::ATOM),
         ];
 
