@@ -11,6 +11,9 @@ use App\Domain\Auth\Repository\UserRepositoryInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @covers \App\Application\Auth\Handler\ListUsersHandler
+ */
 class ListUsersHandlerTest extends TestCase
 {
     private UserRepositoryInterface&MockObject $repository;

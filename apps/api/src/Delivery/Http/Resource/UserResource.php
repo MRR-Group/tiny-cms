@@ -16,7 +16,7 @@ class UserResource
         return [
             "id" => (string)$user->getId(),
             "email" => (string)$user->getEmail(),
-            "role" => $user->getRole()->value,
+            "role" => $user->getRole()->toString(),
         ];
     }
 

@@ -143,4 +143,41 @@ class SiteControllerTest extends TestCase
         $body = json_decode((string)$result->getBody(), true);
         $this->assertEquals("Error message", $body["error"]);
     }
+    public function testUpdateSiteReturns200(): void
+    {
+        $id = SiteId::generate()->toString();
+        $data = [
+            "name" => "Updated Site",
+            "url" => "http://updated.com",
+            "type" => "static",
+        ];
+        $request = (new ServerRequestFactory())->createServerRequest("PUT", "/admin/sites/$id")
+            ->withAttribute("id", $id);
+        $request->getBody()->write(json_encode($data));
+        $request->getBody()->rewind();
+
+        $response = (new ResponseFactory())->createResponse();
+
+        $this->updateHandler->expects($this->once())
+            ->method("handle");
+
+        $result = $this->controller->update($request, $response, []);
+
+        $this->assertEquals(204, $result->getStatusCode());
+    }
+
+    public function testDeleteSiteReturns204(): void
+    {
+        $id = SiteId::generate()->toString();
+        $request = (new ServerRequestFactory())->createServerRequest("DELETE", "/admin/sites/$id")
+            ->withAttribute("id", $id);
+        $response = (new ResponseFactory())->createResponse();
+
+        $this->deleteHandler->expects($this->once())
+            ->method("handle");
+
+        $result = $this->controller->delete($request, $response, []);
+
+        $this->assertEquals(204, $result->getStatusCode());
+    }
 }

@@ -13,6 +13,9 @@ use App\Domain\Site\ValueObject\SiteType;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @covers \App\Application\Site\Handler\UpdateSiteHandler
+ */
 class UpdateSiteHandlerTest extends TestCase
 {
     private SiteRepositoryInterface&MockObject $repository;

@@ -12,6 +12,9 @@ use App\Domain\Site\ValueObject\SiteId;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @covers \App\Application\Site\Handler\DeleteSiteHandler
+ */
 class DeleteSiteHandlerTest extends TestCase
 {
     private SiteRepositoryInterface&MockObject $repository;
