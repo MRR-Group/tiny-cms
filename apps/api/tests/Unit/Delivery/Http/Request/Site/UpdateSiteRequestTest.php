@@ -46,11 +46,11 @@ class UpdateSiteRequestTest extends TestCase
 
         UpdateSiteRequest::fromPsr7($request);
     }
-    
+
     public function testEmptySiteIdThrowsException(): void
     {
         $request = (new ServerRequestFactory())->createServerRequest("PUT", "/sites")
-             ->withAttribute("id", "");
+            ->withAttribute("id", "");
         $request->getBody()->write(json_encode([]));
         $request->getBody()->rewind();
 
@@ -63,7 +63,7 @@ class UpdateSiteRequestTest extends TestCase
     public function testInvalidSiteIdTypeThrowsException(): void
     {
         $request = (new ServerRequestFactory())->createServerRequest("PUT", "/sites/123")
-             ->withAttribute("id", 123);
+            ->withAttribute("id", 123);
         $request->getBody()->write(json_encode([]));
         $request->getBody()->rewind();
 
@@ -201,7 +201,7 @@ class UpdateSiteRequestTest extends TestCase
         $data = [
             "name" => "Name",
             "url" => "url",
-            "type" => 123
+            "type" => 123,
         ];
         $request = (new ServerRequestFactory())->createServerRequest("PUT", "/sites/123")
             ->withAttribute("id", "123");
@@ -219,7 +219,7 @@ class UpdateSiteRequestTest extends TestCase
         $data = [
             "name" => "Name",
             "url" => "url",
-            "type" => "invalid_enum"
+            "type" => "invalid_enum",
         ];
         $request = (new ServerRequestFactory())->createServerRequest("PUT", "/sites/123")
             ->withAttribute("id", "123");
