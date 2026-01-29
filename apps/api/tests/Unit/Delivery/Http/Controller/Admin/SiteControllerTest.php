@@ -181,4 +181,15 @@ class SiteControllerTest extends TestCase
 
         $this->assertEquals(204, $result->getStatusCode());
     }
+
+    public function testDeleteSiteWithArrayIdReturns400(): void
+    {
+        $request = (new ServerRequestFactory())->createServerRequest("DELETE", "/admin/sites/123")
+            ->withAttribute("id", ["id"]);
+        $response = (new ResponseFactory())->createResponse();
+
+        $result = $this->controller->delete($request, $response, []);
+
+        $this->assertEquals(400, $result->getStatusCode());
+    }
 }

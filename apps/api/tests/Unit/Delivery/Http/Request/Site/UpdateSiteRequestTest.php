@@ -90,7 +90,8 @@ class UpdateSiteRequestTest extends TestCase
     {
         $deep = ["type" => "static"];
 
-        for ($i = 0; $i < 513; $i++) {
+        // Depth 1 + 511 = 512 (Rejects on 512 limit, Accepts on 513 limit)
+        for ($i = 0; $i < 511; $i++) {
             $deep = ["wrapper" => $deep];
         }
         $json = json_encode($deep, 0, 1024);
@@ -101,6 +102,27 @@ class UpdateSiteRequestTest extends TestCase
         $request->getBody()->rewind();
 
         $this->expectException(\JsonException::class);
+
+        UpdateSiteRequest::fromPsr7($request);
+    }
+
+    public function testDeeplyNestedJsonWithinLimitPasses(): void
+    {
+        $deep = ["type" => "static"];
+
+        // Depth 1 + 510 = 511 (Accepts on 512 limit, Rejects on 511 limit)
+        for ($i = 0; $i < 510; $i++) {
+            $deep = ["wrapper" => $deep];
+        }
+        $json = json_encode($deep, 0, 1024);
+
+        $request = (new ServerRequestFactory())->createServerRequest("PUT", "/sites/123")
+            ->withAttribute("id", "123");
+        $request->getBody()->write($json);
+        $request->getBody()->rewind();
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage("Name is required");
 
         UpdateSiteRequest::fromPsr7($request);
     }
