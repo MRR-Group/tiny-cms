@@ -51,6 +51,19 @@ describe('UserService', () => {
     );
   });
 
+  it('getAllUsers does not send auth token if not present', async () => {
+    const mockResponse = {
+      ok: true,
+      text: async () => '[]',
+    };
+    mockFetch.mockResolvedValue(mockResponse);
+
+    await userService.getAllUsers();
+
+    const callArgs = mockFetch.mock.calls[0][1];
+    expect(callArgs.headers).not.toHaveProperty('Authorization');
+  });
+
   it('getAllUsers throws error on failure', async () => {
     const mockResponse = {
       ok: false,
