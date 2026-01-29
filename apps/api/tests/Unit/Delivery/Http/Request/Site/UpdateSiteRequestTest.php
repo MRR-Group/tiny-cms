@@ -73,6 +73,38 @@ class UpdateSiteRequestTest extends TestCase
         UpdateSiteRequest::fromPsr7($request);
     }
 
+    public function testInvalidSiteIdTypeArrayThrowsException(): void
+    {
+        $request = (new ServerRequestFactory())->createServerRequest("PUT", "/sites/123")
+            ->withAttribute("id", ["id"]);
+        $request->getBody()->write(json_encode([]));
+        $request->getBody()->rewind();
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage("Site ID is required");
+
+        UpdateSiteRequest::fromPsr7($request);
+    }
+
+    public function testDeeplyNestedJsonThrowsException(): void
+    {
+        $deep = ["type" => "static"];
+
+        for ($i = 0; $i < 513; $i++) {
+            $deep = ["wrapper" => $deep];
+        }
+        $json = json_encode($deep, 0, 1024);
+
+        $request = (new ServerRequestFactory())->createServerRequest("PUT", "/sites/123")
+            ->withAttribute("id", "123");
+        $request->getBody()->write($json);
+        $request->getBody()->rewind();
+
+        $this->expectException(\JsonException::class);
+
+        UpdateSiteRequest::fromPsr7($request);
+    }
+
     public function testMissingNameThrowsException(): void
     {
         $data = [
