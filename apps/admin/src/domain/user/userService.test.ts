@@ -70,4 +70,16 @@ describe('UserService', () => {
 
     await expect(userService.getAllUsers()).rejects.toThrow('Request failed');
   });
+
+  it('getAllUsers throws generic error when JSON parsing fails', async () => {
+    const mockResponse = {
+      ok: false,
+      json: async () => {
+        throw new Error('Invalid JSON');
+      },
+    };
+    mockFetch.mockResolvedValue(mockResponse);
+
+    await expect(userService.getAllUsers()).rejects.toThrow('An error occurred');
+  });
 });

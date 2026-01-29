@@ -191,5 +191,8 @@ class SiteControllerTest extends TestCase
         $result = $this->controller->delete($request, $response, []);
 
         $this->assertEquals(400, $result->getStatusCode());
+        $body = json_decode((string)$result->getBody(), true);
+        $this->assertArrayHasKey("error", $body);
+        $this->assertEquals("Site ID is required", $body["error"]);
     }
 }
