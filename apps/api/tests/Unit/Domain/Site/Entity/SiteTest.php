@@ -56,4 +56,71 @@ class SiteTest extends TestCase
         $this->assertSame($type, $site->getType());
         $this->assertSame($createdAt, $site->getCreatedAt());
     }
+
+    public function testUpdateName(): void
+    {
+        $site = new Site(
+            SiteId::generate(),
+            "Original Name",
+            "http://example.com",
+            SiteType::STATIC,
+            new \DateTimeImmutable(),
+        );
+
+        $site->updateName("New Name");
+
+        $this->assertSame("New Name", $site->getName());
+    }
+
+    public function testUpdateUrl(): void
+    {
+        $site = new Site(
+            SiteId::generate(),
+            "Test Site",
+            "http://example.com",
+            SiteType::STATIC,
+            new \DateTimeImmutable(),
+        );
+
+        $site->updateUrl("http://newurl.com");
+
+        $this->assertSame("http://newurl.com", $site->getUrl());
+    }
+
+    public function testUpdateType(): void
+    {
+        $site = new Site(
+            SiteId::generate(),
+            "Test Site",
+            "http://example.com",
+            SiteType::STATIC,
+            new \DateTimeImmutable(),
+        );
+
+        $site->updateType(SiteType::DYNAMIC);
+
+        $this->assertSame(SiteType::DYNAMIC, $site->getType());
+    }
+
+    public function testGetEditorCount(): void
+    {
+        $site = new Site(
+            SiteId::generate(),
+            "Test Site",
+            "http://example.com",
+            SiteType::STATIC,
+            new \DateTimeImmutable(),
+        );
+
+        $this->assertSame(0, $site->getEditorCount());
+
+        $user1 = $this->createMock(User::class);
+        $user2 = $this->createMock(User::class);
+
+        $site->addUser($user1);
+        $this->assertSame(1, $site->getEditorCount());
+
+        $site->addUser($user2);
+        $this->assertSame(2, $site->getEditorCount());
+    }
 }

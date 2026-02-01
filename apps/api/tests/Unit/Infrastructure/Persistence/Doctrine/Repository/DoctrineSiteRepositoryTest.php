@@ -70,4 +70,18 @@ class DoctrineSiteRepositoryTest extends TestCase
 
         $this->assertSame($sites, $result);
     }
+
+    public function testDeleteRemovesAndFlushes(): void
+    {
+        $site = $this->createMock(Site::class);
+
+        $this->entityManager->expects($this->once())
+            ->method("remove")
+            ->with($site);
+
+        $this->entityManager->expects($this->once())
+            ->method("flush");
+
+        $this->repository->delete($site);
+    }
 }

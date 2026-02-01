@@ -164,7 +164,6 @@ tasks:
   admin:install:
     desc: "Install frontend dependencies"
     cmds:
-      - "docker compose exec --user root admin sh -c 'command -v pnpm >/dev/null || npm install -g pnpm'"
       - "{{.DOCKER_EXEC_ADMIN}} pnpm install"
 
   admin:test:

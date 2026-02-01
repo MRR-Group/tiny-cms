@@ -195,4 +195,31 @@ class SiteControllerTest extends TestCase
         $this->assertArrayHasKey("error", $body);
         $this->assertEquals("Site ID is required", $body["error"]);
     }
+
+    public function testUpdateSiteHandlesErrors(): void
+    {
+        $id = SiteId::generate()->toString();
+        $data = [
+            "name" => "Updated Site",
+            "url" => "http://updated.com",
+            "type" => "static",
+        ];
+        $request = (new ServerRequestFactory())->createServerRequest("PUT", "/admin/sites/$id")
+            ->withAttribute("id", $id);
+        $request->getBody()->write(json_encode($data));
+        $request->getBody()->rewind();
+
+        $response = (new ResponseFactory())->createResponse();
+
+        $this->updateHandler->expects($this->once())
+            ->method("handle")
+            ->willThrowException(new \InvalidArgumentException("Update error"));
+
+        $result = $this->controller->update($request, $response, []);
+
+        $this->assertEquals(400, $result->getStatusCode());
+        $body = json_decode((string)$result->getBody(), true);
+        $this->assertArrayHasKey("error", $body);
+        $this->assertEquals("Update error", $body["error"]);
+    }
 }

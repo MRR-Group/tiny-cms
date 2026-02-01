@@ -9,6 +9,43 @@ Monorepo dla projektu CMS z PHP Slim backend i React admin panel.
 - PHP 8.3+ (dla development lokalnego bez Dockera)
 - [Task](https://taskfile.dev/) (opcjonalnie)
 
+## Konfiguracja uprawnień (USER_ID)
+
+Aby uniknąć problemów z uprawnieniami do plików tworzonych przez kontenery Docker:
+
+1. **Skopiuj plik `.env.example` do `.env`:**
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Ustaw swój USER_ID i GROUP_ID w pliku `.env`:**
+   ```bash
+   # Sprawdź swój USER_ID i GROUP_ID
+   id -u  # USER_ID
+   id -g  # GROUP_ID
+   
+   # Edytuj plik .env i ustaw odpowiednie wartości
+   # Przykład:
+   # USER_ID=1002
+   # GROUP_ID=1002
+   ```
+
+**Rozwiązywanie problemów z uprawnieniami:**
+
+Jeśli napotkasz błędy uprawnień w istniejących katalogach `vendor` lub `node_modules`:
+
+```bash
+# Zatrzymaj kontenery
+docker compose down
+
+# Usuń katalogi z błędnymi uprawnieniami
+docker run --rm -v "$(pwd)/apps/api:/app" alpine sh -c "rm -rf /app/vendor"
+docker run --rm -v "$(pwd)/apps/admin:/app" alpine sh -c "rm -rf /app/node_modules"
+
+# Uruchom ponownie
+docker compose up -d
+```
+
 ## Quick Start
 
 ```bash

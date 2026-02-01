@@ -110,4 +110,19 @@ export class AuthService {
   getToken(): string | null {
     return localStorage.getItem('authToken');
   }
+
+  getUserRole(): string | null {
+    const token = this.getToken();
+    if (!token) return null;
+
+    try {
+      // Decode JWT payload (middle part between dots)
+      const payload = token.split('.')[1];
+      const decoded = JSON.parse(atob(payload));
+      return decoded.role || null;
+    } catch {
+      return null;
+    }
+  }
 }
+
