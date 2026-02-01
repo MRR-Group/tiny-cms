@@ -101,6 +101,7 @@ describe('UserService', () => {
       const instance = createUserService();
       expect(instance).toBeInstanceOf(UserService);
       // Verify base URL is set correctly (default)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect((instance as any).baseUrl).toBe('http://localhost:8080');
     });
   });
