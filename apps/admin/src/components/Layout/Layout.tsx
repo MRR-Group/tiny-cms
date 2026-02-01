@@ -1,4 +1,4 @@
-import { Outlet, useNavigate, useLocation, NavLink } from 'react-router-dom';
+import { Outlet, useNavigate, NavLink } from 'react-router-dom';
 import HomeIcon from '@/assets/icons/home.svg?react';
 import LogoutIcon from '@/assets/icons/logout.svg?react';
 import DocumentIcon from '@/assets/icons/document.svg?react';
@@ -11,7 +11,6 @@ import { SideMenuItem } from '@/components/SideMenuItem/SideMenuItem';
 
 export function Layout() {
   const navigate = useNavigate();
-  const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(window.innerWidth < 768);
 
   useEffect(() => {
