@@ -203,4 +203,46 @@ class UpdateSiteHandlerTest extends TestCase
 
         $this->handler->handle($command);
     }
+
+    public function testHandleWithUrlMissingHost(): void
+    {
+        $id = SiteId::generate();
+        $command = new UpdateSiteCommand($id->toString(), "Name", "https:///path/only", SiteType::STATIC);
+
+        $site = $this->createMock(Site::class);
+        $site->method("getId")->willReturn($id);
+        $this->repository->method("findById")->willReturn($site);
+        $this->repository->method("findByUrl")->willReturn(null);
+
+        // Should return original URL since parse_url succeeds but host is missing
+        $site->expects($this->once())
+            ->method("updateUrl")
+            ->with("https:///path/only");
+        $site->expects($this->once())->method("updateName");
+        $site->expects($this->once())->method("updateType");
+        $this->repository->expects($this->once())->method("save");
+
+        $this->handler->handle($command);
+    }
+
+    public function testHandleWithCompletelyInvalidUrl(): void
+    {
+        $id = SiteId::generate();
+        $command = new UpdateSiteCommand($id->toString(), "Name", "ht!tp://invalid", SiteType::STATIC);
+
+        $site = $this->createMock(Site::class);
+        $site->method("getId")->willReturn($id);
+        $this->repository->method("findById")->willReturn($site);
+        $this->repository->method("findByUrl")->willReturn(null);
+
+        // Should return normalized URL  
+        $site->expects($this->once())
+            ->method("updateUrl")
+            ->with("https://ht!tp//invalid/");
+        $site->expects($this->once())->method("updateName");
+        $site->expects($this->once())->method("updateType");
+        $this->repository->expects($this->once())->method("save");
+
+        $this->handler->handle($command);
+    }
 }

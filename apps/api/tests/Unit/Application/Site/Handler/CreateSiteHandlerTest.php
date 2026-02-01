@@ -160,4 +160,50 @@ class CreateSiteHandlerTest extends TestCase
 
         $handler->handle($command);
     }
+
+    public function testHandleWithUrlMissingHost(): void
+    {
+        $siteRepository = $this->createMock(SiteRepositoryInterface::class);
+        $clock = $this->createMock(ClockInterface::class);
+        $clock->method("now")->willReturn(new \DateTimeImmutable());
+
+        $handler = new CreateSiteHandler($siteRepository, $clock);
+
+        // URL that parses but has no host (e.g., relative path)
+        $command = new CreateSiteCommand("Site", "https:///path/only", "static");
+
+        $siteRepository->expects($this->once())
+            ->method("save")
+            ->with($this->callback(function (Site $site) {
+                // Should return original URL since parse_url succeeds but host is missing
+                $this->assertEquals("https:///path/only", $site->getUrl());
+
+                return true;
+            }));
+
+        $handler->handle($command);
+    }
+
+    public function testHandleWithCompletelyInvalidUrl(): void
+    {
+        $siteRepository = $this->createMock(SiteRepositoryInterface::class);
+        $clock = $this->createMock(ClockInterface::class);
+        $clock->method("now")->willReturn(new \DateTimeImmutable());
+
+        $handler = new CreateSiteHandler($siteRepository, $clock);
+
+        // URL that causes parse_url to return false
+        $command = new CreateSiteCommand("Site", "ht!tp://invalid", "static");
+
+        $siteRepository->expects($this->once())
+            ->method("save")
+            ->with($this->callback(function (Site $site) {
+                // Should return normalized URL based on parse_url behavior
+                $this->assertEquals("https://ht!tp//invalid/", $site->getUrl());
+
+                return true;
+            }));
+
+        $handler->handle($command);
+    }
 }
