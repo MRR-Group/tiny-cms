@@ -235,7 +235,7 @@ class UpdateSiteHandlerTest extends TestCase
         $this->repository->method("findById")->willReturn($site);
         $this->repository->method("findByUrl")->willReturn(null);
 
-        // Should return normalized URL  
+        // Should return normalized URL
         $site->expects($this->once())
             ->method("updateUrl")
             ->with("https://ht!tp//invalid/");
