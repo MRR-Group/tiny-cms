@@ -52,6 +52,7 @@ export const SiteForm: React.FC<SiteFormProps> = ({
         processedUrl = urlObj.toString();
       }
     } catch (err) {
+      // ignore
     }
 
     await onSubmit({ name, url: processedUrl, type });

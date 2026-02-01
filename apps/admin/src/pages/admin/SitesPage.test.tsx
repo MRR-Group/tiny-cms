@@ -4,7 +4,6 @@ import { BrowserRouter } from 'react-router-dom';
 import { SitesPage } from './SitesPage';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-
 const mockSiteService = {
   getSites: vi.fn(),
   createSite: vi.fn(),
@@ -17,7 +16,6 @@ const mockSiteService = {
 const mockUserService = {
   getAllUsers: vi.fn().mockResolvedValue([]),
 };
-
 
 vi.mock('@/domain/site', () => ({
   createSiteService: () => mockSiteService,
@@ -68,7 +66,6 @@ describe('SitesPage', () => {
     );
 
     await waitFor(() => {
-
       expect(screen.getByText('Fetch failed')).toBeInTheDocument();
     });
   });
@@ -85,7 +82,6 @@ describe('SitesPage', () => {
 
     await userEvent.type(screen.getByLabelText(/Name/i), 'New Site');
     await userEvent.type(screen.getByLabelText(/URL/i), 'http://new.com');
-
 
     mockSiteService.getSites
       .mockResolvedValueOnce([])

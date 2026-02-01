@@ -23,7 +23,6 @@ export function Login() {
       if (response.requirePasswordChange) {
         navigate('/change-password');
       } else {
-
         try {
           const payload = JSON.parse(atob(response.token.split('.')[1]));
           if (payload.role === 'admin') {
@@ -32,7 +31,6 @@ export function Login() {
             navigate('/');
           }
         } catch (e) {
-
           navigate('/');
         }
       }

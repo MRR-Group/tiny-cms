@@ -19,7 +19,6 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 function DefaultRoute() {
   const userRole = createAuthService().getUserRole();
 
-
   if (userRole === 'admin') {
     return <Navigate to="/admin/sites" replace />;
   }
