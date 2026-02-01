@@ -4,7 +4,7 @@ import { Button } from '@/components/Button/Button';
 import { Input } from '@/components/Input/Input';
 import { Select } from '@/components/Select/Select';
 import { PasswordStrengthIndicator } from '@/components/PasswordStrengthIndicator';
-import { authService } from '@/domain/auth';
+import { createAuthService } from '@/domain/auth';
 
 export function CreateUser() {
   const navigate = useNavigate();
@@ -21,7 +21,7 @@ export function CreateUser() {
     setIsLoading(true);
 
     try {
-      await authService.createUser({ email, password, role });
+      await createAuthService().createUser({ email, password, role });
       setSuccess(true);
       setTimeout(() => navigate('/'), 2000);
     } catch (err) {

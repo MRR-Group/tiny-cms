@@ -4,7 +4,7 @@ import { AuthLayout } from '@/components/AuthLayout';
 import { Button } from '@/components/Button/Button';
 import { Input } from '@/components/Input/Input';
 import { PasswordStrengthIndicator } from '@/components/PasswordStrengthIndicator';
-import { authService } from '@/domain/auth';
+import { createAuthService } from '@/domain/auth';
 
 export function ForceChangePassword() {
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ export function ForceChangePassword() {
     setIsLoading(true);
 
     try {
-      await authService.changePassword({ oldPassword, newPassword });
+      await createAuthService().changePassword({ oldPassword, newPassword });
       navigate('/');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to change password');

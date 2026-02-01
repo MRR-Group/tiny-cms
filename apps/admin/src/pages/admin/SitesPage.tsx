@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { CreateSiteRequest, Site, User } from '@/domain/site/types';
-import { siteService } from '@/domain/site';
-import { userService } from '@/domain/user';
+import { createSiteService } from '@/domain/site';
+import { createUserService } from '@/domain/user';
 import { AssignUserModal } from '@/components/Site/AssignUserModal';
 import { SiteForm } from '@/components/Site/SiteForm';
 import { Button } from '@/components/Button/Button';
@@ -20,8 +20,8 @@ export const SitesPage: React.FC = () => {
   const fetchData = async () => {
     try {
       const [sitesData, usersData] = await Promise.all([
-        siteService.getSites(),
-        userService.getAllUsers(),
+        createSiteService().getSites(),
+        createUserService().getAllUsers(),
       ]);
       setSites(sitesData);
       setUsers(usersData);
@@ -39,10 +39,10 @@ export const SitesPage: React.FC = () => {
     setError(null);
     try {
       if (editingSite) {
-        await siteService.updateSite(editingSite.id, data);
+        await createSiteService().updateSite(editingSite.id, data);
         setEditingSite(null);
       } else {
-        await siteService.createSite(data);
+        await createSiteService().createSite(data);
       }
       await fetchData(); // Refresh list
     } catch (err) {
@@ -56,7 +56,7 @@ export const SitesPage: React.FC = () => {
     if (!window.confirm(`Are you sure you want to delete "${site.name}"?`)) return;
 
     try {
-      await siteService.deleteSite(site.id);
+      await createSiteService().deleteSite(site.id);
       await fetchData();
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to delete site');
@@ -70,7 +70,7 @@ export const SitesPage: React.FC = () => {
 
   const handleAssignUser = async (userId: string) => {
     if (!selectedSite) return;
-    await siteService.assignUser({ userId, siteId: selectedSite.id });
+    await createSiteService().assignUser({ userId, siteId: selectedSite.id });
     await fetchData(); // Refresh to update editor count if we display it
   };
 

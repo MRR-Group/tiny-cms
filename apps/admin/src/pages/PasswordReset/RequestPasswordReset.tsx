@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { AuthLayout } from '@/components/AuthLayout';
 import { Button } from '@/components/Button/Button';
 import { Input } from '@/components/Input/Input';
-import { authService } from '@/domain/auth';
+import { createAuthService } from '@/domain/auth';
 
 export function RequestPasswordReset() {
   const [email, setEmail] = useState('');
@@ -17,7 +17,7 @@ export function RequestPasswordReset() {
     setIsLoading(true);
 
     try {
-      await authService.requestPasswordReset({ email });
+      await createAuthService().requestPasswordReset({ email });
       setSuccess(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to request password reset');

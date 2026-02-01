@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { AuthLayout } from '@/components/AuthLayout';
 import { Button } from '@/components/Button/Button';
 import { Input } from '@/components/Input/Input';
-import { authService } from '@/domain/auth';
+import { createAuthService } from '@/domain/auth';
 
 export function Login() {
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ export function Login() {
     setIsLoading(true);
 
     try {
-      const response = await authService.login({ email, password });
+      const response = await createAuthService().login({ email, password });
 
       if (response.requirePasswordChange) {
         navigate('/change-password');

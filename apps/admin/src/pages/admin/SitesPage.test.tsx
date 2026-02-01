@@ -1,24 +1,29 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SitesPage } from './SitesPage';
-import { siteService } from '@/domain/site';
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 
-// Mock siteService and userService
+// Create mock functions
+const mockSiteService = {
+  getSites: vi.fn(),
+  createSite: vi.fn(),
+  updateSite: vi.fn(),
+  deleteSite: vi.fn(),
+  assignUser: vi.fn(),
+  getAssignedSites: vi.fn(),
+};
+
+const mockUserService = {
+  getAllUsers: vi.fn().mockResolvedValue([]),
+};
+
+// Mock modules with factories returning the mock objects
 vi.mock('@/domain/site', () => ({
-  siteService: {
-    getSites: vi.fn(),
-    createSite: vi.fn(),
-    updateSite: vi.fn(),
-    deleteSite: vi.fn(),
-    assignUser: vi.fn(),
-  },
+  createSiteService: () => mockSiteService,
 }));
 
 vi.mock('@/domain/user', () => ({
-  userService: {
-    getAllUsers: vi.fn().mockResolvedValue([]),
-  },
+  createUserService: () => mockUserService,
 }));
 
 describe('SitesPage', () => {
@@ -37,7 +42,7 @@ describe('SitesPage', () => {
         editorCount: 0,
       },
     ];
-    (siteService.getSites as Mock).mockResolvedValue(sites);
+    mockSiteService.getSites.mockResolvedValue(sites);
 
     render(<SitesPage />);
 
@@ -50,21 +55,20 @@ describe('SitesPage', () => {
   });
 
   it('displays error if fetch fails', async () => {
-    (siteService.getSites as Mock).mockRejectedValue(new Error('Fetch failed'));
+    mockSiteService.getSites.mockRejectedValue(new Error('Fetch failed'));
 
     render(<SitesPage />);
 
     await waitFor(() => {
       // The component displays "No sites found" even on error because empty list,
       // but error message is shown too.
-      // Wait, if fetch fails, sites is []
       expect(screen.getByText('Fetch failed')).toBeInTheDocument();
     });
   });
 
   it('creates a site and refreshes list', async () => {
-    (siteService.getSites as Mock).mockResolvedValue([]);
-    (siteService.createSite as Mock).mockResolvedValue({});
+    mockSiteService.getSites.mockResolvedValue([]);
+    mockSiteService.createSite.mockResolvedValue({});
 
     render(<SitesPage />);
 
@@ -72,7 +76,7 @@ describe('SitesPage', () => {
     await userEvent.type(screen.getByLabelText(/URL/i), 'http://new.com');
 
     // Mock getSites returning new list after create
-    (siteService.getSites as Mock)
+    mockSiteService.getSites
       .mockResolvedValueOnce([])
       .mockResolvedValueOnce([
         { id: '2', name: 'New Site', url: 'http://new.com', type: 'static', editorCount: 0 },
@@ -81,7 +85,7 @@ describe('SitesPage', () => {
     await userEvent.click(screen.getByRole('button', { name: /Create Site/i }));
 
     await waitFor(() => {
-      expect(siteService.createSite).toHaveBeenCalledWith({
+      expect(mockSiteService.createSite).toHaveBeenCalledWith({
         name: 'New Site',
         url: 'http://new.com',
         type: 'static',

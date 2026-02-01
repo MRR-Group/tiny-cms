@@ -9,12 +9,12 @@ import {
 } from './authService';
 
 const API_BASE_URL = 'http://localhost:8000';
-const authService = new AuthService(API_BASE_URL);
-
 describe('authService', () => {
   const fetchMock = vi.fn();
+  let authService: AuthService;
 
   beforeEach(() => {
+    authService = new AuthService(API_BASE_URL);
     global.fetch = fetchMock;
     const storage = new Map<string, string>();
     vi.stubGlobal('localStorage', {

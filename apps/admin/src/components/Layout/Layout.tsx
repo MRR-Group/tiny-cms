@@ -1,14 +1,15 @@
 import { Outlet, useNavigate, Link, useLocation } from 'react-router-dom';
 import HomeIcon from '@/assets/icons/home.svg?react';
 import LogoutIcon from '@/assets/icons/logout.svg?react';
-import { authService } from '@/domain/auth';
+import { createAuthService } from '@/domain/auth';
+import React from 'react';
 
 export function Layout() {
   const navigate = useNavigate();
   const location = useLocation();
 
   const handleLogout = () => {
-    authService.logout();
+    createAuthService().logout();
     navigate('/login');
   };
 
@@ -25,11 +26,10 @@ export function Layout() {
         <nav className="space-y-1.5 flex-1">
           <Link
             to="/"
-            className={`flex items-center gap-3 px-4 py-2.5 rounded-lg font-medium transition-all duration-200 ${
-              location.pathname === '/'
+            className={`flex items-center gap-3 px-4 py-2.5 rounded-lg font-medium transition-all duration-200 ${location.pathname === '/'
                 ? 'bg-primary/10 text-primary shadow-sm'
                 : 'text-slate-600 hover:bg-slate-50 hover:text-primary'
-            }`}
+              }`}
           >
             <HomeIcon className="w-5 h-5" />
             Dashboard

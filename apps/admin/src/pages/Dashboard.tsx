@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Site } from '@/domain/site/types';
-import { siteService } from '@/domain/site';
+import { createSiteService } from '@/domain/site';
 
 export const Dashboard: React.FC = () => {
   const [sites, setSites] = useState<Site[]>([]);
@@ -9,7 +9,7 @@ export const Dashboard: React.FC = () => {
   useEffect(() => {
     const fetchSites = async () => {
       try {
-        const data = await siteService.getAssignedSites();
+        const data = await createSiteService().getAssignedSites();
         setSites(data);
       } catch (error) {
         console.error('Failed to fetch assigned sites', error);

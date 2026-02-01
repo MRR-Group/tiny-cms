@@ -6,17 +6,17 @@ import { ForceChangePassword } from '@/pages/ChangePassword';
 import { RequestPasswordReset, SetNewPassword } from '@/pages/PasswordReset';
 import { CreateUser } from '@/pages/UserManagement';
 import { SitesPage } from '@/pages/admin/SitesPage';
-import { authService } from '@/domain/auth';
+import { createAuthService } from '@/domain/auth';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  if (!authService.isAuthenticated()) {
+  if (!createAuthService().isAuthenticated()) {
     return <Navigate to="/login" replace />;
   }
   return <>{children}</>;
 }
 
 function DefaultRoute() {
-  const userRole = authService.getUserRole();
+  const userRole = createAuthService().getUserRole();
 
   // Redirect admins to sites page, editors to dashboard
   if (userRole === 'admin') {
