@@ -1,30 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { CreateSiteRequest, Site, User } from '@/domain/site/types';
+import { CreateSiteRequest, Site } from '@/domain/site/types';
 import { createSiteService } from '@/domain/site';
-import { createUserService } from '@/domain/user';
-import { AssignUserModal } from '@/components/Site/AssignUserModal';
 import { SiteForm } from '@/components/Site/SiteForm';
-import { Button } from '@/components/Button/Button';
+import { SiteList } from '@/components/Site/SiteList';
+import { ConfirmActionModal } from '@/components/Modal/ConfirmActionModal';
+import { AlertModal } from '@/components/Modal/AlertModal';
 
 export const SitesPage: React.FC = () => {
   const [sites, setSites] = useState<Site[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedSite, setSelectedSite] = useState<Site | null>(null);
 
-  // Edit mode state
+  // Modals state
   const [editingSite, setEditingSite] = useState<Site | null>(null);
+  const [siteToDelete, setSiteToDelete] = useState<Site | null>(null);
+  const [alertConfig, setAlertConfig] = useState<{ title: string, message: string, type: 'error' | 'success' } | null>(null);
 
   const fetchData = async () => {
     try {
-      const [sitesData, usersData] = await Promise.all([
-        createSiteService().getSites(),
-        createUserService().getAllUsers(),
-      ]);
+      const sitesData = await createSiteService().getSites();
       setSites(sitesData);
-      setUsers(usersData);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch data');
     }
@@ -52,26 +47,20 @@ export const SitesPage: React.FC = () => {
     }
   };
 
-  const handleDeleteSite = async (site: Site) => {
-    if (!window.confirm(`Are you sure you want to delete "${site.name}"?`)) return;
+  const handleConfirmDeleteSite = async () => {
+    if (!siteToDelete) return;
 
     try {
-      await createSiteService().deleteSite(site.id);
+      await createSiteService().deleteSite(siteToDelete.id);
+      setSiteToDelete(null);
       await fetchData();
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Failed to delete site');
+      setAlertConfig({
+        title: 'Deletion Failed',
+        message: err instanceof Error ? err.message : 'Failed to delete site',
+        type: 'error'
+      });
     }
-  };
-
-  const openAssignModal = (site: Site) => {
-    setSelectedSite(site);
-    setIsModalOpen(true);
-  };
-
-  const handleAssignUser = async (userId: string) => {
-    if (!selectedSite) return;
-    await createSiteService().assignUser({ userId, siteId: selectedSite.id });
-    await fetchData(); // Refresh to update editor count if we display it
   };
 
   const handleEditClick = (site: Site) => {
@@ -123,101 +112,28 @@ export const SitesPage: React.FC = () => {
             <div className="p-6 border-b border-gray-100">
               <h2 className="text-xl font-bold text-gray-900">Existing Sites</h2>
             </div>
-
-            {sites.length === 0 ? (
-              <div className="p-12 text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-50 mb-4">
-                  <span className="text-2xl">🌐</span>
-                </div>
-                <h3 className="text-lg font-medium text-gray-900">No sites found</h3>
-                <p className="text-gray-500 mt-1">Get started by creating your first site.</p>
-              </div>
-            ) : (
-              <ul className="divide-y divide-gray-100">
-                {sites.map((site) => (
-                  <li
-                    key={site.id}
-                    className="p-6 hover:bg-gray-50 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-                  >
-                    <div>
-                      <div className="flex items-center gap-3">
-                        <h3 className="text-lg font-semibold text-gray-900">{site.name}</h3>
-                        <span
-                          className={`px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wide
-                          ${site.type === 'static' ? 'bg-blue-50 text-blue-700' : 'bg-purple-50 text-purple-700'}`}
-                        >
-                          {site.type}
-                        </span>
-                      </div>
-                      <div className="text-sm text-gray-500 mt-1 flex items-center gap-4">
-                        <a
-                          href={site.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="hover:text-indigo-600 transition-colors flex items-center gap-1"
-                        >
-                          {site.url}
-                          <svg
-                            className="w-3 h-3"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                            />
-                          </svg>
-                        </a>
-                        <span className="flex items-center gap-1" title="Assigned Editors">
-                          <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                            />
-                          </svg>
-                          {site.editorCount} Editors
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <Button size="sm" variant="secondary" onClick={() => openAssignModal(site)}>
-                        Assign User
-                      </Button>
-                      <Button size="sm" variant="secondary" onClick={() => handleEditClick(site)}>
-                        Edit
-                      </Button>
-                      <Button size="sm" variant="danger" onClick={() => handleDeleteSite(site)}>
-                        Delete
-                      </Button>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
+            <SiteList sites={sites} onEdit={handleEditClick} onDelete={setSiteToDelete} />
           </div>
         </div>
       </div>
 
-      {selectedSite && (
-        <AssignUserModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onAssign={handleAssignUser}
-          siteName={selectedSite.name}
-          users={users}
-        />
-      )}
+      <ConfirmActionModal
+        isOpen={!!siteToDelete}
+        onClose={() => setSiteToDelete(null)}
+        onConfirm={handleConfirmDeleteSite}
+        title="Delete Site"
+        message={`Are you sure you want to delete "${siteToDelete?.name}"? This action cannot be undone.`}
+        confirmLabel="Delete Site"
+        variant="danger"
+      />
+
+      <AlertModal
+        isOpen={!!alertConfig}
+        onClose={() => setAlertConfig(null)}
+        title={alertConfig?.title || ''}
+        message={alertConfig?.message || ''}
+        type={alertConfig?.type || 'info'}
+      />
     </div>
   );
 };

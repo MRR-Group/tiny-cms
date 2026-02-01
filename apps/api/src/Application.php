@@ -67,9 +67,11 @@ final class Application
             $group->get("/users", [UserController::class, "list"]);
             $group->post("/sites", [AdminSiteController::class, "create"]);
             $group->get("/sites", [AdminSiteController::class, "list"]);
+            $group->get("/sites/{id}", [AdminSiteController::class, "get"]);
             $group->put("/sites/{id}", [AdminSiteController::class, "update"]);
             $group->delete("/sites/{id}", [AdminSiteController::class, "delete"]);
             $group->post("/sites/assign", [AdminSiteController::class, "assignUser"]);
+            $group->delete("/sites/{id}/users/{userId}", [AdminSiteController::class, "unassignUser"]);
         })->add(new RoleMiddleware("admin"))
             ->add(JwtAuthMiddleware::class);
 

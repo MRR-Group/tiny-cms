@@ -61,10 +61,22 @@ export class SiteService {
     });
   }
 
+  async getSite(id: string): Promise<Site> {
+    return this.request<Site>(`/admin/sites/${id}`, {
+      method: 'GET',
+    });
+  }
+
   async assignUser(data: AssignUserRequest): Promise<void> {
     await this.request('/admin/sites/assign', {
       method: 'POST',
       body: JSON.stringify(data),
+    });
+  }
+
+  async unassignUser(siteId: string, userId: string): Promise<void> {
+    await this.request(`/admin/sites/${siteId}/users/${userId}`, {
+      method: 'DELETE',
     });
   }
 

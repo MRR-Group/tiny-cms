@@ -23,10 +23,45 @@ class UpdateSiteHandler
             throw new \InvalidArgumentException("Site not found");
         }
 
+        $url = $this->normalizeUrl($command->url);
+        $existingSite = $this->siteRepository->findByUrl($url);
+        if ($existingSite !== null && !$existingSite->getId()->equals($siteId)) {
+            throw new \InvalidArgumentException("Site with URL '{$url}' already exists");
+        }
+
         $site->updateName($command->name);
-        $site->updateUrl($command->url);
+        $site->updateUrl($url);
         $site->updateType($command->type);
 
         $this->siteRepository->save($site);
+    }
+
+    private function normalizeUrl(string $url): string
+    {
+        $url = trim($url);
+        
+        // Add protocol if missing
+        if (!preg_match('/^https?:\/\//i', $url)) {
+            $url = 'https://' . $url;
+        }
+
+        $parts = parse_url($url);
+        if ($parts === false || !isset($parts['host'])) {
+            return $url;
+        }
+
+        $host = $parts['host'];
+        // Add www. if host has only 2 parts (e.g. example.com)
+        if (!str_starts_with($host, 'www.') && count(explode('.', $host)) === 2) {
+            $host = 'www.' . $host;
+        }
+
+        $scheme = $parts['scheme'] ?? 'https';
+        $path = $parts['path'] ?? '/';
+        if (!str_ends_with($path, '/')) {
+            $path .= '/';
+        }
+
+        return "{$scheme}://{$host}{$path}";
     }
 }

@@ -10,7 +10,7 @@ export function CreateUser() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('user');
+  const [role, setRole] = useState('editor');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -32,7 +32,7 @@ export function CreateUser() {
   };
 
   const roleOptions = [
-    { value: 'user', label: 'Standard User' },
+    { value: 'editor', label: 'Editor' },
     { value: 'admin', label: 'Administrator' },
   ];
 

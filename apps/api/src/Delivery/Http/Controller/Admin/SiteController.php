@@ -8,9 +8,13 @@ use App\Application\Site\Command\DeleteSiteCommand;
 use App\Application\Site\Handler\AssignUserToSiteHandler;
 use App\Application\Site\Handler\CreateSiteHandler;
 use App\Application\Site\Handler\DeleteSiteHandler;
+use App\Application\Site\Handler\GetSiteHandler;
 use App\Application\Site\Handler\ListSitesHandler;
+use App\Application\Site\Handler\UnassignUserFromSiteHandler;
 use App\Application\Site\Handler\UpdateSiteHandler;
+use App\Application\Site\Query\GetSiteQuery;
 use App\Application\Site\Query\ListSitesQuery;
+use App\Application\Site\Command\UnassignUserFromSiteCommand;
 use App\Delivery\Http\Request\Site\AssignUserToSiteRequest;
 use App\Delivery\Http\Request\Site\CreateSiteRequest;
 use App\Delivery\Http\Request\Site\UpdateSiteRequest;
@@ -23,10 +27,55 @@ class SiteController
     public function __construct(
         private CreateSiteHandler $createHandler,
         private ListSitesHandler $listHandler,
+        private GetSiteHandler $getHandler,
         private AssignUserToSiteHandler $assignHandler,
+        private UnassignUserFromSiteHandler $unassignHandler,
         private UpdateSiteHandler $updateHandler,
         private DeleteSiteHandler $deleteHandler,
     ) {}
+
+    public function unassignUser(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    {
+        try {
+            $siteId = $request->getAttribute("id");
+            $userId = $request->getAttribute("userId");
+
+            if (!is_string($siteId) || empty($siteId) || !is_string($userId) || empty($userId)) {
+                 throw new \InvalidArgumentException("Site ID and User ID are required");
+            }
+
+            $command = new UnassignUserFromSiteCommand($userId, $siteId);
+            $this->unassignHandler->handle($command);
+
+            return $response->withHeader("Content-Type", "application/json")->withStatus(204);
+        } catch (\InvalidArgumentException $e) {
+            $response->getBody()->write(json_encode(["error" => $e->getMessage()], JSON_THROW_ON_ERROR));
+
+            return $response->withHeader("Content-Type", "application/json")->withStatus(400);
+        }
+    }
+
+    public function get(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    {
+        try {
+            $siteId = $request->getAttribute("id");
+
+            if (!is_string($siteId) || empty($siteId)) {
+                throw new \InvalidArgumentException("Site ID is required");
+            }
+
+            $site = $this->getHandler->handle(new GetSiteQuery($siteId));
+            $data = SiteResource::toDetailArray($site);
+
+            $response->getBody()->write(json_encode($data, JSON_THROW_ON_ERROR));
+
+            return $response->withHeader("Content-Type", "application/json")->withStatus(200);
+        } catch (\InvalidArgumentException $e) {
+            $response->getBody()->write(json_encode(["error" => $e->getMessage()], JSON_THROW_ON_ERROR));
+
+            return $response->withHeader("Content-Type", "application/json")->withStatus(404);
+        }
+    }
 
     public function create(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {

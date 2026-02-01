@@ -1,6 +1,8 @@
 import { Outlet, useNavigate, Link, useLocation } from 'react-router-dom';
 import HomeIcon from '@/assets/icons/home.svg?react';
 import LogoutIcon from '@/assets/icons/logout.svg?react';
+import DocumentIcon from '@/assets/icons/document.svg?react';
+import UsersIcon from '@/assets/icons/users.svg?react';
 import { createAuthService } from '@/domain/auth';
 import React from 'react';
 
@@ -27,13 +29,39 @@ export function Layout() {
           <Link
             to="/"
             className={`flex items-center gap-3 px-4 py-2.5 rounded-lg font-medium transition-all duration-200 ${location.pathname === '/'
-                ? 'bg-primary/10 text-primary shadow-sm'
-                : 'text-slate-600 hover:bg-slate-50 hover:text-primary'
+              ? 'bg-primary/10 text-primary shadow-sm'
+              : 'text-slate-600 hover:bg-slate-50 hover:text-primary'
               }`}
           >
             <HomeIcon className="w-5 h-5" />
             Dashboard
           </Link>
+
+          {createAuthService().getUserRole() === 'admin' && (
+            <>
+              <Link
+                to="/admin/sites"
+                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg font-medium transition-all duration-200 ${location.pathname === '/admin/sites'
+                  ? 'bg-primary/10 text-primary shadow-sm'
+                  : 'text-slate-600 hover:bg-slate-50 hover:text-primary'
+                  }`}
+              >
+                <DocumentIcon className="w-5 h-5" />
+                Sites
+              </Link>
+
+              <Link
+                to="/users/create"
+                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg font-medium transition-all duration-200 ${location.pathname === '/users/create'
+                  ? 'bg-primary/10 text-primary shadow-sm'
+                  : 'text-slate-600 hover:bg-slate-50 hover:text-primary'
+                  }`}
+              >
+                <UsersIcon className="w-5 h-5" />
+                Add User
+              </Link>
+            </>
+          )}
         </nav>
 
         <div className="pt-6 border-t border-slate-100">

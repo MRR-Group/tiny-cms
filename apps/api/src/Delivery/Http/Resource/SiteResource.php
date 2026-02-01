@@ -24,6 +24,23 @@ class SiteResource
     }
 
     /**
+     * @return array<string, mixed>
+     */
+    public static function toDetailArray(Site $site): array
+    {
+        $data = self::toArray($site);
+        $data['editors'] = array_map(function ($user) {
+            return [
+                'id' => (string)$user->getId(),
+                'email' => (string)$user->getEmail(),
+                'role' => $user->getRole()->toString(),
+            ];
+        }, $site->getUsers()->toArray());
+
+        return $data;
+    }
+
+    /**
      * @param array<Site> $sites
      * @return array<int, array<string, mixed>>
      */

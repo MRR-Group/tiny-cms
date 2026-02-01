@@ -7,6 +7,7 @@ export interface Site {
   type: SiteType;
   editorCount: number;
   createdAt: string;
+  editors?: User[];
 }
 
 export interface CreateSiteRequest {

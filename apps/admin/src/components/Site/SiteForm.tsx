@@ -37,7 +37,27 @@ export const SiteForm: React.FC<SiteFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await onSubmit({ name, url, type });
+
+    let processedUrl = url.trim();
+
+    // Add protocol if missing
+    if (!/^https?:\/\//i.test(processedUrl)) {
+      processedUrl = `https://${processedUrl}`;
+    }
+
+    // Add www. ifhostname only has two parts (e.g., example.com -> www.example.com)
+    try {
+      const urlObj = new URL(processedUrl);
+      const hostname = urlObj.hostname;
+      if (!hostname.startsWith('www.') && hostname.split('.').length === 2) {
+        urlObj.hostname = `www.${hostname}`;
+        processedUrl = urlObj.toString();
+      }
+    } catch (err) {
+      // If URL parsing fails, we still have the protocol-prefixed version
+    }
+
+    await onSubmit({ name, url: processedUrl, type });
     if (!initialData) {
       setName('');
       setUrl('');
@@ -58,11 +78,11 @@ export const SiteForm: React.FC<SiteFormProps> = ({
       <Input
         id="url"
         label="URL"
-        type="url"
+        type="text"
         value={url}
         onChange={(e) => setUrl(e.target.value)}
         required
-        placeholder="https://example.com"
+        placeholder="example.com"
       />
       <Select
         id="type"

@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace App\Application\Site\Handler;
 
-use App\Application\Site\Command\AssignUserToSiteCommand;
+use App\Application\Site\Command\UnassignUserFromSiteCommand;
 use App\Domain\Auth\Repository\UserRepositoryInterface;
 use App\Domain\Auth\ValueObject\UserId;
 use App\Domain\Site\Repository\SiteRepositoryInterface;
 use App\Domain\Site\ValueObject\SiteId;
 
-class AssignUserToSiteHandler
+class UnassignUserFromSiteHandler
 {
     public function __construct(
         private SiteRepositoryInterface $siteRepository,
         private UserRepositoryInterface $userRepository,
     ) {}
 
-    public function handle(AssignUserToSiteCommand $command): void
+    public function handle(UnassignUserFromSiteCommand $command): void
     {
         $site = $this->siteRepository->findById(new SiteId($command->siteId));
 
@@ -31,7 +31,7 @@ class AssignUserToSiteHandler
             throw new \InvalidArgumentException("User not found");
         }
 
-        $user->addSite($site);
-        $this->userRepository->save($user);
+        $site->removeUser($user);
+        $this->siteRepository->save($site);
     }
 }
