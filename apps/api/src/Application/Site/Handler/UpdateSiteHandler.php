@@ -48,7 +48,7 @@ class UpdateSiteHandler
 
         $parts = parse_url($url);
 
-        if ($parts === false) {
+        if ($parts === false || !isset($parts["host"])) {
             return $url;
         }
 
@@ -59,7 +59,7 @@ class UpdateSiteHandler
             $host = "www." . $host;
         }
 
-        $scheme = strtolower($parts["scheme"]);
+        $scheme = isset($parts["scheme"]) ? strtolower($parts["scheme"]) : "https";
         $path = $parts["path"] ?? "/";
 
         if (!str_ends_with($path, "/")) {
