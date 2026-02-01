@@ -7,9 +7,9 @@ namespace Tests\Unit\Application\Site\Handler;
 use App\Application\Site\Command\CreateSiteCommand;
 use App\Application\Site\Handler\CreateSiteHandler;
 use App\Domain\Shared\Clock\ClockInterface;
+use App\Domain\Shared\Util\UrlNormalizer;
 use App\Domain\Site\Entity\Site;
 use App\Domain\Site\Repository\SiteRepositoryInterface;
-use App\Domain\Shared\Util\UrlNormalizer;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 

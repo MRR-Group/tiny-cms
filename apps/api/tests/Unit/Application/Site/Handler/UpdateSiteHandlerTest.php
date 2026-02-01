@@ -6,11 +6,11 @@ namespace Tests\Unit\Application\Site\Handler;
 
 use App\Application\Site\Command\UpdateSiteCommand;
 use App\Application\Site\Handler\UpdateSiteHandler;
+use App\Domain\Shared\Util\UrlNormalizer;
 use App\Domain\Site\Entity\Site;
 use App\Domain\Site\Repository\SiteRepositoryInterface;
 use App\Domain\Site\ValueObject\SiteId;
 use App\Domain\Site\ValueObject\SiteType;
-use App\Domain\Shared\Util\UrlNormalizer;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;

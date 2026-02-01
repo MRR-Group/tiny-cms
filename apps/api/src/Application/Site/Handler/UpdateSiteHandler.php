@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace App\Application\Site\Handler;
 
 use App\Application\Site\Command\UpdateSiteCommand;
+use App\Domain\Shared\Util\UrlNormalizer;
 use App\Domain\Site\Repository\SiteRepositoryInterface;
 use App\Domain\Site\ValueObject\SiteId;
-
-use App\Domain\Shared\Util\UrlNormalizer;
 
 class UpdateSiteHandler
 {

@@ -6,12 +6,11 @@ namespace App\Application\Site\Handler;
 
 use App\Application\Site\Command\CreateSiteCommand;
 use App\Domain\Shared\Clock\ClockInterface;
+use App\Domain\Shared\Util\UrlNormalizer;
 use App\Domain\Site\Entity\Site;
 use App\Domain\Site\Repository\SiteRepositoryInterface;
 use App\Domain\Site\ValueObject\SiteId;
 use App\Domain\Site\ValueObject\SiteType;
-
-use App\Domain\Shared\Util\UrlNormalizer;
 
 class CreateSiteHandler
 {
