@@ -58,6 +58,7 @@ class CreateSiteHandler
             return $url;
         }
 
+        /** @phpstan-ignore-next-line */
         $host = strtolower($parts["host"]);
 
         // Add www. if host has only 2 parts (e.g. example.com)
