@@ -9,6 +9,7 @@ use App\Application\Site\Handler\CreateSiteHandler;
 use App\Domain\Shared\Clock\ClockInterface;
 use App\Domain\Site\Entity\Site;
 use App\Domain\Site\Repository\SiteRepositoryInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class CreateSiteHandlerTest extends TestCase
@@ -52,9 +53,7 @@ class CreateSiteHandlerTest extends TestCase
         $handler->handle($command);
     }
 
-    /**
-     * @dataProvider normalizationProvider
-     */
+    #[DataProvider("normalizationProvider")]
     public function testNormalization(string $inputUrl, string $expectedUrl): void
     {
         $siteRepository = $this->createMock(SiteRepositoryInterface::class);
@@ -67,6 +66,7 @@ class CreateSiteHandlerTest extends TestCase
             ->method("save")
             ->with($this->callback(function (Site $site) use ($expectedUrl) {
                 $this->assertEquals($expectedUrl, $site->getUrl());
+
                 return true;
             }));
 

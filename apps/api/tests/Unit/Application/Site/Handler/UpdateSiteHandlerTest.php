@@ -11,6 +11,7 @@ use App\Domain\Site\Repository\SiteRepositoryInterface;
 use App\Domain\Site\ValueObject\SiteId;
 use App\Domain\Site\ValueObject\SiteType;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -95,13 +96,11 @@ class UpdateSiteHandlerTest extends TestCase
         $this->repository->method("findByUrl")->with("https://www.same.com/")->willReturn($site);
 
         $site->expects($this->once())->method("updateUrl")->with("https://www.same.com/");
-        
+
         $this->handler->handle($command);
     }
 
-    /**
-     * @dataProvider normalizationProvider
-     */
+    #[DataProvider("normalizationProvider")]
     public function testNormalization(string $inputUrl, string $expectedUrl): void
     {
         $id = SiteId::generate();
@@ -116,6 +115,7 @@ class UpdateSiteHandlerTest extends TestCase
             ->method("updateUrl")
             ->with($this->callback(function (string $url) use ($expectedUrl) {
                 $this->assertEquals($expectedUrl, $url);
+
                 return true;
             }));
 
