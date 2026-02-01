@@ -149,4 +149,40 @@ describe('SiteService', () => {
     );
     expect(result).toEqual(sites);
   });
+
+  it('updateSite sends PUT request', async () => {
+    const id = 'site-123';
+    const data = { name: 'Updated Site', url: 'http://updated.com', type: 'dynamic' as const };
+    const response = {
+      ok: true,
+      status: 204,
+      text: async () => '',
+      json: async () => ({}),
+    };
+    fetchMock.mockResolvedValue(response);
+
+    await service.updateSite(id, data);
+
+    const callArgs = fetchMock.mock.calls[0];
+    expect(callArgs[0]).toBe(`${baseUrl}/admin/sites/${id}`);
+    expect(callArgs[1].method).toBe('PUT');
+    expect(callArgs[1].body).toBe(JSON.stringify(data));
+  });
+
+  it('deleteSite sends DELETE request', async () => {
+    const id = 'site-123';
+    const response = {
+      ok: true,
+      status: 204,
+      text: async () => '',
+      json: async () => ({}),
+    };
+    fetchMock.mockResolvedValue(response);
+
+    await service.deleteSite(id);
+
+    const callArgs = fetchMock.mock.calls[0];
+    expect(callArgs[0]).toBe(`${baseUrl}/admin/sites/${id}`);
+    expect(callArgs[1].method).toBe('DELETE');
+  });
 });
