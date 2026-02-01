@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { UserService } from './userService';
+import { UserService, createUserService } from './userService';
 
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
@@ -94,5 +94,12 @@ describe('UserService', () => {
     mockFetch.mockResolvedValue(mockResponse);
 
     await expect(userService.getAllUsers()).rejects.toThrow('An error occurred');
+  });
+
+  describe('factory', () => {
+    it('createUserService creates instance', () => {
+      const instance = createUserService();
+      expect(instance).toBeInstanceOf(UserService);
+    });
   });
 });
