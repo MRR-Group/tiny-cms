@@ -14,7 +14,7 @@ class ChangePasswordRequestTest extends TestCase
     public function testCreatesCommandFromValidRequest(): void
     {
         $request = (new ServerRequestFactory())->createServerRequest("POST", "/auth/change-password")
-            ->withAttribute("user_id", "550e8400-e29b-41d4-a716-446655440000")
+            ->withAttribute("userId", "550e8400-e29b-41d4-a716-446655440000")
             ->withParsedBody([
                 "old_password" => "old",
                 "new_password" => "new",
@@ -31,7 +31,7 @@ class ChangePasswordRequestTest extends TestCase
     public function testConvertsObjectBodyToArray(): void
     {
         $request = (new ServerRequestFactory())->createServerRequest("POST", "/")
-            ->withAttribute("user_id", "550e8400-e29b-41d4-a716-446655440000")
+            ->withAttribute("userId", "550e8400-e29b-41d4-a716-446655440000")
             ->withParsedBody((object)["old_password" => "old", "new_password" => "new"]);
 
         $command = ChangePasswordRequest::fromPsr7($request);
@@ -43,7 +43,7 @@ class ChangePasswordRequestTest extends TestCase
     public function testConvertsNonStringInputsToString(): void
     {
         $request = (new ServerRequestFactory())->createServerRequest("POST", "/")
-            ->withAttribute("user_id", "550e8400-e29b-41d4-a716-446655440000")
+            ->withAttribute("userId", "550e8400-e29b-41d4-a716-446655440000")
             ->withParsedBody(["old_password" => 12345, "new_password" => 67890]);
 
         $command = ChangePasswordRequest::fromPsr7($request);
@@ -69,7 +69,7 @@ class ChangePasswordRequestTest extends TestCase
     public function testThrowsExceptionIfOldPasswordMissing(): void
     {
         $request = (new ServerRequestFactory())->createServerRequest("POST", "/auth/change-password")
-            ->withAttribute("user_id", "user-123")
+            ->withAttribute("userId", "user-123")
             ->withParsedBody([
                 "new_password" => "new",
             ]);
@@ -83,7 +83,7 @@ class ChangePasswordRequestTest extends TestCase
     public function testThrowsExceptionIfNewPasswordMissing(): void
     {
         $request = (new ServerRequestFactory())->createServerRequest("POST", "/auth/change-password")
-            ->withAttribute("user_id", "user-123")
+            ->withAttribute("userId", "user-123")
             ->withParsedBody([
                 "old_password" => "old",
             ]);

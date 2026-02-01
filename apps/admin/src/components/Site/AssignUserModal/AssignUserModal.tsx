@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { User } from '@/domain/site/types';
-import { Button } from '../Button/Button';
-import { Select } from '../Select/Select';
+import { Button } from '@/components/Button/Button';
+import { Select } from '@/components/Select/Select';
 
 interface AssignUserModalProps {
   isOpen: boolean;
@@ -19,12 +19,18 @@ export const AssignUserModal: React.FC<AssignUserModalProps> = ({
   users,
 }) => {
   const [userId, setUserId] = useState('');
+  const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!userId) {
+      setError('Please select a user');
+      return;
+    }
+    setError(null);
     setIsSubmitting(true);
     try {
       await onAssign(userId);
@@ -54,13 +60,17 @@ export const AssignUserModal: React.FC<AssignUserModalProps> = ({
               onChange={(e) => setUserId(e.target.value)}
               options={userOptions}
               placeholder="Choose a user..."
-              required
             />
+            {error && (
+              <p className="text-sm text-red-600 bg-red-50 p-2 rounded-lg border border-red-100">
+                {error}
+              </p>
+            )}
             <div className="flex items-center justify-end gap-3 pt-4">
               <Button type="button" variant="ghost" onClick={onClose}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={isSubmitting || !userId}>
+              <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? 'Assigning...' : 'Assign'}
               </Button>
             </div>

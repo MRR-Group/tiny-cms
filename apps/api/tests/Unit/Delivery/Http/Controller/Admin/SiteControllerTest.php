@@ -9,7 +9,9 @@ use App\Application\Site\Command\CreateSiteCommand;
 use App\Application\Site\Handler\AssignUserToSiteHandler;
 use App\Application\Site\Handler\CreateSiteHandler;
 use App\Application\Site\Handler\DeleteSiteHandler;
+use App\Application\Site\Handler\GetSiteHandler;
 use App\Application\Site\Handler\ListSitesHandler;
+use App\Application\Site\Handler\UnassignUserFromSiteHandler;
 use App\Application\Site\Handler\UpdateSiteHandler;
 use App\Application\Site\Query\ListSitesQuery;
 use App\Delivery\Http\Controller\Admin\SiteController;
@@ -26,6 +28,8 @@ class SiteControllerTest extends TestCase
     private CreateSiteHandler&MockObject $createHandler;
     private AssignUserToSiteHandler&MockObject $assignHandler;
     private ListSitesHandler&MockObject $listHandler;
+    private GetSiteHandler&MockObject $getHandler;
+    private UnassignUserFromSiteHandler&MockObject $unassignHandler;
     private UpdateSiteHandler&MockObject $updateHandler;
     private DeleteSiteHandler&MockObject $deleteHandler;
     private SiteController $controller;
@@ -33,14 +37,19 @@ class SiteControllerTest extends TestCase
     protected function setUp(): void
     {
         $this->createHandler = $this->createMock(CreateSiteHandler::class);
-        $this->assignHandler = $this->createMock(AssignUserToSiteHandler::class);
         $this->listHandler = $this->createMock(ListSitesHandler::class);
+        $this->getHandler = $this->createMock(GetSiteHandler::class);
+        $this->assignHandler = $this->createMock(AssignUserToSiteHandler::class);
+        $this->unassignHandler = $this->createMock(UnassignUserFromSiteHandler::class);
         $this->updateHandler = $this->createMock(UpdateSiteHandler::class);
         $this->deleteHandler = $this->createMock(DeleteSiteHandler::class);
+        
         $this->controller = new SiteController(
             $this->createHandler,
             $this->listHandler,
+            $this->getHandler,
             $this->assignHandler,
+            $this->unassignHandler,
             $this->updateHandler,
             $this->deleteHandler,
         );

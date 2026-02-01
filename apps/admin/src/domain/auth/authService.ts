@@ -116,7 +116,7 @@ export class AuthService {
     if (!token) return null;
 
     const parts = token.split('.');
-    
+
     try {
       // Decode JWT payload (middle part between dots)
       const payload = parts[1];
@@ -127,4 +127,3 @@ export class AuthService {
     }
   }
 }
-

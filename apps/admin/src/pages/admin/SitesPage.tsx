@@ -14,7 +14,11 @@ export const SitesPage: React.FC = () => {
   // Modals state
   const [editingSite, setEditingSite] = useState<Site | null>(null);
   const [siteToDelete, setSiteToDelete] = useState<Site | null>(null);
-  const [alertConfig, setAlertConfig] = useState<{ title: string, message: string, type: 'error' | 'success' } | null>(null);
+  const [alertConfig, setAlertConfig] = useState<{
+    title: string;
+    message: string;
+    type: 'error' | 'success';
+  } | null>(null);
 
   const fetchData = async () => {
     try {
@@ -58,7 +62,7 @@ export const SitesPage: React.FC = () => {
       setAlertConfig({
         title: 'Deletion Failed',
         message: err instanceof Error ? err.message : 'Failed to delete site',
-        type: 'error'
+        type: 'error',
       });
     }
   };

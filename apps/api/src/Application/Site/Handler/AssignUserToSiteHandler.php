@@ -31,7 +31,7 @@ class AssignUserToSiteHandler
             throw new \InvalidArgumentException("User not found");
         }
 
-        $user->addSite($site);
-        $this->userRepository->save($user);
+        $site->addUser($user);
+        $this->siteRepository->save($site);
     }
 }

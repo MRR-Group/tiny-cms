@@ -97,12 +97,18 @@ describe('UserService', () => {
   });
 
   describe('factory', () => {
-    it('createUserService creates instance with correct base URL', () => {
+    it('createUserService uses VITE_API_URL if provided', () => {
+      vi.stubEnv('VITE_API_URL', 'http://custom-api.com');
       const instance = createUserService();
-      expect(instance).toBeInstanceOf(UserService);
-      // Verify base URL is set correctly (default)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      expect((instance as any).baseUrl).toBe('http://localhost:8080');
+      expect((instance as unknown as { baseUrl: string }).baseUrl).toBe('http://custom-api.com');
+      vi.unstubAllEnvs();
+    });
+
+    it('createUserService uses default URL if VITE_API_URL is missing', () => {
+      vi.stubEnv('VITE_API_URL', '');
+      const instance = createUserService();
+      expect((instance as unknown as { baseUrl: string }).baseUrl).toBe('http://localhost:8080');
+      vi.unstubAllEnvs();
     });
   });
 });

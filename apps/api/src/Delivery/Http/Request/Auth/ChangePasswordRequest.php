@@ -12,7 +12,7 @@ class ChangePasswordRequest
 {
     public static function fromPsr7(ServerRequestInterface $request): ChangePasswordCommand
     {
-        $userIdStr = $request->getAttribute("user_id");
+        $userIdStr = $request->getAttribute("userId");
         $data = (array)$request->getParsedBody();
 
         $oldPassword = $data["old_password"] ?? "";

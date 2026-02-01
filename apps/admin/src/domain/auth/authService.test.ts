@@ -230,7 +230,7 @@ describe('authService', () => {
       const payload = btoa(JSON.stringify({ role: 'admin' }));
       const token = `header.${payload}.signature`;
       localStorage.setItem('authToken', token);
-      
+
       expect(authService.getUserRole()).toBe('admin');
     });
 
@@ -238,7 +238,7 @@ describe('authService', () => {
       const payload = btoa(JSON.stringify({ some: 'data' }));
       const token = `header.${payload}.signature`;
       localStorage.setItem('authToken', token);
-      
+
       expect(authService.getUserRole()).toBeNull();
     });
 
@@ -251,7 +251,7 @@ describe('authService', () => {
       const payload = 'not-json';
       const token = `header.${payload}.signature`;
       localStorage.setItem('authToken', token);
-      
+
       expect(authService.getUserRole()).toBeNull();
     });
   });

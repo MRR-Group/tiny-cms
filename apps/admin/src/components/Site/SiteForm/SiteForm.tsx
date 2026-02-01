@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { CreateSiteRequest, SiteType } from '@/domain/site/types';
-import { Button } from '../Button/Button';
-import { Input } from '../Input/Input';
-import { Select } from '../Select/Select';
+import { Button } from '@/components/Button/Button';
+import { Input } from '@/components/Input/Input';
+import { Select } from '@/components/Select/Select';
 
 interface SiteFormProps {
   onSubmit: (data: CreateSiteRequest) => Promise<void>;

@@ -24,7 +24,7 @@ describe('SiteForm', () => {
 
     expect(handleSubmit).toHaveBeenCalledWith({
       name: 'Test Site',
-      url: 'http://example.com',
+      url: 'http://www.example.com/',
       type: 'dynamic',
     });
   });

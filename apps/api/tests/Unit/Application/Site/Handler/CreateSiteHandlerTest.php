@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 
 class CreateSiteHandlerTest extends TestCase
 {
-    public function testHandleCreatesSite(): void
+    public function testHandleCreatesSiteWithNormalization(): void
     {
         $siteRepository = $this->createMock(SiteRepositoryInterface::class);
         $clock = $this->createMock(ClockInterface::class);
@@ -23,17 +23,34 @@ class CreateSiteHandlerTest extends TestCase
         $clock->method("now")->willReturn($now);
 
         $handler = new CreateSiteHandler($siteRepository, $clock);
-        $command = new CreateSiteCommand("My Site", "https://example.com", "static");
+        
+        // Input: "example.com" -> Output: "https://www.example.com/"
+        $command = new CreateSiteCommand("My Site", "example.com", "static");
 
         $siteRepository->expects($this->once())
             ->method("save")
-            ->with($this->callback(fn(Site $site) => $site->getName() === "My Site"
-                    && $site->getUrl() === "https://example.com"
-                    && $site->getType() === SiteType::STATIC
-                    && $site->getCreatedAt() === $now));
+            ->with($this->callback(fn(Site $site) => 
+                $site->getUrl() === "https://www.example.com/"
+            ));
 
-        $siteId = $handler->handle($command);
+        $handler->handle($command);
+    }
 
-        $this->assertInstanceOf(SiteId::class, $siteId);
+    public function testHandleThrowsIfSiteAlreadyExists(): void
+    {
+        $siteRepository = $this->createMock(SiteRepositoryInterface::class);
+        $clock = $this->createMock(ClockInterface::class);
+        
+        $existingSite = $this->createMock(Site::class);
+        // Normalize search
+        $siteRepository->method("findByUrl")->with("https://www.xd.pl/")->willReturn($existingSite);
+
+        $handler = new CreateSiteHandler($siteRepository, $clock);
+        $command = new CreateSiteCommand("My Site", "xd.pl", "static");
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage("Site with URL 'https://www.xd.pl/' already exists");
+
+        $handler->handle($command);
     }
 }

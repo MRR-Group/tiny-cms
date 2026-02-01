@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { BrowserRouter } from 'react-router-dom';
 import { SitesPage } from './SitesPage';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
@@ -44,7 +45,11 @@ describe('SitesPage', () => {
     ];
     mockSiteService.getSites.mockResolvedValue(sites);
 
-    render(<SitesPage />);
+    render(
+      <BrowserRouter>
+        <SitesPage />
+      </BrowserRouter>
+    );
 
     await waitFor(() => {
       expect(screen.getByText('Site 1')).toBeInTheDocument();
@@ -57,7 +62,11 @@ describe('SitesPage', () => {
   it('displays error if fetch fails', async () => {
     mockSiteService.getSites.mockRejectedValue(new Error('Fetch failed'));
 
-    render(<SitesPage />);
+    render(
+      <BrowserRouter>
+        <SitesPage />
+      </BrowserRouter>
+    );
 
     await waitFor(() => {
       // The component displays "No sites found" even on error because empty list,
@@ -70,7 +79,11 @@ describe('SitesPage', () => {
     mockSiteService.getSites.mockResolvedValue([]);
     mockSiteService.createSite.mockResolvedValue({});
 
-    render(<SitesPage />);
+    render(
+      <BrowserRouter>
+        <SitesPage />
+      </BrowserRouter>
+    );
 
     await userEvent.type(screen.getByLabelText(/Name/i), 'New Site');
     await userEvent.type(screen.getByLabelText(/URL/i), 'http://new.com');
@@ -87,7 +100,7 @@ describe('SitesPage', () => {
     await waitFor(() => {
       expect(mockSiteService.createSite).toHaveBeenCalledWith({
         name: 'New Site',
-        url: 'http://new.com',
+        url: 'http://www.new.com/',
         type: 'static',
       });
     });

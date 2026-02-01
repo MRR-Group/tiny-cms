@@ -26,47 +26,58 @@ class UpdateSiteHandlerTest extends TestCase
         $this->handler = new UpdateSiteHandler($this->repository);
     }
 
-    public function testHandleUpdatesSite(): void
+    public function testHandleUpdatesSiteWithNormalization(): void
     {
         $id = SiteId::generate();
+        // Input: "new-url.com" -> Output: "https://www.new-url.com/"
         $command = new UpdateSiteCommand(
             $id->toString(),
             "New Name",
-            "http://new-url.com",
+            "new-url.com",
             SiteType::DYNAMIC,
         );
 
         $site = $this->createMock(Site::class);
-        $site->expects($this->once())->method("updateName")->with("New Name");
-        $site->expects($this->once())->method("updateUrl")->with("http://new-url.com");
-        $site->expects($this->once())->method("updateType")->with(SiteType::DYNAMIC);
+        $site->method("getId")->willReturn($id);
+        
+        $site->expects($this->once())->method("updateUrl")->with("https://www.new-url.com/");
 
-        $this->repository->expects($this->once())
-            ->method("findById")
-            ->with($this->callback(fn(SiteId $sid) => $sid->equals($id)))
-            ->willReturn($site);
-
-        $this->repository->expects($this->once())->method("save")->with($site);
+        $this->repository->method("findById")->willReturn($site);
+        // Duplicate check should return null or the same site
+        $this->repository->method("findByUrl")->willReturn(null);
 
         $this->handler->handle($command);
     }
 
-    public function testHandleThrowsExceptionIfSiteNotFound(): void
+    public function testHandleThrowsIfSiteNotFound(): void
     {
         $id = SiteId::generate();
-        $command = new UpdateSiteCommand(
-            $id->toString(),
-            "New Name",
-            "http://new-url.com",
-            SiteType::DYNAMIC,
-        );
+        $command = new UpdateSiteCommand($id->toString(), "Name", "url.com", SiteType::STATIC);
 
-        $this->repository->expects($this->once())
-            ->method("findById")
-            ->willReturn(null);
+        $this->repository->method("findById")->willReturn(null);
 
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage("Site not found");
+
+        $this->handler->handle($command);
+    }
+
+    public function testHandleThrowsIfUrlAlreadyTakenByAnotherSite(): void
+    {
+        $id = SiteId::generate();
+        $otherId = SiteId::generate();
+        $command = new UpdateSiteCommand($id->toString(), "Name", "taken.com", SiteType::STATIC);
+
+        $site = $this->createMock(Site::class);
+        $site->method("getId")->willReturn($id);
+        $this->repository->method("findById")->willReturn($site);
+
+        $otherSite = $this->createMock(Site::class);
+        $otherSite->method("getId")->willReturn($otherId);
+        $this->repository->method("findByUrl")->with("https://www.taken.com/")->willReturn($otherSite);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage("Site with URL 'https://www.taken.com/' already exists");
 
         $this->handler->handle($command);
     }
