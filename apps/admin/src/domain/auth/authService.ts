@@ -115,9 +115,11 @@ export class AuthService {
     const token = this.getToken();
     if (!token) return null;
 
+    const parts = token.split('.');
+    
     try {
       // Decode JWT payload (middle part between dots)
-      const payload = token.split('.')[1];
+      const payload = parts[1];
       const decoded = JSON.parse(atob(payload));
       return decoded.role || null;
     } catch {

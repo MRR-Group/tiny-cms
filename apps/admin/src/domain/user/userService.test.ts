@@ -97,9 +97,11 @@ describe('UserService', () => {
   });
 
   describe('factory', () => {
-    it('createUserService creates instance', () => {
+    it('createUserService creates instance with correct base URL', () => {
       const instance = createUserService();
       expect(instance).toBeInstanceOf(UserService);
+      // Verify base URL is set correctly (default)
+      expect((instance as any).baseUrl).toBe('http://localhost:8080');
     });
   });
 });
