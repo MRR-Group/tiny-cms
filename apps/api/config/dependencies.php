@@ -5,8 +5,10 @@ declare(strict_types=1);
 use App\Application\Auth\Contract\PasswordHasherInterface;
 use App\Application\Auth\Contract\TokenIssuerInterface;
 use App\Domain\Auth\Repository\UserRepositoryInterface;
+use App\Domain\Site\Repository\SiteRepositoryInterface;
 use App\Infrastructure\Persistence\Doctrine\EntityManagerFactory;
 use App\Infrastructure\Persistence\Doctrine\Repository\DoctrineUserRepository;
+use App\Infrastructure\Persistence\Doctrine\Repository\DoctrineSiteRepository;
 use App\Infrastructure\Security\Argon2PasswordHasher;
 use App\Infrastructure\Security\JwtTokenService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -18,6 +20,7 @@ return [
         return EntityManagerFactory::create($c->get('settings'));
     },
     UserRepositoryInterface::class => autowire(DoctrineUserRepository::class),
+    SiteRepositoryInterface::class => autowire(DoctrineSiteRepository::class),
     PasswordHasherInterface::class => autowire(Argon2PasswordHasher::class),
     TokenIssuerInterface::class => function (Psr\Container\ContainerInterface $c) {
         return new JwtTokenService(

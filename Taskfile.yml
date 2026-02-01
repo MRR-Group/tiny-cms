@@ -33,8 +33,16 @@ tasks:
       - task: api:test
       - task: api:mutation
       - task: api:deptrac
+      - task: api:deptrac
       - task: admin:test
       - task: admin:mutation
+
+  init:fresh:
+    desc: "Re-initialize project with fresh database"
+    cmds:
+      - task: up
+      - task: api:db:reset
+      - task: init
 
   fix:
     desc: "Fix all projects (backend and frontend)"
@@ -137,6 +145,11 @@ tasks:
     cmds:
       - "{{.DOCKER_EXEC_API}} vendor/bin/doctrine-migrations migrate --no-interaction"
 
+  api:db:reset:
+    desc: "Reset database (revert all migrations)"
+    cmds:
+      - "{{.DOCKER_EXEC_API}} vendor/bin/doctrine-migrations migrate 0 --no-interaction"
+
   api:seed:admin:
     desc: "Create a new admin user (usage: task api:seed:admin -- <email> <password>)"
     cmds:
@@ -151,7 +164,6 @@ tasks:
   admin:install:
     desc: "Install frontend dependencies"
     cmds:
-      - "docker compose exec --user root admin sh -c 'command -v pnpm >/dev/null || npm install -g pnpm'"
       - "{{.DOCKER_EXEC_ADMIN}} pnpm install"
 
   admin:test:

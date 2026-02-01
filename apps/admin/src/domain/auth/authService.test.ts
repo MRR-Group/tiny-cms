@@ -9,12 +9,12 @@ import {
 } from './authService';
 
 const API_BASE_URL = 'http://localhost:8000';
-const authService = new AuthService(API_BASE_URL);
-
 describe('authService', () => {
   const fetchMock = vi.fn();
+  let authService: AuthService;
 
   beforeEach(() => {
+    authService = new AuthService(API_BASE_URL);
     global.fetch = fetchMock;
     const storage = new Map<string, string>();
     vi.stubGlobal('localStorage', {
@@ -216,6 +216,43 @@ describe('authService', () => {
 
     it('getToken returns null if missing', () => {
       expect(authService.getToken()).toBeNull();
+    });
+  });
+
+  describe('getUserRole', () => {
+    it('returns null if no token exists', () => {
+      localStorage.removeItem('authToken');
+      expect(authService.getUserRole()).toBeNull();
+    });
+
+    it('returns role from valid token', () => {
+      // Mock a simplified JWT token structures (header.payload.signature)
+      const payload = btoa(JSON.stringify({ role: 'admin' }));
+      const token = `header.${payload}.signature`;
+      localStorage.setItem('authToken', token);
+
+      expect(authService.getUserRole()).toBe('admin');
+    });
+
+    it('returns null if token has no role', () => {
+      const payload = btoa(JSON.stringify({ some: 'data' }));
+      const token = `header.${payload}.signature`;
+      localStorage.setItem('authToken', token);
+
+      expect(authService.getUserRole()).toBeNull();
+    });
+
+    it('returns null if token is malformed', () => {
+      localStorage.setItem('authToken', 'invalid-token');
+      expect(authService.getUserRole()).toBeNull();
+    });
+
+    it('returns null if payload is not valid json', () => {
+      const payload = 'not-json';
+      const token = `header.${payload}.signature`;
+      localStorage.setItem('authToken', token);
+
+      expect(authService.getUserRole()).toBeNull();
     });
   });
 });

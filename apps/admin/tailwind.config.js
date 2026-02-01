@@ -32,8 +32,8 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Mitr', 'system-ui', 'sans-serif'],
-        serif: ['Source Serif 4', 'Georgia', 'serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        serif: ['Inter', 'system-ui', 'sans-serif'],
       },
     },
   },

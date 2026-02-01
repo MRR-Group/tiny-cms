@@ -26,7 +26,7 @@ class ChangePasswordControllerTest extends TestCase
     public function testReturns200OnSuccess(): void
     {
         $request = (new ServerRequestFactory())->createServerRequest("POST", "/auth/change-password")
-            ->withAttribute("user_id", "550e8400-e29b-41d4-a716-446655440000")
+            ->withAttribute("userId", "550e8400-e29b-41d4-a716-446655440000")
             ->withParsedBody(["old_password" => "old", "new_password" => "new"]);
         $response = (new ResponseFactory())->createResponse();
 
@@ -43,7 +43,7 @@ class ChangePasswordControllerTest extends TestCase
     public function testReturns400IfInvalidOldPassword(): void
     {
         $request = (new ServerRequestFactory())->createServerRequest("POST", "/auth/change-password")
-            ->withAttribute("user_id", "550e8400-e29b-41d4-a716-446655440000")
+            ->withAttribute("userId", "550e8400-e29b-41d4-a716-446655440000")
             ->withParsedBody(["old_password" => "wrong", "new_password" => "new"]);
         $response = (new ResponseFactory())->createResponse();
 
@@ -59,7 +59,7 @@ class ChangePasswordControllerTest extends TestCase
     public function testReturns500OnOtherErrors(): void
     {
         $request = (new ServerRequestFactory())->createServerRequest("POST", "/auth/change-password")
-            ->withAttribute("user_id", "550e8400-e29b-41d4-a716-446655440000")
+            ->withAttribute("userId", "550e8400-e29b-41d4-a716-446655440000")
             ->withParsedBody(["old_password" => "old", "new_password" => "new"]);
         $response = (new ResponseFactory())->createResponse();
 

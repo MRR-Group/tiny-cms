@@ -17,4 +17,9 @@ interface UserRepositoryInterface
     public function findByEmail(Email $email): ?User;
 
     public function findByResetToken(string $token): ?User;
+
+    /**
+     * @return array<User>
+     */
+    public function findAll(): array;
 }

@@ -31,7 +31,7 @@ describe('Button', () => {
 
     const button = screen.getByRole('button');
 
-    expect(button.className).toContain('bg-red-500');
+    expect(button.className).toContain('bg-orange-600');
   });
 
   it('handles click events', async () => {

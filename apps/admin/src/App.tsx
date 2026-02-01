@@ -5,13 +5,25 @@ import { Login } from '@/pages/Login';
 import { ForceChangePassword } from '@/pages/ChangePassword';
 import { RequestPasswordReset, SetNewPassword } from '@/pages/PasswordReset';
 import { CreateUser } from '@/pages/UserManagement';
-import { authService } from '@/domain/auth';
+import { SitesPage } from '@/pages/admin/SitesPage';
+import { SiteDetailsPage } from '@/pages/admin/SiteDetailsPage';
+import { createAuthService } from '@/domain/auth';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  if (!authService.isAuthenticated()) {
+  if (!createAuthService().isAuthenticated()) {
     return <Navigate to="/login" replace />;
   }
   return <>{children}</>;
+}
+
+function DefaultRoute() {
+  const userRole = createAuthService().getUserRole();
+
+  if (userRole === 'admin') {
+    return <Navigate to="/admin/sites" replace />;
+  }
+
+  return <Dashboard />;
 }
 
 function App() {
@@ -33,8 +45,10 @@ function App() {
           </ProtectedRoute>
         }
       >
-        <Route index element={<Dashboard />} />
+        <Route index element={<DefaultRoute />} />
         <Route path="users/create" element={<CreateUser />} />
+        <Route path="admin/sites" element={<SitesPage />} />
+        <Route path="admin/sites/:id" element={<SiteDetailsPage />} />
       </Route>
     </Routes>
   );

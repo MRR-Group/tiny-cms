@@ -3,6 +3,13 @@
     "source": {
         "directories": [
             "src"
+        ],
+        "excludes": [
+            "src/Infrastructure/Persistence/Doctrine/Migrations",
+            "Infrastructure/Persistence/Doctrine/Migrations",
+            "Infrastructure/Persistence/Doctrine/EntityManagerFactory.php",
+            "src/Application.php",
+            "Application.php"
         ]
     },
     "mutators": {

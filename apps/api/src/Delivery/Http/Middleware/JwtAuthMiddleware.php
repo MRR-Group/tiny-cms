@@ -38,7 +38,7 @@ class JwtAuthMiddleware implements MiddlewareInterface
             return $response->withStatus(401)->withHeader("Content-Type", "application/json");
         }
 
-        $request = $request->withAttribute("user_id", $claims["sub"])
+        $request = $request->withAttribute("userId", $claims["sub"])
             ->withAttribute("role", $claims["role"]);
 
         return $handler->handle($request);

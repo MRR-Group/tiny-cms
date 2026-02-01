@@ -3,12 +3,22 @@
 COMPONENTS_DIR="src/components"
 MISSING_STORIES=""
 
-for dir in "$COMPONENTS_DIR"/*; do
-    if [ -d "$dir" ]; then
-        COMPONENT_NAME=$(basename "$dir")
-        # Check if there's a .stories.tsx file in the directory
+# Helper to show path
+relative_path() {
+    echo "$1" | sed "s|^$COMPONENTS_DIR/||"
+}
+
+for dir in $(find "$COMPONENTS_DIR" -type d); do
+    # Skip the base components directory itself
+    if [ "$dir" = "$COMPONENTS_DIR" ]; then continue; fi
+
+    # Check if there's any .tsx file that is NOT a story or test in this directory
+    # This identifies "component" directories in the "one folder, one component" pattern
+    if ls "$dir"/*.tsx 2>/dev/null | grep -vE "\.stories\.tsx$|\.test\.tsx$" >/dev/null 2>&1; then
+        # It's a component directory, it must have a story
         if ! ls "$dir"/*.stories.tsx >/dev/null 2>&1; then
-            MISSING_STORIES="$MISSING_STORIES $COMPONENT_NAME"
+            COMPONENT_NAME=$(basename "$dir")
+            MISSING_STORIES="$MISSING_STORIES $COMPONENT_NAME ($(relative_path "$dir"))"
         fi
     fi
 done

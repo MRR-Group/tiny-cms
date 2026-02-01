@@ -99,7 +99,7 @@ class JwtAuthMiddlewareTest extends TestCase
         $handler = $this->createMock(RequestHandlerInterface::class);
         $handler->expects($this->once())
             ->method("handle")
-            ->with($this->callback(fn(ServerRequestInterface $req) => $req->getAttribute("user_id") === "user-123"
+            ->with($this->callback(fn(ServerRequestInterface $req) => $req->getAttribute("userId") === "user-123"
                 && $req->getAttribute("role") === "admin"))
             ->willReturn((new ResponseFactory())->createResponse());
 

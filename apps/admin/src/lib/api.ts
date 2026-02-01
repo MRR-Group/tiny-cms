@@ -1,6 +1,6 @@
 /** @internal */
-export const _getBaseUrl = (env: Record<string, string | undefined>) => env.VITE_API_URL || 'http://localhost:8080';
-const API_BASE_URL = _getBaseUrl(import.meta.env);
+export const _getBaseUrl = (env: Record<string, string | undefined>) =>
+  env.VITE_API_URL || 'http://localhost:8080';
 
 interface RequestOptions extends RequestInit {
   params?: Record<string, string>;
@@ -14,8 +14,9 @@ interface ApiResponse<T> {
 
 async function request<T>(endpoint: string, options: RequestOptions = {}): Promise<ApiResponse<T>> {
   const { params, ...fetchOptions } = options;
+  const baseUrl = _getBaseUrl(import.meta.env);
 
-  let url = `${API_BASE_URL}${endpoint}`;
+  let url = `${baseUrl}${endpoint}`;
 
   if (params) {
     const searchParams = new URLSearchParams(params);

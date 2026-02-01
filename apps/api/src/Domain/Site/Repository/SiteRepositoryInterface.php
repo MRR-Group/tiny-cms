@@ -1,0 +1,24 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Domain\Site\Repository;
+
+use App\Domain\Site\Entity\Site;
+use App\Domain\Site\ValueObject\SiteId;
+
+interface SiteRepositoryInterface
+{
+    public function save(Site $site): void;
+
+    public function findById(SiteId $id): ?Site;
+
+    public function findByUrl(string $url): ?Site;
+
+    /**
+     * @return array<Site>
+     */
+    public function findAll(): array;
+
+    public function delete(Site $site): void;
+}

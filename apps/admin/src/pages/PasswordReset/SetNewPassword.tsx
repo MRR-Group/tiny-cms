@@ -4,7 +4,7 @@ import { AuthLayout } from '@/components/AuthLayout';
 import { Button } from '@/components/Button/Button';
 import { Input } from '@/components/Input/Input';
 import { PasswordStrengthIndicator } from '@/components/PasswordStrengthIndicator';
-import { authService } from '@/domain/auth';
+import { createAuthService } from '@/domain/auth';
 
 export function SetNewPassword() {
   const navigate = useNavigate();
@@ -38,7 +38,7 @@ export function SetNewPassword() {
     setIsLoading(true);
 
     try {
-      await authService.setNewPassword({ token, password });
+      await createAuthService().setNewPassword({ token, password });
       navigate('/login');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to reset password');

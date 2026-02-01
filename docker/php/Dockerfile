@@ -1,11 +1,16 @@
 FROM php:8.3-fpm-alpine
 
+# Arguments for user/group IDs
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+
 RUN apk add --no-cache \
     git \
     curl \
     libpq-dev \
     zip \
-    unzip
+    unzip \
+    shadow
 
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 RUN chmod +x /usr/local/bin/install-php-extensions && \
@@ -15,6 +20,12 @@ RUN chmod +x /usr/local/bin/install-php-extensions && \
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Create user with matching host UID/GID
+RUN addgroup -g ${GROUP_ID} appuser && \
+    adduser -D -u ${USER_ID} -G appuser appuser
+
 WORKDIR /var/www/html
+
+USER appuser
 
 EXPOSE 9000
