@@ -37,4 +37,6 @@ export class UserService {
   }
 }
 
-export const createUserService = () => new UserService(import.meta.env.VITE_API_URL || 'http://localhost:8080');
+export function createUserService() {
+  return new UserService(import.meta.env.VITE_API_URL || 'http://localhost:8080');
+}
