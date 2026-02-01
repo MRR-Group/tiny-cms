@@ -6,7 +6,8 @@ ARG GROUP_ID=1000
 
 # Enable corepack and install pnpm globally
 RUN corepack enable && \
-    corepack prepare pnpm@latest --activate
+    corepack prepare pnpm@latest --activate && \
+    apk add --no-cache git
 
 # Create user with matching host UID/GID
 RUN addgroup -g ${GROUP_ID} nodeuser && \
