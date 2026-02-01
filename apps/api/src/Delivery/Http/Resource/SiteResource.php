@@ -29,13 +29,11 @@ class SiteResource
     public static function toDetailArray(Site $site): array
     {
         $data = self::toArray($site);
-        $data['editors'] = array_map(function ($user) {
-            return [
-                'id' => (string)$user->getId(),
-                'email' => (string)$user->getEmail(),
-                'role' => $user->getRole()->toString(),
-            ];
-        }, $site->getUsers()->toArray());
+        $data["editors"] = array_map(fn($user) => [
+            "id" => (string)$user->getId(),
+            "email" => (string)$user->getEmail(),
+            "role" => $user->getRole()->toString(),
+        ], $site->getUsers()->toArray());
 
         return $data;
     }

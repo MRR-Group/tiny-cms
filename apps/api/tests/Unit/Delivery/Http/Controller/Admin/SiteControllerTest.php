@@ -43,7 +43,7 @@ class SiteControllerTest extends TestCase
         $this->unassignHandler = $this->createMock(UnassignUserFromSiteHandler::class);
         $this->updateHandler = $this->createMock(UpdateSiteHandler::class);
         $this->deleteHandler = $this->createMock(DeleteSiteHandler::class);
-        
+
         $this->controller = new SiteController(
             $this->createHandler,
             $this->listHandler,

@@ -25,7 +25,7 @@ class CreateSiteHandler
         $createdAt = $this->clock->now();
 
         $url = $this->normalizeUrl($command->url);
-        
+
         if ($this->siteRepository->findByUrl($url)) {
             throw new \InvalidArgumentException("Site with URL '{$url}' already exists");
         }
@@ -46,27 +46,30 @@ class CreateSiteHandler
     private function normalizeUrl(string $url): string
     {
         $url = trim($url);
-        
+
         // Add protocol if missing
         if (!preg_match('/^https?:\/\//i', $url)) {
-            $url = 'https://' . $url;
+            $url = "https://" . $url;
         }
 
         $parts = parse_url($url);
-        if ($parts === false || !isset($parts['host'])) {
+
+        if ($parts === false || !isset($parts["host"])) {
             return $url;
         }
 
-        $host = $parts['host'];
+        $host = strtolower($parts["host"]);
+
         // Add www. if host has only 2 parts (e.g. example.com)
-        if (!str_starts_with($host, 'www.') && count(explode('.', $host)) === 2) {
-            $host = 'www.' . $host;
+        if (!str_starts_with($host, "www.") && count(explode(".", $host)) === 2) {
+            $host = "www." . $host;
         }
 
-        $scheme = $parts['scheme'] ?? 'https';
-        $path = $parts['path'] ?? '/';
-        if (!str_ends_with($path, '/')) {
-            $path .= '/';
+        $scheme = strtolower($parts["scheme"] ?? "https");
+        $path = $parts["path"] ?? "/";
+
+        if (!str_ends_with($path, "/")) {
+            $path .= "/";
         }
 
         return "{$scheme}://{$host}{$path}";

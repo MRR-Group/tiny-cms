@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Delivery\Http\Controller\Admin;
 
 use App\Application\Site\Command\DeleteSiteCommand;
+use App\Application\Site\Command\UnassignUserFromSiteCommand;
 use App\Application\Site\Handler\AssignUserToSiteHandler;
 use App\Application\Site\Handler\CreateSiteHandler;
 use App\Application\Site\Handler\DeleteSiteHandler;
@@ -14,7 +15,6 @@ use App\Application\Site\Handler\UnassignUserFromSiteHandler;
 use App\Application\Site\Handler\UpdateSiteHandler;
 use App\Application\Site\Query\GetSiteQuery;
 use App\Application\Site\Query\ListSitesQuery;
-use App\Application\Site\Command\UnassignUserFromSiteCommand;
 use App\Delivery\Http\Request\Site\AssignUserToSiteRequest;
 use App\Delivery\Http\Request\Site\CreateSiteRequest;
 use App\Delivery\Http\Request\Site\UpdateSiteRequest;
@@ -41,7 +41,7 @@ class SiteController
             $userId = $request->getAttribute("userId");
 
             if (!is_string($siteId) || empty($siteId) || !is_string($userId) || empty($userId)) {
-                 throw new \InvalidArgumentException("Site ID and User ID are required");
+                throw new \InvalidArgumentException("Site ID and User ID are required");
             }
 
             $command = new UnassignUserFromSiteCommand($userId, $siteId);

@@ -39,7 +39,7 @@ class UpdateSiteHandlerTest extends TestCase
 
         $site = $this->createMock(Site::class);
         $site->method("getId")->willReturn($id);
-        
+
         $site->expects($this->once())->method("updateUrl")->with("https://www.new-url.com/");
 
         $this->repository->method("findById")->willReturn($site);
@@ -80,5 +80,60 @@ class UpdateSiteHandlerTest extends TestCase
         $this->expectExceptionMessage("Site with URL 'https://www.taken.com/' already exists");
 
         $this->handler->handle($command);
+    }
+
+    public function testHandleDoesNotThrowIfUrlTakenBySameSite(): void
+    {
+        $id = SiteId::generate();
+        $command = new UpdateSiteCommand($id->toString(), "Name", "same.com", SiteType::STATIC);
+
+        $site = $this->createMock(Site::class);
+        $site->method("getId")->willReturn($id);
+        $this->repository->method("findById")->willReturn($site);
+
+        // Same site returned by findByUrl
+        $this->repository->method("findByUrl")->with("https://www.same.com/")->willReturn($site);
+
+        $site->expects($this->once())->method("updateUrl")->with("https://www.same.com/");
+        
+        $this->handler->handle($command);
+    }
+
+    /**
+     * @dataProvider normalizationProvider
+     */
+    public function testNormalization(string $inputUrl, string $expectedUrl): void
+    {
+        $id = SiteId::generate();
+        $command = new UpdateSiteCommand($id->toString(), "Name", $inputUrl, SiteType::STATIC);
+
+        $site = $this->createMock(Site::class);
+        $site->method("getId")->willReturn($id);
+        $this->repository->method("findById")->willReturn($site);
+        $this->repository->method("findByUrl")->willReturn(null);
+
+        $site->expects($this->once())
+            ->method("updateUrl")
+            ->with($this->callback(function (string $url) use ($expectedUrl) {
+                $this->assertEquals($expectedUrl, $url);
+                return true;
+            }));
+
+        $this->handler->handle($command);
+    }
+
+    public static function normalizationProvider(): array
+    {
+        return [
+            "no protocol, no www" => ["example.com", "https://www.example.com/"],
+            "http protocol, no www" => ["http://example.com", "http://www.example.com/"],
+            "https protocol, no www" => ["https://example.com", "https://www.example.com/"],
+            "no protocol, with www" => ["www.example.com", "https://www.example.com/"],
+            "with sub-sub-domain" => ["abc.def.example.com", "https://abc.def.example.com/"],
+            "invalid host fallback" => ["https:///path", "https:///path"],
+            "already normalized" => ["https://www.example.com/", "https://www.example.com/"],
+            "uppercase protocol" => ["HTTPS://EXAMPLE.COM", "https://www.example.com/"],
+            "another case" => ["SITE.INFO", "https://www.site.info/"],
+        ];
     }
 }

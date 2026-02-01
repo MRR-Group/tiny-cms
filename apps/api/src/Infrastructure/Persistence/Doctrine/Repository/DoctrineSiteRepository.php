@@ -28,7 +28,7 @@ class DoctrineSiteRepository implements SiteRepositoryInterface
 
     public function findByUrl(string $url): ?Site
     {
-        return $this->entityManager->getRepository(Site::class)->findOneBy(['url' => $url]);
+        return $this->entityManager->getRepository(Site::class)->findOneBy(["url" => $url]);
     }
 
     /**
