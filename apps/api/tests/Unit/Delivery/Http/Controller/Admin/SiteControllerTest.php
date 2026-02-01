@@ -6,6 +6,7 @@ namespace Tests\Unit\Delivery\Http\Controller\Admin;
 
 use App\Application\Site\Command\AssignUserToSiteCommand;
 use App\Application\Site\Command\CreateSiteCommand;
+use App\Application\Site\Command\UnassignUserFromSiteCommand;
 use App\Application\Site\Handler\AssignUserToSiteHandler;
 use App\Application\Site\Handler\CreateSiteHandler;
 use App\Application\Site\Handler\DeleteSiteHandler;
@@ -13,6 +14,7 @@ use App\Application\Site\Handler\GetSiteHandler;
 use App\Application\Site\Handler\ListSitesHandler;
 use App\Application\Site\Handler\UnassignUserFromSiteHandler;
 use App\Application\Site\Handler\UpdateSiteHandler;
+use App\Application\Site\Query\GetSiteQuery;
 use App\Application\Site\Query\ListSitesQuery;
 use App\Delivery\Http\Controller\Admin\SiteController;
 use App\Domain\Site\Entity\Site;
@@ -191,8 +193,9 @@ class SiteControllerTest extends TestCase
         $this->assertEquals(204, $result->getStatusCode());
     }
 
-    public function testDeleteSiteWithArrayIdReturns400(): void
+    public function testDeleteSiteValidationErrors(): void
     {
+        // Array ID
         $request = (new ServerRequestFactory())->createServerRequest("DELETE", "/admin/sites/123")
             ->withAttribute("id", ["id"]);
         $response = (new ResponseFactory())->createResponse();
@@ -201,8 +204,15 @@ class SiteControllerTest extends TestCase
 
         $this->assertEquals(400, $result->getStatusCode());
         $body = json_decode((string)$result->getBody(), true);
-        $this->assertArrayHasKey("error", $body);
         $this->assertEquals("Site ID is required", $body["error"]);
+
+        // Empty string ID
+        $request = (new ServerRequestFactory())->createServerRequest("DELETE", "/admin/sites/")
+            ->withAttribute("id", "");
+        $response = (new ResponseFactory())->createResponse();
+
+        $result = $this->controller->delete($request, $response, []);
+        $this->assertEquals(400, $result->getStatusCode());
     }
 
     public function testUpdateSiteHandlesErrors(): void
@@ -230,5 +240,130 @@ class SiteControllerTest extends TestCase
         $body = json_decode((string)$result->getBody(), true);
         $this->assertArrayHasKey("error", $body);
         $this->assertEquals("Update error", $body["error"]);
+    }
+
+    public function testGetSiteReturns200(): void
+    {
+        $id = SiteId::generate()->toString();
+        $request = (new ServerRequestFactory())->createServerRequest("GET", "/admin/sites/$id")
+            ->withAttribute("id", $id);
+        $response = (new ResponseFactory())->createResponse();
+
+        $site = $this->createMock(Site::class);
+        $site->method("getId")->willReturn(SiteId::fromString($id));
+        $site->method("getName")->willReturn("Site 1");
+        $site->method("getUrl")->willReturn("url");
+        $site->method("getType")->willReturn(SiteType::STATIC);
+        $site->method("getCreatedAt")->willReturn(new \DateTimeImmutable());
+        $site->method("getEditorCount")->willReturn(1);
+
+        $user = $this->createMock(\App\Domain\Auth\Entity\User::class);
+        $userId = "00000000-0000-0000-0000-000000000001";
+        $user->method("getId")->willReturn(\App\Domain\Auth\ValueObject\UserId::fromString($userId));
+        $user->method("getEmail")->willReturn(new \App\Domain\Auth\ValueObject\Email("test@example.com"));
+        $user->method("getRole")->willReturn(\App\Domain\Auth\ValueObject\Role::editor());
+
+        $collection = $this->createMock(\Doctrine\Common\Collections\Collection::class);
+        $collection->method("toArray")->willReturn([$user]);
+        $site->method("getUsers")->willReturn($collection);
+
+        $this->getHandler->expects($this->once())
+            ->method("handle")
+            ->with($this->isInstanceOf(GetSiteQuery::class))
+            ->willReturn($site);
+
+        $result = $this->controller->get($request, $response, []);
+
+        $this->assertEquals(200, $result->getStatusCode());
+        $body = json_decode((string)$result->getBody(), true);
+        $this->assertArrayHasKey("id", $body);
+        $this->assertEquals($id, $body["id"]);
+        $this->assertArrayHasKey("editors", $body);
+        $this->assertCount(1, $body["editors"]);
+        $this->assertArrayHasKey("id", $body["editors"][0]);
+        $this->assertEquals("00000000-0000-0000-0000-000000000001", $body["editors"][0]["id"]);
+        $this->assertEquals("test@example.com", $body["editors"][0]["email"]);
+        $this->assertEquals("editor", $body["editors"][0]["role"]);
+    }
+
+    public function testGetSiteValidationErrors(): void
+    {
+        // Missing/Invalid ID
+        $request = (new ServerRequestFactory())->createServerRequest("GET", "/admin/sites/")
+            ->withAttribute("id", []); // Invalid
+        $response = (new ResponseFactory())->createResponse();
+
+        $result = $this->controller->get($request, $response, []);
+
+        // Controller returns 404 for exceptions in get() (including validation)
+        $this->assertEquals(404, $result->getStatusCode()); 
+        $body = json_decode((string)$result->getBody(), true);
+        $this->assertArrayHasKey("error", $body);
+        $this->assertEquals("Site ID is required", $body["error"]);
+
+        // Empty string ID (kills LogicalOr on !is_string || empty)
+        $request = (new ServerRequestFactory())->createServerRequest("GET", "/admin/sites/")
+            ->withAttribute("id", ""); // Empty string
+        $response = (new ResponseFactory())->createResponse();
+
+        $result = $this->controller->get($request, $response, []);
+        $this->assertEquals(404, $result->getStatusCode());
+    }
+
+    public function testUnassignUserReturns204(): void
+    {
+        $siteId = SiteId::generate()->toString();
+        $userId = "uid";
+        
+        $request = (new ServerRequestFactory())->createServerRequest("DELETE", "/admin/sites/$siteId/users/$userId")
+            ->withAttribute("id", $siteId)
+            ->withAttribute("userId", $userId);
+        $response = (new ResponseFactory())->createResponse();
+
+        $this->unassignHandler->expects($this->once())
+             ->method("handle")
+             ->with($this->isInstanceOf(UnassignUserFromSiteCommand::class));
+
+        $result = $this->controller->unassignUser($request, $response, []);
+
+        $this->assertEquals(204, $result->getStatusCode());
+    }
+
+    public function testUnassignUserValidationErrors(): void
+    {
+        // Missing userId
+        $siteId = SiteId::generate()->toString();
+        $request = (new ServerRequestFactory())->createServerRequest("DELETE", "/admin/sites/$siteId/users/")
+            ->withAttribute("id", $siteId)
+             // userId missing
+             ;
+        $response = (new ResponseFactory())->createResponse();
+
+        $result = $this->controller->unassignUser($request, $response, []);
+        $this->assertEquals(400, $result->getStatusCode());
+        $body = json_decode((string)$result->getBody(), true);
+        $this->assertArrayHasKey("error", $body);
+        $this->assertEquals("Site ID and User ID are required", $body["error"]);
+        
+        // Invalid siteId (array)
+        $request = (new ServerRequestFactory())->createServerRequest("DELETE", "/admin/sites//users/uid")
+            ->withAttribute("userId", "uid")
+            ->withAttribute("id", []); // array
+        $response = (new ResponseFactory())->createResponse();
+
+        $result = $this->controller->unassignUser($request, $response, []);
+        $this->assertEquals(400, $result->getStatusCode());
+        $body = json_decode((string)$result->getBody(), true);
+        $this->assertArrayHasKey("error", $body);
+        $this->assertEquals("Site ID and User ID are required", $body["error"]);
+
+        // Empty string siteId
+        $request = (new ServerRequestFactory())->createServerRequest("DELETE", "/admin/sites//users/uid")
+            ->withAttribute("userId", "uid")
+            ->withAttribute("id", ""); 
+        $response = (new ResponseFactory())->createResponse();
+
+        $result = $this->controller->unassignUser($request, $response, []);
+        $this->assertEquals(400, $result->getStatusCode());
     }
 }

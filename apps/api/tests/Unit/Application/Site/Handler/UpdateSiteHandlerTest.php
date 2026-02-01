@@ -42,10 +42,13 @@ class UpdateSiteHandlerTest extends TestCase
         $site->method("getId")->willReturn($id);
 
         $site->expects($this->once())->method("updateUrl")->with("https://www.new-url.com/");
+        $site->expects($this->once())->method("updateName")->with("New Name");
+        $site->expects($this->once())->method("updateType")->with(SiteType::DYNAMIC);
 
         $this->repository->method("findById")->willReturn($site);
         // Duplicate check should return null or the same site
         $this->repository->method("findByUrl")->willReturn(null);
+        $this->repository->expects($this->once())->method("save")->with($site);
 
         $this->handler->handle($command);
     }
@@ -134,6 +137,70 @@ class UpdateSiteHandlerTest extends TestCase
             "already normalized" => ["https://www.example.com/", "https://www.example.com/"],
             "uppercase protocol" => ["HTTPS://EXAMPLE.COM", "https://www.example.com/"],
             "another case" => ["SITE.INFO", "https://www.site.info/"],
+            "with leading/trailing whitespace" => ["  example.com  ", "https://www.example.com/"],
+            "with tabs" => ["\texample.com\t", "https://www.example.com/"],
+            "domain with http text" => ["httpbin.org", "https://www.httpbin.org/"],
+            "no protocol needed" => ["test.com", "https://www.test.com/"],
         ];
+    }
+
+    public function testHandleWithUnparseableUrl(): void
+    {
+        $id = SiteId::generate();
+        // URL that should work with normalization
+        $command = new UpdateSiteCommand($id->toString(), "Name", "///", SiteType::STATIC);
+
+        $site = $this->createMock(Site::class);
+        $site->method("getId")->willReturn($id);
+        $this->repository->method("findById")->willReturn($site);
+        $this->repository->method("findByUrl")->willReturn(null);
+
+        $site->expects($this->once())
+            ->method("updateUrl")
+            ->with("https://///");
+        $site->expects($this->once())->method("updateName");
+        $site->expects($this->once())->method("updateType");
+        $this->repository->expects($this->once())->method("save");
+
+        $this->handler->handle($command);
+    }
+
+    public function testHandleWithHttpProtocol(): void
+    {
+        $id = SiteId::generate();
+        $command = new UpdateSiteCommand($id->toString(), "Name", "http://example.com", SiteType::STATIC);
+
+        $site = $this->createMock(Site::class);
+        $site->method("getId")->willReturn($id);
+        $this->repository->method("findById")->willReturn($site);
+        $this->repository->method("findByUrl")->willReturn(null);
+
+        $site->expects($this->once())
+            ->method("updateUrl")
+            ->with("http://www.example.com/");
+        $site->expects($this->once())->method("updateName");
+        $site->expects($this->once())->method("updateType");
+
+        $this->handler->handle($command);
+    }
+
+    public function testHandleWithCaretRegex(): void
+    {
+        $id = SiteId::generate();
+        $command = new UpdateSiteCommand($id->toString(), "Name", "example.com/foo?u=http://bar", SiteType::STATIC);
+
+        $site = $this->createMock(Site::class);
+        $site->method("getId")->willReturn($id);
+        $this->repository->method("findById")->willReturn($site);
+        $this->repository->method("findByUrl")->willReturn(null);
+
+        $site->expects($this->once())
+            ->method("updateUrl")
+            ->with("https://www.example.com/foo/?u=http://bar");
+        $site->expects($this->once())->method("updateName");
+        $site->expects($this->once())->method("updateType");
+        $this->repository->expects($this->once())->method("save");
+
+        $this->handler->handle($command);
     }
 }

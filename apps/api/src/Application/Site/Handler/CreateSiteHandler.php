@@ -54,7 +54,7 @@ class CreateSiteHandler
 
         $parts = parse_url($url);
 
-        if ($parts === false || !isset($parts["host"])) {
+        if ($parts === false) {
             return $url;
         }
 
@@ -65,13 +65,16 @@ class CreateSiteHandler
             $host = "www." . $host;
         }
 
-        $scheme = strtolower($parts["scheme"] ?? "https");
+        $scheme = strtolower($parts["scheme"]);
         $path = $parts["path"] ?? "/";
 
         if (!str_ends_with($path, "/")) {
             $path .= "/";
         }
 
-        return "{$scheme}://{$host}{$path}";
+        $query = isset($parts["query"]) ? "?{$parts['query']}" : "";
+        $fragment = isset($parts["fragment"]) ? "#{$parts['fragment']}" : "";
+
+        return "{$scheme}://{$host}{$path}{$query}{$fragment}";
     }
 }

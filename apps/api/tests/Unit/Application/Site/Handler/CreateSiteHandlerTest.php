@@ -85,6 +85,77 @@ class CreateSiteHandlerTest extends TestCase
             "already normalized" => ["https://www.example.com/", "https://www.example.com/"],
             "uppercase protocol" => ["HTTPS://EXAMPLE.COM", "https://www.example.com/"],
             "another case" => ["SITE.INFO", "https://www.site.info/"],
+            "with leading/trailing whitespace" => ["  example.com  ", "https://www.example.com/"],
+            "with tabs" => ["\texample.com\t", "https://www.example.com/"],
+            "domain with http text" => ["httpbin.org", "https://www.httpbin.org/"],
+            "no protocol needed" => ["test.com", "https://www.test.com/"],
         ];
+    }
+
+    public function testHandleWithUnparseableUrl(): void
+    {
+        $siteRepository = $this->createMock(SiteRepositoryInterface::class);
+        $clock = $this->createMock(ClockInterface::class);
+        $clock->method("now")->willReturn(new \DateTimeImmutable());
+
+        $handler = new CreateSiteHandler($siteRepository, $clock);
+
+        // URL that returns false from parse_url (after https prepend)
+        $command = new CreateSiteCommand("Site", "///", "static");
+
+        $siteRepository->expects($this->once())
+            ->method("save")
+            ->with($this->callback(function (Site $site) {
+                // Returns original URL with https prepended
+                $this->assertEquals("https://///", $site->getUrl());
+                return true;
+            }));
+
+        $handler->handle($command);
+    }
+
+    public function testHandleWithHttpProtocol(): void
+    {
+        $siteRepository = $this->createMock(SiteRepositoryInterface::class);
+        $clock = $this->createMock(ClockInterface::class);
+        $clock->method("now")->willReturn(new \DateTimeImmutable());
+
+        $handler = new CreateSiteHandler($siteRepository, $clock);
+
+        // http:// should be preserved (not default to https)
+        $command = new CreateSiteCommand("Site", "http://example.com", "static");
+
+        $siteRepository->expects($this->once())
+            ->method("save")
+            ->with($this->callback(function (Site $site) {
+                $this->assertEquals("http://www.example.com/", $site->getUrl());
+                return true;
+            }));
+
+        $handler->handle($command);
+    }
+
+    public function testHandleWithCaretRegex(): void
+    {
+        $siteRepository = $this->createMock(SiteRepositoryInterface::class);
+        $clock = $this->createMock(ClockInterface::class);
+        $clock->method("now")->willReturn(new \DateTimeImmutable());
+
+        $handler = new CreateSiteHandler($siteRepository, $clock);
+
+        // URL containing http: inside but not at start
+        // Without caret ^, regex matches inside and thinks protocol exists.
+        // With caret ^, regex fails, prepends https://.
+        $command = new CreateSiteCommand("Site", "example.com/foo?u=http://bar", "static");
+
+        $siteRepository->expects($this->once())
+            ->method("save")
+            ->with($this->callback(function (Site $site) {
+                // Correct behavior: prepends https://
+                $this->assertEquals("https://www.example.com/foo/?u=http://bar", $site->getUrl());
+                return true;
+            }));
+
+        $handler->handle($command);
     }
 }

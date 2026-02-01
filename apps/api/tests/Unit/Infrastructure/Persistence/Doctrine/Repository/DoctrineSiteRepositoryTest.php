@@ -84,4 +84,25 @@ class DoctrineSiteRepositoryTest extends TestCase
 
         $this->repository->delete($site);
     }
+
+    public function testFindByUrlReturnsSite(): void
+    {
+        $url = "http://example.com";
+        $site = $this->createMock(Site::class);
+        $doctrineRepository = $this->createMock(EntityRepository::class);
+
+        $this->entityManager->expects($this->once())
+            ->method("getRepository")
+            ->with(Site::class)
+            ->willReturn($doctrineRepository);
+
+        $doctrineRepository->expects($this->once())
+            ->method("findOneBy")
+            ->with(["url" => $url])
+            ->willReturn($site);
+
+        $result = $this->repository->findByUrl($url);
+
+        $this->assertSame($site, $result);
+    }
 }

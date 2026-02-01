@@ -16,9 +16,9 @@ const config = {
     '!src/**/index.ts',
   ],
   thresholds: {
-    high: 95,
-    low: 90,
-    break: 95,
+    high: 100,
+    low: 100,
+    break: 100,
   },
   htmlReporter: {
     fileName: 'reports/mutation/mutation-report.html',

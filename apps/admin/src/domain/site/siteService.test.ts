@@ -211,6 +211,40 @@ describe('SiteService', () => {
         expect(result).toEqual({});
     });
 
+    it('does not send Authorization header when no token', async () => {
+        mockFetch.mockResolvedValue({
+            ok: true,
+            status: 200,
+            text: async () => '[]',
+        });
+
+        await siteService.getSites();
+        
+        const callArgs = mockFetch.mock.calls[0][1];
+        expect(callArgs.headers).not.toHaveProperty('Authorization');
+        expect(callArgs.headers).toHaveProperty('Content-Type', 'application/json');
+    });
+
+    it('throws error when error.error is undefined', async () => {
+        mockFetch.mockResolvedValue({
+            ok: false,
+            status: 400,
+            json: async () => ({}),
+        });
+
+        await expect(siteService.getSites()).rejects.toThrow('Request failed');
+    });
+
+    it('throws error when error.error.message is undefined but error.error exists', async () => {
+        mockFetch.mockResolvedValue({
+            ok: false,
+            status: 400,
+            json: async () => ({ error: {} }),
+        });
+
+        await expect(siteService.getSites()).rejects.toThrow('Request failed');
+    });
+
     describe('factory', () => {
         it('createSiteService uses VITE_API_URL if provided', () => {
             vi.stubEnv('VITE_API_URL', 'http://custom-api.com');

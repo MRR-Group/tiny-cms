@@ -23,7 +23,12 @@ export class SiteService {
       const error = await response.json().catch(() => ({
         error: { message: 'An error occurred' },
       }));
-      throw new Error(error.error?.message || error.error || 'Request failed');
+      
+      const errorMessage = error.error?.message || 
+        (typeof error.error === 'string' ? error.error : null) || 
+        'Request failed';
+      
+      throw new Error(errorMessage);
     }
 
     // Some 204 responses might have no content
