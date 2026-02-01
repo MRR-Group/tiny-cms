@@ -23,7 +23,7 @@ export function Login() {
       if (response.requirePasswordChange) {
         navigate('/change-password');
       } else {
-        // Decode token to get role
+
         try {
           const payload = JSON.parse(atob(response.token.split('.')[1]));
           if (payload.role === 'admin') {
@@ -32,7 +32,7 @@ export function Login() {
             navigate('/');
           }
         } catch (e) {
-          // Fallback to dashboard if token parsing fails
+
           navigate('/');
         }
       }
