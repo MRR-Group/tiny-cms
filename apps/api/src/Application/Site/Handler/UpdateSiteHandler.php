@@ -48,7 +48,7 @@ class UpdateSiteHandler
 
         $parts = parse_url($url);
 
-        if ($parts === false || !isset($parts["host"])) {
+        if ($parts === false) {
             return $url;
         }
 
