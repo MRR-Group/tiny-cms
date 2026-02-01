@@ -43,14 +43,14 @@ class UrlNormalizer
     }
 
     /**
-     * @param array<string, int|string> $parts
+     * @param array{scheme?: string, path?: string, query?: string, fragment?: string} $parts
      */
     private function buildUrl(array $parts, string $host): string
     {
-        $scheme = isset($parts["scheme"]) ? strtolower((string)$parts["scheme"]) : "https";
+        $scheme = isset($parts["scheme"]) ? strtolower($parts["scheme"]) : "https";
         $path = $parts["path"] ?? "/";
 
-        if (!str_ends_with((string)$path, "/")) {
+        if (!str_ends_with($path, "/")) {
             $path .= "/";
         }
 
