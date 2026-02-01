@@ -32,8 +32,9 @@ export function Layout() {
   return (
     <div className="min-h-screen flex bg-slate-50">
       <aside
-        className={`bg-white border-r border-slate-200 p-4 flex flex-col shadow-sm transition-all duration-300 ease-in-out relative ${isCollapsed ? 'w-20' : 'w-64'
-          }`}
+        className={`bg-white border-r border-slate-200 p-4 flex flex-col shadow-sm transition-all duration-300 ease-in-out relative ${
+          isCollapsed ? 'w-20' : 'w-64'
+        }`}
       >
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
@@ -45,7 +46,9 @@ export function Layout() {
           />
         </button>
 
-        <div className={`mb-8 flex items-center min-h-[60px] ${isCollapsed ? 'justify-center' : 'px-2'}`}>
+        <div
+          className={`mb-8 flex items-center min-h-[60px] ${isCollapsed ? 'justify-center' : 'px-2'}`}
+        >
           <Logo variant={isCollapsed ? 'sidebar-collapsed' : 'sidebar-expanded'} />
         </div>
 
@@ -82,11 +85,7 @@ export function Layout() {
 
         <div className="pt-4 border-t border-slate-100 mt-auto">
           <button onClick={handleLogout} className="w-full text-left">
-            <SideMenuItem
-              icon={LogoutIcon}
-              label="Logout"
-              isCollapsed={isCollapsed}
-            />
+            <SideMenuItem icon={LogoutIcon} label="Logout" isCollapsed={isCollapsed} />
           </button>
         </div>
       </aside>

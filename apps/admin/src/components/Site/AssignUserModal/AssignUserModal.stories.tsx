@@ -14,7 +14,7 @@ export const Default: Story = {
   args: {
     isOpen: true,
     siteName: 'My Awesome Site',
-    onClose: () => { },
+    onClose: () => {},
     onAssign: async () => new Promise((resolve) => setTimeout(resolve, 1000)),
     users: [
       { id: '1', email: 'alice@example.com', role: 'editor' },
@@ -27,8 +27,8 @@ export const Closed: Story = {
   args: {
     isOpen: false,
     siteName: 'My Awesome Site',
-    onClose: () => { },
-    onAssign: async () => { },
+    onClose: () => {},
+    onAssign: async () => {},
     users: [],
   },
 };

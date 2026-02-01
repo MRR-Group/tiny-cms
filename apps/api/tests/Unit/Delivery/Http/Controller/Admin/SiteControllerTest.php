@@ -17,9 +17,14 @@ use App\Application\Site\Handler\UpdateSiteHandler;
 use App\Application\Site\Query\GetSiteQuery;
 use App\Application\Site\Query\ListSitesQuery;
 use App\Delivery\Http\Controller\Admin\SiteController;
+use App\Domain\Auth\Entity\User;
+use App\Domain\Auth\ValueObject\Email;
+use App\Domain\Auth\ValueObject\Role;
+use App\Domain\Auth\ValueObject\UserId;
 use App\Domain\Site\Entity\Site;
 use App\Domain\Site\ValueObject\SiteId;
 use App\Domain\Site\ValueObject\SiteType;
+use Doctrine\Common\Collections\Collection;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Slim\Psr7\Factory\ResponseFactory;
@@ -257,13 +262,13 @@ class SiteControllerTest extends TestCase
         $site->method("getCreatedAt")->willReturn(new \DateTimeImmutable());
         $site->method("getEditorCount")->willReturn(1);
 
-        $user = $this->createMock(\App\Domain\Auth\Entity\User::class);
+        $user = $this->createMock(User::class);
         $userId = "00000000-0000-0000-0000-000000000001";
-        $user->method("getId")->willReturn(\App\Domain\Auth\ValueObject\UserId::fromString($userId));
-        $user->method("getEmail")->willReturn(new \App\Domain\Auth\ValueObject\Email("test@example.com"));
-        $user->method("getRole")->willReturn(\App\Domain\Auth\ValueObject\Role::editor());
+        $user->method("getId")->willReturn(UserId::fromString($userId));
+        $user->method("getEmail")->willReturn(new Email("test@example.com"));
+        $user->method("getRole")->willReturn(Role::editor());
 
-        $collection = $this->createMock(\Doctrine\Common\Collections\Collection::class);
+        $collection = $this->createMock(Collection::class);
         $collection->method("toArray")->willReturn([$user]);
         $site->method("getUsers")->willReturn($collection);
 
@@ -314,15 +319,15 @@ class SiteControllerTest extends TestCase
     {
         $siteId = SiteId::generate()->toString();
         $userId = "uid";
-        
+
         $request = (new ServerRequestFactory())->createServerRequest("DELETE", "/admin/sites/$siteId/users/$userId")
             ->withAttribute("id", $siteId)
             ->withAttribute("userId", $userId);
         $response = (new ResponseFactory())->createResponse();
 
         $this->unassignHandler->expects($this->once())
-             ->method("handle")
-             ->with($this->isInstanceOf(UnassignUserFromSiteCommand::class));
+            ->method("handle")
+            ->with($this->isInstanceOf(UnassignUserFromSiteCommand::class));
 
         $result = $this->controller->unassignUser($request, $response, []);
 
@@ -334,9 +339,8 @@ class SiteControllerTest extends TestCase
         // Missing userId
         $siteId = SiteId::generate()->toString();
         $request = (new ServerRequestFactory())->createServerRequest("DELETE", "/admin/sites/$siteId/users/")
-            ->withAttribute("id", $siteId)
-             // userId missing
-             ;
+            ->withAttribute("id", $siteId);
+        // userId missing
         $response = (new ResponseFactory())->createResponse();
 
         $result = $this->controller->unassignUser($request, $response, []);
@@ -344,7 +348,7 @@ class SiteControllerTest extends TestCase
         $body = json_decode((string)$result->getBody(), true);
         $this->assertArrayHasKey("error", $body);
         $this->assertEquals("Site ID and User ID are required", $body["error"]);
-        
+
         // Invalid siteId (array)
         $request = (new ServerRequestFactory())->createServerRequest("DELETE", "/admin/sites//users/uid")
             ->withAttribute("userId", "uid")

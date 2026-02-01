@@ -7,7 +7,7 @@ export function AuthLayout({ children, subtitle }: { children: ReactNode; subtit
       <div className="w-full max-w-md">
         <div className="text-center mb-10">
           <div className="flex justify-center mb-3">
-            <Logo variant="branding" subtitle='' />
+            <Logo variant="branding" subtitle="" />
           </div>
           {subtitle && <p className="text-slate-500 font-medium tracking-tight mt-3">{subtitle}</p>}
         </div>
