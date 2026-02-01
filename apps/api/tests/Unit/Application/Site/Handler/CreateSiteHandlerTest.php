@@ -9,6 +9,7 @@ use App\Application\Site\Handler\CreateSiteHandler;
 use App\Domain\Shared\Clock\ClockInterface;
 use App\Domain\Site\Entity\Site;
 use App\Domain\Site\Repository\SiteRepositoryInterface;
+use App\Domain\Shared\Util\UrlNormalizer;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -21,7 +22,7 @@ class CreateSiteHandlerTest extends TestCase
         $now = new \DateTimeImmutable();
         $clock->method("now")->willReturn($now);
 
-        $handler = new CreateSiteHandler($siteRepository, $clock);
+        $handler = new CreateSiteHandler($siteRepository, $clock, new UrlNormalizer());
 
         // Input: "example.com" -> Output: "https://www.example.com/"
         $command = new CreateSiteCommand("My Site", "example.com", "static");
@@ -44,7 +45,7 @@ class CreateSiteHandlerTest extends TestCase
         // Normalize search
         $siteRepository->method("findByUrl")->with("https://www.xd.pl/")->willReturn($existingSite);
 
-        $handler = new CreateSiteHandler($siteRepository, $clock);
+        $handler = new CreateSiteHandler($siteRepository, $clock, new UrlNormalizer());
         $command = new CreateSiteCommand("My Site", "xd.pl", "static");
 
         $this->expectException(\InvalidArgumentException::class);
@@ -60,7 +61,7 @@ class CreateSiteHandlerTest extends TestCase
         $clock = $this->createMock(ClockInterface::class);
         $clock->method("now")->willReturn(new \DateTimeImmutable());
 
-        $handler = new CreateSiteHandler($siteRepository, $clock);
+        $handler = new CreateSiteHandler($siteRepository, $clock, new UrlNormalizer());
 
         $siteRepository->expects($this->once())
             ->method("save")
@@ -98,7 +99,7 @@ class CreateSiteHandlerTest extends TestCase
         $clock = $this->createMock(ClockInterface::class);
         $clock->method("now")->willReturn(new \DateTimeImmutable());
 
-        $handler = new CreateSiteHandler($siteRepository, $clock);
+        $handler = new CreateSiteHandler($siteRepository, $clock, new UrlNormalizer());
 
         // URL that returns false from parse_url (after https prepend)
         $command = new CreateSiteCommand("Site", "///", "static");
@@ -121,7 +122,7 @@ class CreateSiteHandlerTest extends TestCase
         $clock = $this->createMock(ClockInterface::class);
         $clock->method("now")->willReturn(new \DateTimeImmutable());
 
-        $handler = new CreateSiteHandler($siteRepository, $clock);
+        $handler = new CreateSiteHandler($siteRepository, $clock, new UrlNormalizer());
 
         $command = new CreateSiteCommand("Site", "http://example.com", "static");
 
@@ -142,7 +143,7 @@ class CreateSiteHandlerTest extends TestCase
         $clock = $this->createMock(ClockInterface::class);
         $clock->method("now")->willReturn(new \DateTimeImmutable());
 
-        $handler = new CreateSiteHandler($siteRepository, $clock);
+        $handler = new CreateSiteHandler($siteRepository, $clock, new UrlNormalizer());
 
         // URL containing http: inside but not at start
         // Without caret ^, regex matches inside and thinks protocol exists.
@@ -167,7 +168,7 @@ class CreateSiteHandlerTest extends TestCase
         $clock = $this->createMock(ClockInterface::class);
         $clock->method("now")->willReturn(new \DateTimeImmutable());
 
-        $handler = new CreateSiteHandler($siteRepository, $clock);
+        $handler = new CreateSiteHandler($siteRepository, $clock, new UrlNormalizer());
 
         // URL that parses but has no host (e.g., relative path)
         $command = new CreateSiteCommand("Site", "https:///path/only", "static");
@@ -190,7 +191,7 @@ class CreateSiteHandlerTest extends TestCase
         $clock = $this->createMock(ClockInterface::class);
         $clock->method("now")->willReturn(new \DateTimeImmutable());
 
-        $handler = new CreateSiteHandler($siteRepository, $clock);
+        $handler = new CreateSiteHandler($siteRepository, $clock, new UrlNormalizer());
 
         // URL that causes parse_url to return false
         $command = new CreateSiteCommand("Site", "ht!tp://invalid", "static");

@@ -19,7 +19,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 function DefaultRoute() {
   const userRole = createAuthService().getUserRole();
 
-  // Redirect admins to sites page, editors to dashboard
+
   if (userRole === 'admin') {
     return <Navigate to="/admin/sites" replace />;
   }

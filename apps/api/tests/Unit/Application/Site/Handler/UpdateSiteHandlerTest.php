@@ -10,6 +10,7 @@ use App\Domain\Site\Entity\Site;
 use App\Domain\Site\Repository\SiteRepositoryInterface;
 use App\Domain\Site\ValueObject\SiteId;
 use App\Domain\Site\ValueObject\SiteType;
+use App\Domain\Shared\Util\UrlNormalizer;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -24,7 +25,7 @@ class UpdateSiteHandlerTest extends TestCase
     protected function setUp(): void
     {
         $this->repository = $this->createMock(SiteRepositoryInterface::class);
-        $this->handler = new UpdateSiteHandler($this->repository);
+        $this->handler = new UpdateSiteHandler($this->repository, new UrlNormalizer());
     }
 
     public function testHandleUpdatesSiteWithNormalization(): void
