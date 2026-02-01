@@ -49,12 +49,12 @@ services:
       args:
         USER_ID: ${USER_ID:-1000}
         GROUP_ID: ${GROUP_ID:-1000}
-    working_dir: /app
+    working_dir: /app/apps/admin
     command: sh -c "pnpm install && pnpm dev --host"
     ports:
       - "5180:5173"
     volumes:
-      - ./apps/admin:/app
+      - .:/app
     networks:
       - tiny-cms
 
@@ -65,12 +65,12 @@ services:
       args:
         USER_ID: ${USER_ID:-1000}
         GROUP_ID: ${GROUP_ID:-1000}
-    working_dir: /app
+    working_dir: /app/apps/admin
     command: sh -c "pnpm install && pnpm storybook -- --host 0.0.0.0"
     ports:
       - "6006:6006"
     volumes:
-      - ./apps/admin:/app
+      - .:/app
     networks:
       - tiny-cms
 
