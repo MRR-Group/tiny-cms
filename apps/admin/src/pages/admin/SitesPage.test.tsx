@@ -54,7 +54,6 @@ describe('SitesPage', () => {
     await waitFor(() => {
       expect(screen.getByText('Site 1')).toBeInTheDocument();
     });
-    // URL text check might fail if structure changed, let's just check for name
     expect(screen.getByText('Site 1')).toBeInTheDocument();
     expect(screen.getByText('static')).toBeInTheDocument();
   });
@@ -69,8 +68,7 @@ describe('SitesPage', () => {
     );
 
     await waitFor(() => {
-      // The component displays "No sites found" even on error because empty list,
-      // but error message is shown too.
+
       expect(screen.getByText('Fetch failed')).toBeInTheDocument();
     });
   });
@@ -88,7 +86,7 @@ describe('SitesPage', () => {
     await userEvent.type(screen.getByLabelText(/Name/i), 'New Site');
     await userEvent.type(screen.getByLabelText(/URL/i), 'http://new.com');
 
-    // Mock getSites returning new list after create
+
     mockSiteService.getSites
       .mockResolvedValueOnce([])
       .mockResolvedValueOnce([
