@@ -66,8 +66,8 @@ class UpdateSiteHandler
             $path .= "/";
         }
 
-        $query = isset($parts["query"]) ? "?{$parts['query']}" : "";
-        $fragment = isset($parts["fragment"]) ? "#{$parts['fragment']}" : "";
+        $query = isset($parts["query"]) ? "?{$parts["query"]}" : "";
+        $fragment = isset($parts["fragment"]) ? "#{$parts["fragment"]}" : "";
 
         return "{$scheme}://{$host}{$path}{$query}{$fragment}";
     }

@@ -108,6 +108,7 @@ class CreateSiteHandlerTest extends TestCase
             ->with($this->callback(function (Site $site) {
                 // Returns original URL with https prepended
                 $this->assertEquals("https://///", $site->getUrl());
+
                 return true;
             }));
 
@@ -122,13 +123,13 @@ class CreateSiteHandlerTest extends TestCase
 
         $handler = new CreateSiteHandler($siteRepository, $clock);
 
-        // http:// should be preserved (not default to https)
         $command = new CreateSiteCommand("Site", "http://example.com", "static");
 
         $siteRepository->expects($this->once())
             ->method("save")
             ->with($this->callback(function (Site $site) {
                 $this->assertEquals("http://www.example.com/", $site->getUrl());
+
                 return true;
             }));
 
@@ -153,6 +154,7 @@ class CreateSiteHandlerTest extends TestCase
             ->with($this->callback(function (Site $site) {
                 // Correct behavior: prepends https://
                 $this->assertEquals("https://www.example.com/foo/?u=http://bar", $site->getUrl());
+
                 return true;
             }));
 
