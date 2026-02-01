@@ -40,12 +40,10 @@ export const SiteForm: React.FC<SiteFormProps> = ({
 
     let processedUrl = url.trim();
 
-    // Add protocol if missing
     if (!/^https?:\/\//i.test(processedUrl)) {
       processedUrl = `https://${processedUrl}`;
     }
 
-    // Add www. ifhostname only has two parts (e.g., example.com -> www.example.com)
     try {
       const urlObj = new URL(processedUrl);
       const hostname = urlObj.hostname;
@@ -54,7 +52,6 @@ export const SiteForm: React.FC<SiteFormProps> = ({
         processedUrl = urlObj.toString();
       }
     } catch (err) {
-      // If URL parsing fails, we still have the protocol-prefixed version
     }
 
     await onSubmit({ name, url: processedUrl, type });
