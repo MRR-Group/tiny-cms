@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { SitesPage } from './SitesPage';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// Create mock functions
+
 const mockSiteService = {
   getSites: vi.fn(),
   createSite: vi.fn(),
@@ -18,7 +18,7 @@ const mockUserService = {
   getAllUsers: vi.fn().mockResolvedValue([]),
 };
 
-// Mock modules with factories returning the mock objects
+
 vi.mock('@/domain/site', () => ({
   createSiteService: () => mockSiteService,
 }));
