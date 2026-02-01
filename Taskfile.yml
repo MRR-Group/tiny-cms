@@ -192,6 +192,11 @@ tasks:
     cmds:
       - "{{.DOCKER_EXEC_ADMIN}} pnpm mutation"
 
+  admin:test:e2e:
+    desc: "Run E2E tests"
+    cmds:
+      - "{{.DOCKER_EXEC_ADMIN}} pnpm test:e2e"
+
   # === Storybook ===
   storybook:logs:
     desc: "View Storybook logs"

@@ -1,0 +1,57 @@
+name: E2E Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+        working-directory: apps/admin
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
+        working-directory: apps/admin
+
+      - name: Build and Start Services
+        run: |
+          docker compose up -d
+          # Wait for API to be ready
+          ./docker/scripts/wait-for-it.sh localhost:8080 -t 60
+          # Wait for Admin to be ready
+          ./docker/scripts/wait-for-it.sh localhost:5180 -t 60
+
+      - name: Seed Admin User
+        run: docker compose exec -T api php bin/create-admin.php admin@example.com password123
+
+      - name: Run E2E tests
+        run: pnpm test:e2e --project=chromium
+        working-directory: apps/admin
+        env:
+          BASE_URL: http://localhost:5180
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: apps/admin/playwright-report/
+          retention-days: 30
