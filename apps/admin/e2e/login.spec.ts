@@ -21,7 +21,7 @@ test.describe('Login Page', () => {
     // However, for GH Actions, it should work if we start the whole stack or mock the API.
     
     // For now, let's just check if it stays on the login page or shows an error if mocked.
-    await expect(page.getByText('Login failed')).toBeVisible();
+    await expect(page.getByText('Invalid credentials provided')).toBeVisible();
   });
 
   test('should login successfully with admin credentials', async ({ page }) => {

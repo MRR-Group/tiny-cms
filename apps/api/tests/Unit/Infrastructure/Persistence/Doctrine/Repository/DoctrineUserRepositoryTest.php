@@ -98,4 +98,27 @@ class DoctrineUserRepositoryTest extends TestCase
 
         $this->assertSame($user, $result);
     }
+
+    public function testFindAll(): void
+    {
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $repository = $this->createMock(EntityRepository::class);
+
+        $entityManager->expects($this->once())
+            ->method("getRepository")
+            ->with(User::class)
+            ->willReturn($repository);
+
+        $users = [$this->createMock(User::class)];
+
+        $repository->expects($this->once())
+            ->method("findAll")
+            ->willReturn($users);
+
+        $doctrineRepo = new DoctrineUserRepository($entityManager);
+
+        $result = $doctrineRepo->findAll();
+
+        $this->assertSame($users, $result);
+    }
 }

@@ -54,7 +54,9 @@ class LoginControllerTest extends TestCase
         $result = ($this->controller)($request, $response, []);
 
         $this->assertEquals(401, $result->getStatusCode());
-        $this->assertStringContainsString("Invalid credentials", (string)$result->getBody());
+        $body = json_decode((string)$result->getBody(), true);
+        $this->assertEquals("Invalid credentials", $body["error"]["message"]);
+        $this->assertEquals(401, $body["error"]["code"]);
     }
 
     public function testReturns500OnOtherErrors(): void
@@ -69,6 +71,9 @@ class LoginControllerTest extends TestCase
         $result = ($this->controller)($request, $response, []);
 
         $this->assertEquals(500, $result->getStatusCode());
+        $body = json_decode((string)$result->getBody(), true);
+        $this->assertEquals("Database error", $body["error"]["message"]);
+        $this->assertEquals(500, $body["error"]["code"]);
     }
 
     public function testReturns400OnInvalidArgument(): void
@@ -80,6 +85,8 @@ class LoginControllerTest extends TestCase
         $result = ($this->controller)($request, $response, []);
 
         $this->assertEquals(400, $result->getStatusCode());
-        $this->assertStringContainsString("Email and password are required", (string)$result->getBody());
+        $body = json_decode((string)$result->getBody(), true);
+        $this->assertEquals("Email and password are required", $body["error"]["message"]);
+        $this->assertEquals(400, $body["error"]["code"]);
     }
 }

@@ -29,15 +29,24 @@ class LoginController
                 ->withHeader("Content-Type", "application/json")
                 ->withStatus(200);
         } catch (\InvalidArgumentException $e) {
-            $response->getBody()->write(json_encode(["error" => $e->getMessage()], JSON_THROW_ON_ERROR));
+            $response->getBody()->write(json_encode([
+                "error" => [
+                    "message" => $e->getMessage(),
+                    "code" => 400,
+                ],
+            ], JSON_THROW_ON_ERROR));
 
             return $response
                 ->withHeader("Content-Type", "application/json")
                 ->withStatus(400);
         } catch (\Exception $e) {
-            // Should differentiate 401 vs 500, but for now simple
-            $status = $e->getMessage() === "Invalid credentials" ? 401 : 500;
-            $response->getBody()->write(json_encode(["error" => $e->getMessage()], JSON_THROW_ON_ERROR));
+            $status = in_array($e->getMessage(), ["Invalid credentials", "Invalid credentials provided", "User not found"], true) ? 401 : 500;
+            $response->getBody()->write(json_encode([
+                "error" => [
+                    "message" => $e->getMessage(),
+                    "code" => $status,
+                ],
+            ], JSON_THROW_ON_ERROR));
 
             return $response
                 ->withHeader("Content-Type", "application/json")

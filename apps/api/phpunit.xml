@@ -22,6 +22,10 @@
         <include>
             <directory>src</directory>
         </include>
+        <exclude>
+            <directory>src/Infrastructure/Persistence/Doctrine/Migrations</directory>
+            <file>src/Application.php</file>
+        </exclude>
     </source>
 
     <coverage>
