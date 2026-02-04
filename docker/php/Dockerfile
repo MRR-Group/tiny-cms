@@ -21,7 +21,15 @@ RUN chmod +x /usr/local/bin/install-php-extensions && \
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Create user with matching host UID/GID
-RUN addgroup -g ${GROUP_ID} appuser && \
+RUN if getent passwd ${USER_ID} > /dev/null; then \
+        USER_NAME=$(getent passwd ${USER_ID} | cut -d: -f1); \
+        deluser $USER_NAME; \
+    fi && \
+    if getent group ${GROUP_ID} > /dev/null; then \
+        GROUP_NAME=$(getent group ${GROUP_ID} | cut -d: -f1); \
+        delgroup $GROUP_NAME; \
+    fi && \
+    addgroup -g ${GROUP_ID} appuser && \
     adduser -D -u ${USER_ID} -G appuser appuser
 
 WORKDIR /var/www/html

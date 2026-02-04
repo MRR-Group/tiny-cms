@@ -10,8 +10,30 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: tinycms_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo, pdo_pgsql
+          coverage: none
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
@@ -23,36 +45,44 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install dependencies
+      - name: Install API dependencies
+        run: composer install --no-interaction --prefer-dist
+        working-directory: apps/api
+
+      - name: Prepare API env
+        run: cp .env.cli .env
+        working-directory: apps/api
+
+      - name: Run Migrations
+        run: vendor/bin/doctrine-migrations migrate --no-interaction
+        working-directory: apps/api
+
+      - name: Seed Admin User
+        run: php bin/create-admin.php admin@example.com password123
+        working-directory: apps/api
+
+      - name: Start API Server
+        run: php -S localhost:8080 -t public > api.log 2>&1 &
+        working-directory: apps/api
+
+      - name: Install Admin dependencies
         run: pnpm install --no-frozen-lockfile
+        working-directory: apps/admin
+
+      - name: Prepare Admin env
+        run: echo "VITE_API_URL=http://localhost:8080" > .env
         working-directory: apps/admin
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
         working-directory: apps/admin
 
-      - name: Prepare environment files
-        run: |
-          cp .env.example .env
-          cp apps/api/.env.example apps/api/.env
-          echo "VITE_API_URL=/api" > apps/admin/.env
-
-      - name: Build and Start Services
-        run: |
-          docker compose up -d
-          # Wait for API to be ready
-          ./docker/scripts/wait-for-it.sh localhost:8080 -t 90
-          # Wait for Admin to be ready
-          ./docker/scripts/wait-for-it.sh localhost:5180 -t 90
-
-      - name: Seed Admin User
-        run: docker compose exec -T api php bin/create-admin.php admin@example.com password123
-
       - name: Run E2E tests
         run: pnpm test:e2e --project=chromium
         working-directory: apps/admin
         env:
-          BASE_URL: http://localhost:5180
+          BASE_URL: http://localhost:5173
+          CI: true
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
@@ -61,3 +91,10 @@ jobs:
           name: playwright-report
           path: apps/admin/playwright-report/
           retention-days: 30
+
+      - name: Upload API logs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: api-logs
+          path: apps/api/api.log

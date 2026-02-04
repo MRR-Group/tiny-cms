@@ -10,7 +10,13 @@ RUN corepack enable && \
     apk add --no-cache git
 
 # Create user with matching host UID/GID
-RUN addgroup -g ${GROUP_ID} nodeuser && \
+RUN if [ "$(getent passwd ${USER_ID} | cut -d: -f1)" = "node" ]; then \
+        deluser node; \
+    fi && \
+    if [ "$(getent group ${GROUP_ID} | cut -d: -f1)" = "node" ]; then \
+        delgroup node; \
+    fi && \
+    addgroup -g ${GROUP_ID} nodeuser && \
     adduser -D -u ${USER_ID} -G nodeuser nodeuser
 
 WORKDIR /app
