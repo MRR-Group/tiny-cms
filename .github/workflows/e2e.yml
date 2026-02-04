@@ -31,13 +31,19 @@ jobs:
         run: npx playwright install --with-deps chromium
         working-directory: apps/admin
 
+      - name: Prepare environment files
+        run: |
+          cp .env.example .env
+          cp apps/api/.env.example apps/api/.env
+          echo "VITE_API_URL=/api" > apps/admin/.env
+
       - name: Build and Start Services
         run: |
           docker compose up -d
           # Wait for API to be ready
-          ./docker/scripts/wait-for-it.sh localhost:8080 -t 60
+          ./docker/scripts/wait-for-it.sh localhost:8080 -t 90
           # Wait for Admin to be ready
-          ./docker/scripts/wait-for-it.sh localhost:5180 -t 60
+          ./docker/scripts/wait-for-it.sh localhost:5180 -t 90
 
       - name: Seed Admin User
         run: docker compose exec -T api php bin/create-admin.php admin@example.com password123
