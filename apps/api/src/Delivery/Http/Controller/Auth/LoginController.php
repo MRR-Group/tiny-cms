@@ -7,6 +7,8 @@ namespace App\Delivery\Http\Controller\Auth;
 use App\Application\Auth\Handler\LoginHandler;
 use App\Delivery\Http\Request\Auth\LoginRequest;
 use App\Delivery\Http\Resource\AuthTokenResource;
+use App\Domain\Auth\Exception\InvalidCredentialsException;
+use App\Domain\Auth\Exception\UserNotFoundException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -39,18 +41,28 @@ class LoginController
             return $response
                 ->withHeader("Content-Type", "application/json")
                 ->withStatus(400);
-        } catch (\Exception $e) {
-            $status = in_array($e->getMessage(), ["Invalid credentials", "Invalid credentials provided", "User not found"], true) ? 401 : 500;
+        } catch (InvalidCredentialsException|UserNotFoundException $e) {
             $response->getBody()->write(json_encode([
                 "error" => [
-                    "message" => $e->getMessage(),
-                    "code" => $status,
+                    "message" => "Invalid credentials provided",
+                    "code" => 401,
                 ],
             ], JSON_THROW_ON_ERROR));
 
             return $response
                 ->withHeader("Content-Type", "application/json")
-                ->withStatus($status);
+                ->withStatus(401);
+        } catch (\Exception $e) {
+            $response->getBody()->write(json_encode([
+                "error" => [
+                    "message" => $e->getMessage(),
+                    "code" => 500,
+                ],
+            ], JSON_THROW_ON_ERROR));
+
+            return $response
+                ->withHeader("Content-Type", "application/json")
+                ->withStatus(500);
         }
     }
 }
