@@ -81,11 +81,6 @@ jobs:
         run: npx playwright install --with-deps chromium
         working-directory: apps/admin
 
-      - name: Debug Network
-        run: |
-          curl -v http://localhost:8080/health
-          cat apps/admin/.env
-
       - name: Run E2E tests
         run: pnpm test:e2e --project=chromium
         working-directory: apps/admin
