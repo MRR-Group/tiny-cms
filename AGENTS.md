@@ -1,124 +1,163 @@
-# AGENTS.md – Rules for AI Agents (Codex / Copilot / LLM)
+# AGENTS.md - Agent Guide for tiny-cms
+This repository is maintained with AI assistance.
+Agents must follow this document strictly.
+If a request conflicts with these rules, stop and explain the conflict.
 
-This repository is developed with AI assistance.
-AI agents MUST strictly follow the rules defined in this document.
+## 1) Repository Context
+- Monorepo apps:
+  - `apps/api`: PHP 8.3 + Slim backend
+  - `apps/admin`: React + TypeScript + Vite frontend
+- Shared package: `packages/shared`
+- Main orchestration: Docker Compose + `Taskfile.yml`
+- Backend architectural boundaries enforced by Deptrac.
 
-If any requirement is unclear, choose the safest and most explicit solution.
-If a task cannot be completed without violating these rules, STOP and explain why.
+## 2) Hard Quality Gates
+### 2.1 Mutation quality is non-negotiable
+- Never lower Infection thresholds in `apps/api/infection.json`.
+- Never lower Stryker thresholds in `apps/admin/stryker.config.mjs`.
+- Current config is strict (100% threshold expectations).
+- If mutation fails: fix code, improve tests, or refactor.
 
----
+### 2.2 CI integrity
+- Never disable/skip/weaken checks in `.github/workflows/*`.
+- Never convert failing checks to warnings.
+- Never add `continue-on-error` to quality steps.
 
-# 1. NON-NEGOTIABLE QUALITY GATES
+### 2.3 Tests are mandatory
+- Do not delete tests.
+- Do not skip tests.
+- Do not narrow tests just to bypass failures.
+- Do not silence failing assertions.
 
-## 1.1 Mutation testing thresholds
-- NEVER lower mutation thresholds (Infection minMsi, minCoveredMsi, Stryker thresholds).
-- NEVER modify thresholds to make CI pass.
-- If mutation tests fail:
-  1. Fix implementation
-  2. Add or improve tests
-  3. Refactor code to improve testability
+## 3) Build, Lint, and Test Commands
+Run from repo root unless noted.
 
-Lowering quality metrics is strictly forbidden.
+### 3.1 Preferred task commands (Docker)
+- Start stack: `task up`
+- Backend install: `task api:install`
+- Frontend install: `task admin:install`
+- Backend full checks: `task ci:api`
+- Frontend full checks: `task ci:admin`
+- Full suite shortcut: `task test`
 
----
+### 3.2 Backend commands (`apps/api`)
+- Install dependencies: `composer install`
+- Static analysis: `composer lint`
+- Code style check: `composer cs`
+- Code style fix: `composer cs:fix`
+- Unit/feature tests: `composer test`
+- Mutation tests: `composer mutation`
+- Architecture checks: `composer deptrac`
 
-## 1.2 CI integrity
-- NEVER disable or weaken CI checks
-- NEVER convert failing steps to warnings
-- NEVER use continue-on-error
-- NEVER skip test steps
+### 3.3 Frontend commands (`apps/admin`)
+- Install dependencies: `pnpm install`
+- Dev server: `pnpm dev`
+- Lint: `pnpm lint`
+- Lint auto-fix: `pnpm lint:fix`
+- Format files: `pnpm format`
+- Unit/component tests: `pnpm test`
+- Coverage run: `pnpm test:coverage`
+- Production build: `pnpm build`
+- Storybook: `pnpm storybook`
+- Storybook build: `pnpm build-storybook`
+- Mutation tests: `pnpm mutation`
+- E2E tests: `pnpm test:e2e`
 
-Example of REQUIRED strict step:
+## 4) Single-Test Execution (Important)
+### 4.1 Backend (PHPUnit)
+- Single file:
+  - `cd apps/api && vendor/bin/phpunit tests/Unit/Domain/Auth/ValueObject/EmailTest.php`
+- Single test name/method via filter:
+  - `cd apps/api && vendor/bin/phpunit --filter testNameHere`
+- Composer passthrough to phpunit:
+  - `cd apps/api && composer test -- --filter testNameHere`
 
-- Run mutation tests
-  composer mutation
-  working-directory: apps/api
+### 4.2 Frontend (Vitest)
+- Single file:
+  - `cd apps/admin && pnpm vitest run src/domain/site/siteService.test.ts`
+- Single test name:
+  - `cd apps/admin && pnpm vitest run -t "creates site"`
+- File + test name:
+  - `cd apps/admin && pnpm vitest run src/components/Button/Button.test.tsx -t "renders"`
 
----
+### 4.3 Frontend E2E (Playwright)
+- Single spec:
+  - `cd apps/admin && pnpm playwright test e2e/path/to/spec.test.ts`
+- Single title match:
+  - `cd apps/admin && pnpm playwright test -g "should log in"`
 
-## 1.3 Tests must never be removed
-- Do not delete tests
-- Do not skip tests
-- Do not filter tests to avoid failures
-- Do not silence failures
+## 5) Backend Architecture Rules (Mandatory)
+Architecture style: DDD-light + Clean Architecture + CQRS-light.
 
----
+### 5.1 Layers
+- Domain: business rules only.
+- Application: use-cases (`Command/Query + Handler`).
+- Infrastructure: DB/ORM/security/integration adapters.
+- Delivery: HTTP controllers, request mapping, response resources.
 
-# 2. ARCHITECTURE (MANDATORY)
+### 5.2 Dependency boundaries
+- Domain must not depend on Slim, HTTP, ORM, DB, or storage.
+- Delivery must not directly access ORM internals.
+- Infrastructure must not leak technical concerns into Domain APIs.
+- Handlers should consume typed commands/queries, never raw HTTP payloads.
+- Deptrac in `apps/api/deptrac.yaml` is authoritative.
 
-This project uses DDD-light + Clean Architecture + CQRS-light.
+## 6) Code Style Guidelines
+### 6.1 General
+- Keep edits minimal, focused, and consistent with nearby code.
+- Prefer clarity and explicitness over clever abstractions.
+- Add comments only for non-obvious intent (why), not mechanics (what).
 
-## 2.1 Layers (STRICT)
-- Domain: business rules only
-- Application: use-cases (Command / Query + Handler)
-- Infrastructure: DB, ORM, storage, security
-- Delivery: Slim (REST + GraphQL), Request/Resource mapping
+### 6.2 Imports
+- Keep imports tidy and consistent with surrounding files.
+- Use one PHP `use` per line.
+- In TS, prefer `@/` alias (`src/*`) for internal modules when practical.
+- Reuse existing module boundaries; do not duplicate logic across layers.
 
----
+### 6.3 PHP conventions (`apps/api`)
+- Use `declare(strict_types=1);`.
+- Follow PSR-4 namespace mapping (`App\\`, `Tests\\`).
+- Keep explicit parameter/property/return types.
+- Prefer constructor property promotion and immutable value objects.
+- Preserve naming conventions:
+  - `*Command`, `*Query`, `*Handler`
+  - `*Request`, `*Resource`
+  - `*RepositoryInterface`
+- Keep controllers thin; put business logic in Application/Domain.
+- Validate invariants in value objects/domain constructors.
 
-## 2.2 Forbidden dependencies
-- Domain MUST NOT depend on Slim, HTTP, ORM, DB, Storage
-- Delivery MUST NOT use ORM directly
-- Infrastructure MUST NOT leak into Domain
-- Handlers MUST NOT parse HTTP input directly
+### 6.4 TS/React conventions (`apps/admin`)
+- Keep strict typing (`strict: true`) intact.
+- Use explicit interfaces/types for props and API payloads.
+- Component names/files: PascalCase.
+- Variables/functions: camelCase and descriptive names.
+- Co-locate tests near source: `*.test.ts` / `*.test.tsx`.
+- Co-locate stories: `*.stories.tsx`.
+- Follow existing ESLint/Prettier behavior; do not introduce conflicting style tools.
 
----
+### 6.5 Error handling
+- Fail fast on invalid input with actionable messages.
+- Backend: map known exceptions to correct HTTP status + JSON body.
+- Frontend: propagate meaningful `Error` messages from failed API requests.
+- Never swallow errors silently.
 
-## 2.3 Command / Query pattern (REQUIRED)
-- Every use-case = Command/Query + Handler
-- Cross-cutting concerns MUST be middleware
-- Validation, authorization, transactions, audit go through pipeline
+## 7) Agent Workflow Expectations
+- Run targeted checks for changed areas before finishing.
+- Prefer single-test execution first, then broader suites.
+- If checks cannot be run, clearly list exact follow-up commands.
+- Keep changes scoped; avoid unrelated refactors.
+- Never use destructive git commands unless explicitly requested.
 
----
+## 8) Cursor / Copilot Rule Files
+Checked:
+- `.cursor/rules/`
+- `.cursorrules`
+- `.github/copilot-instructions.md`
 
-## 2.4 Request / Validator / Resource separation
-- Request (Delivery) → parse input → create Command/Query
-- Validator (Application) → validate Command/DTO
-- Handler (Application) → execute use-case
-- Resource (Delivery) → map output to JSON/GraphQL
+Current status in this repository:
+- No Cursor rules found.
+- No Copilot instruction file found.
 
----
+If these files are added later, merge their constraints here and follow the most restrictive rule.
 
-# 3. STYLE RULES
-
-## 3.1 No noise comments
-Do NOT add comments like:
-- // here I made an if
-- // create variable
-- decorative headers
-
-Comments are allowed ONLY to explain WHY, not WHAT.
-
----
-
-# 4. PR / COMMIT RULES
-- Do not cheat CI
-- Do not weaken checks
-- Do not remove steps
-- Follow folder structure and naming conventions
-- Prefer small, correct commits
-
----
-
-# 5. FAILURE POLICY
-If something fails:
-1. Fix code
-2. Fix tests
-3. Refactor
-4. NEVER reduce quality
-
----
-
-# 6. Follow code architecture saved in ARCHITECTURE.md
-
-AI agents MUST strictly follow the architecture rules defined in `ARCHITECTURE.md`.
-
-- Do not introduce new architectural patterns without explicit approval
-- Do not bypass layers or shortcuts around defined boundaries
-- If unsure where code belongs, follow ARCHITECTURE.md as the source of truth
-- If a task conflicts with ARCHITECTURE.md, STOP and explain the conflict instead of guessing
-
-ARCHITECTURE.md is binding and has higher priority than convenience or speed.
----
-
-This document is mandatory for all AI-generated code.
+This document is mandatory for all AI-generated code in this repository.
