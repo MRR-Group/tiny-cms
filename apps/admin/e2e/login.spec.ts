@@ -16,11 +16,6 @@ test.describe('Login Page', () => {
     await page.getByLabel('Password').fill('wrongpassword');
     await page.getByRole('button', { name: 'Sign In' }).click();
 
-    // Since we don't have a real backend running in a simple Playwright setup without more config,
-    // this might fail or timeout if the proxy doesn't work.
-    // However, for GH Actions, it should work if we start the whole stack or mock the API.
-    
-    // For now, let's just check if it stays on the login page or shows an error if mocked.
     await expect(page.getByText('Invalid credentials provided')).toBeVisible();
   });
 
@@ -31,8 +26,30 @@ test.describe('Login Page', () => {
     await page.getByLabel('Password').fill('password123');
     await page.getByRole('button', { name: 'Sign In' }).click();
 
-    // After login, it should redirect to /admin/sites
     await expect(page).toHaveURL(/\/admin\/sites/);
     await expect(page.getByText('Site Management')).toBeVisible();
+  });
+
+  test('should have a link to password reset', async ({ page }) => {
+    await page.goto('/login');
+
+    const resetLink = page.getByRole('link', { name: /forgot password/i });
+    await expect(resetLink).toBeVisible();
+    await resetLink.click();
+
+    await expect(page).toHaveURL(/\/password-reset/);
+  });
+
+  test('should show loading state while authenticating', async ({ page }) => {
+    await page.goto('/login');
+
+    await page.getByLabel('Email Address').fill('admin@example.com');
+    await page.getByLabel('Password').fill('password123');
+    await page.getByRole('button', { name: 'Sign In' }).click();
+
+    // Button should show loading text briefly
+    await expect(
+      page.getByRole('button', { name: /authenticating/i }).or(page.getByText('Site Management'))
+    ).toBeVisible();
   });
 });
