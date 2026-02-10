@@ -19,6 +19,13 @@ class SiteTypeTypeTest extends TestCase
         $this->assertEquals("dynamic", $type->convertToDatabaseValue(SiteType::DYNAMIC, $platform));
     }
 
+    public function testConvertToDatabaseValueReturnsNullForNull(): void
+    {
+        $type = new SiteTypeType();
+        $platform = $this->createMock(AbstractPlatform::class);
+        $this->assertNull($type->convertToDatabaseValue(null, $platform));
+    }
+
     public function testConvertToDatabaseValueReturnsValueForNonEnum(): void
     {
         $type = new SiteTypeType();
@@ -35,6 +42,14 @@ class SiteTypeTypeTest extends TestCase
 
         $result = $type->convertToPHPValue("dynamic", $platform);
         $this->assertEquals(SiteType::DYNAMIC, $result);
+    }
+
+    public function testConvertToPHPValueReturnsNullForNull(): void
+    {
+        $type = new SiteTypeType();
+        $platform = $this->createMock(AbstractPlatform::class);
+
+        $this->assertNull($type->convertToPHPValue(null, $platform));
     }
 
     public function testGetNameReturnsName(): void

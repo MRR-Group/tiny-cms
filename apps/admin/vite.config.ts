@@ -20,7 +20,7 @@ export default defineConfig({
         port: 5173,
         proxy: {
             '/api': {
-                target: 'http://nginx',
+                target: process.env.VITE_API_PROXY_TARGET || 'http://nginx',
                 changeOrigin: true,
                 rewrite: (path) => path.replace(/^\/api/, ''),
             },

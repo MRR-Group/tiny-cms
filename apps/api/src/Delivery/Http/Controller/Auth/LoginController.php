@@ -7,6 +7,8 @@ namespace App\Delivery\Http\Controller\Auth;
 use App\Application\Auth\Handler\LoginHandler;
 use App\Delivery\Http\Request\Auth\LoginRequest;
 use App\Delivery\Http\Resource\AuthTokenResource;
+use App\Domain\Auth\Exception\InvalidCredentialsException;
+use App\Domain\Auth\Exception\UserNotFoundException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -29,19 +31,38 @@ class LoginController
                 ->withHeader("Content-Type", "application/json")
                 ->withStatus(200);
         } catch (\InvalidArgumentException $e) {
-            $response->getBody()->write(json_encode(["error" => $e->getMessage()], JSON_THROW_ON_ERROR));
+            $response->getBody()->write(json_encode([
+                "error" => [
+                    "message" => $e->getMessage(),
+                    "code" => 400,
+                ],
+            ], JSON_THROW_ON_ERROR));
 
             return $response
                 ->withHeader("Content-Type", "application/json")
                 ->withStatus(400);
-        } catch (\Exception $e) {
-            // Should differentiate 401 vs 500, but for now simple
-            $status = $e->getMessage() === "Invalid credentials" ? 401 : 500;
-            $response->getBody()->write(json_encode(["error" => $e->getMessage()], JSON_THROW_ON_ERROR));
+        } catch (InvalidCredentialsException|UserNotFoundException $e) {
+            $response->getBody()->write(json_encode([
+                "error" => [
+                    "message" => "Invalid credentials provided",
+                    "code" => 401,
+                ],
+            ], JSON_THROW_ON_ERROR));
 
             return $response
                 ->withHeader("Content-Type", "application/json")
-                ->withStatus($status);
+                ->withStatus(401);
+        } catch (\Exception $e) {
+            $response->getBody()->write(json_encode([
+                "error" => [
+                    "message" => $e->getMessage(),
+                    "code" => 500,
+                ],
+            ], JSON_THROW_ON_ERROR));
+
+            return $response
+                ->withHeader("Content-Type", "application/json")
+                ->withStatus(500);
         }
     }
 }
