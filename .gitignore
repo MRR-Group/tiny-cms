@@ -20,6 +20,7 @@ Thumbs.db
 npm-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+core.*
 
 # Dependencies
 node_modules/
@@ -30,3 +31,8 @@ dist/
 storybook-static/
 playwright-report/
 test-results/
+
+# Local AI assistant metadata
+.agent/
+.agents/
+.claude/
