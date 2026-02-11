@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { Button } from '@/components/Button/Button';
 
 interface AlertModalProps {
@@ -41,7 +42,7 @@ export const AlertModal: React.FC<AlertModalProps> = ({
 
   const config = typeConfig[type];
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 bg-gray-600/50 backdrop-blur-sm overflow-y-auto h-full w-full flex items-center justify-center z-[60]">
       <div className="relative p-8 border w-96 shadow-xl rounded-2xl bg-white animate-in fade-in zoom-in-95 duration-200">
         <div className="text-center">
@@ -59,6 +60,7 @@ export const AlertModal: React.FC<AlertModalProps> = ({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

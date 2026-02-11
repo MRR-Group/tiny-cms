@@ -1,5 +1,3 @@
-import React from 'react';
-
 export interface LogoProps {
   variant?: 'branding' | 'sidebar-expanded' | 'sidebar-collapsed';
   className?: string;

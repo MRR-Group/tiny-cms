@@ -23,6 +23,7 @@ export const Default: Story = {
       name: 'Example Site',
       url: 'https://example.com',
       type: 'static',
+      editorCount: 0,
       createdAt: '2024-01-01T12:00:00Z',
     },
   },

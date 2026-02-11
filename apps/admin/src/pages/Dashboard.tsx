@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Site } from '@/domain/site/types';
 import { createSiteService } from '@/domain/site';
 
 export const Dashboard: React.FC = () => {
+  const navigate = useNavigate();
   const [sites, setSites] = useState<Site[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -54,6 +56,7 @@ export const Dashboard: React.FC = () => {
                   <button
                     type="button"
                     className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    onClick={() => navigate(`/admin/sites/${site.id}`)}
                   >
                     Manage Site
                   </button>

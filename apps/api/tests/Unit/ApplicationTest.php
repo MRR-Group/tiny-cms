@@ -158,4 +158,22 @@ class ApplicationTest extends TestCase
         $this->assertContains("/auth/password-reset/confirm", $patterns);
         $this->assertContains("/health", $patterns);
     }
+
+    public function testSiteSectionRoutesRegisteredOutsideAdminGroup(): void
+    {
+        $_ENV["JWT_SECRET"] = "x";
+        $_ENV["APP_ENV"] = "test";
+        $_ENV["DB_HOST"] = "x";
+        $app = Application::create();
+
+        $routes = $app->getRouteCollector()->getRoutes();
+        $patterns = array_map(fn($route) => $route->getPattern(), $routes);
+
+        $this->assertContains("/sites/{id}/sections", $patterns);
+        $this->assertContains("/sites/{id}/sections/{sectionId}/items", $patterns);
+        $this->assertContains("/sites/{id}/sections/{sectionId}/items/{itemId}", $patterns);
+        $this->assertContains("/admin/sites/{id}/sections", $patterns);
+        $this->assertContains("/admin/sites/{id}/sections/order", $patterns);
+        $this->assertContains("/admin/sites/{id}/sections/{sectionId}", $patterns);
+    }
 }

@@ -7,7 +7,7 @@ interface SiteDetailsCardProps {
 
 export const SiteDetailsCard: React.FC<SiteDetailsCardProps> = ({ site }) => {
   return (
-    <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6">
+    <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm">
       <h3 className="font-bold text-slate-700 mb-2">Site Details</h3>
       <dl className="space-y-2 text-sm">
         <div>

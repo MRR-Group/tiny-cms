@@ -1,4 +1,12 @@
-import { AssignUserRequest, CreateSiteRequest, Site, UpdateSiteRequest } from './types';
+import {
+  AssignUserRequest,
+  CreateSiteRequest,
+  CreateSiteSectionRequest,
+  Site,
+  SiteSection,
+  UpdateSiteSectionRequest,
+  UpdateSiteRequest,
+} from './types';
 
 export class SiteService {
   constructor(private readonly baseUrl: string) {}
@@ -89,6 +97,78 @@ export class SiteService {
   async getAssignedSites(): Promise<Site[]> {
     return this.request<Site[]>('/sites', {
       method: 'GET',
+    });
+  }
+
+  async getSections(siteId: string): Promise<SiteSection[]> {
+    return this.request<SiteSection[]>(`/sites/${siteId}/sections`, {
+      method: 'GET',
+    });
+  }
+
+  async createSection(siteId: string, data: CreateSiteSectionRequest): Promise<SiteSection> {
+    return this.request<SiteSection>(`/admin/sites/${siteId}/sections`, {
+      method: 'POST',
+      body: JSON.stringify({ ...data, siteId }),
+    });
+  }
+
+  async updateSection(
+    siteId: string,
+    sectionId: string,
+    data: UpdateSiteSectionRequest
+  ): Promise<SiteSection> {
+    return this.request<SiteSection>(`/admin/sites/${siteId}/sections/${sectionId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteSection(siteId: string, sectionId: string): Promise<void> {
+    await this.request(`/admin/sites/${siteId}/sections/${sectionId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getSectionItems(siteId: string, sectionId: string): Promise<Array<Record<string, unknown>>> {
+    return this.request<Array<Record<string, unknown>>>(`/sites/${siteId}/sections/${sectionId}/items`, {
+      method: 'GET',
+    });
+  }
+
+  async createSectionItem(
+    siteId: string,
+    sectionId: string,
+    data: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
+    return this.request<Record<string, unknown>>(`/sites/${siteId}/sections/${sectionId}/items`, {
+      method: 'POST',
+      body: JSON.stringify({ data }),
+    });
+  }
+
+  async updateSectionItem(
+    siteId: string,
+    sectionId: string,
+    itemId: string,
+    data: Record<string, unknown>
+  ): Promise<Record<string, unknown>> {
+    return this.request<Record<string, unknown>>(`/sites/${siteId}/sections/${sectionId}/items/${itemId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ data }),
+    });
+  }
+
+  async deleteSectionItem(siteId: string, sectionId: string, itemId: string): Promise<void> {
+    await this.request(`/sites/${siteId}/sections/${sectionId}/items/${itemId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async reorderSections(siteId: string, sectionIds: string[]): Promise<void> {
+    await this.request(`/sites/${siteId}/sections/order`, {
+      method: 'PUT',
+      body: JSON.stringify({ siteId, sectionIds }),
     });
   }
 }

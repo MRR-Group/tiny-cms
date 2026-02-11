@@ -1,7 +1,10 @@
 import { test, expect, Page, Route } from '@playwright/test';
 
 function makeToken(role: 'admin' | 'editor'): string {
-  const payload = role === 'admin' ? 'eyJyb2xlIjoiYWRtaW4ifQ==' : 'eyJyb2xlIjoiZWRpdG9yIn0=';
+  const payload =
+    role === 'admin'
+      ? Buffer.from(JSON.stringify({ role: 'admin', sub: '00000000-0000-0000-0000-000000000001' })).toString('base64')
+      : Buffer.from(JSON.stringify({ role: 'editor', sub: '00000000-0000-0000-0000-000000000002' })).toString('base64');
   return `header.${payload}.signature`;
 }
 
@@ -132,5 +135,31 @@ test.describe('Auth, Role, and User Flows', () => {
     await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
     await expect(page.getByText('Editor Site')).toBeVisible();
     await expect(page.getByText('Add User')).not.toBeVisible();
+  });
+
+  test('admin can manage sections even when not assigned to site', async ({ page }) => {
+    await setAuthToken(page, 'admin');
+
+    await page.route('**/api/admin/sites/site-1', async (route) => {
+      await fulfillJson(route, 200, {
+        id: 'site-1',
+        name: 'Restricted Site',
+        url: 'https://restricted.example.com',
+        type: 'static',
+        editorCount: 0,
+        createdAt: '2026-01-01T00:00:00+00:00',
+        editors: [],
+      });
+    });
+    await page.route('**/api/admin/users', async (route) => {
+      await fulfillJson(route, 200, []);
+    });
+    await page.route('**/api/sites/site-1/sections', async (route) => {
+      await fulfillJson(route, 200, []);
+    });
+
+    await page.goto('/admin/sites/site-1');
+
+    await expect(page.getByRole('button', { name: 'Create Section' })).toBeVisible();
   });
 });

@@ -247,6 +247,135 @@ describe('SiteService', () => {
     await expect(siteService.getSites()).rejects.toThrow('Request failed');
   });
 
+  it('getSections returns site sections', async () => {
+    const mockSections = [{ id: 'sec-1', type: 'text', title: 'Intro' }];
+    mockFetch.mockResolvedValue({
+      ok: true,
+      status: 200,
+      text: async () => JSON.stringify(mockSections),
+    });
+
+    const sections = await siteService.getSections('site-1');
+
+    expectRequest('/sites/site-1/sections', 'GET');
+    expect(sections).toEqual(mockSections);
+  });
+
+  it('createSection sends POST request', async () => {
+    const sectionPayload = {
+      type: 'text',
+      title: 'Welcome',
+    };
+    mockFetch.mockResolvedValue({
+      ok: true,
+      status: 201,
+      text: async () => JSON.stringify({ id: 'sec-2', ...sectionPayload }),
+    });
+
+    await siteService.createSection('site-1', sectionPayload);
+
+    expectRequest('/admin/sites/site-1/sections', 'POST');
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        body: JSON.stringify({ ...sectionPayload, siteId: 'site-1' }),
+      })
+    );
+  });
+
+  it('reorderSections sends PUT request', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      status: 204,
+      text: async () => '',
+    });
+
+    await siteService.reorderSections('site-1', ['sec-2', 'sec-1']);
+
+    expectRequest('/sites/site-1/sections/order', 'PUT');
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        body: JSON.stringify({ siteId: 'site-1', sectionIds: ['sec-2', 'sec-1'] }),
+      })
+    );
+  });
+
+  it('updateSection sends PUT request', async () => {
+    const payload = { title: 'Updated', data: { images: ['a.jpg'] } };
+    mockFetch.mockResolvedValue({
+      ok: true,
+      status: 200,
+      text: async () => JSON.stringify({ id: 'sec-1', ...payload }),
+    });
+
+    await siteService.updateSection('site-1', 'sec-1', payload);
+
+    expectRequest('/admin/sites/site-1/sections/sec-1', 'PUT');
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ body: JSON.stringify(payload) })
+    );
+  });
+
+  it('deleteSection sends DELETE request', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      status: 204,
+      text: async () => '',
+    });
+
+    await siteService.deleteSection('site-1', 'sec-1');
+
+    expectRequest('/admin/sites/site-1/sections/sec-1', 'DELETE');
+  });
+
+  it('getSectionItems sends GET request', async () => {
+    mockFetch.mockResolvedValue({ ok: true, status: 200, text: async () => '[]' });
+
+    await siteService.getSectionItems('site-1', 'sec-1');
+
+    expectRequest('/sites/site-1/sections/sec-1/items', 'GET');
+  });
+
+  it('createSectionItem sends POST request', async () => {
+    const payload = { title: 'Item' };
+    mockFetch.mockResolvedValue({ ok: true, status: 201, text: async () => '{}' });
+
+    await siteService.createSectionItem('site-1', 'sec-1', payload);
+
+    expectRequest('/sites/site-1/sections/sec-1/items', 'POST');
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        body: JSON.stringify({ data: payload }),
+      })
+    );
+  });
+
+  it('updateSectionItem sends PUT request', async () => {
+    const payload = { title: 'Item' };
+    mockFetch.mockResolvedValue({ ok: true, status: 200, text: async () => '{}' });
+
+    await siteService.updateSectionItem('site-1', 'sec-1', 'item-1', payload);
+
+    expectRequest('/sites/site-1/sections/sec-1/items/item-1', 'PUT');
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        body: JSON.stringify({ data: payload }),
+      })
+    );
+  });
+
+  it('deleteSectionItem sends DELETE request', async () => {
+    mockFetch.mockResolvedValue({ ok: true, status: 204, text: async () => '' });
+
+    await siteService.deleteSectionItem('site-1', 'sec-1', 'item-1');
+
+    expectRequest('/sites/site-1/sections/sec-1/items/item-1', 'DELETE');
+  });
+
   describe('factory', () => {
     it('createSiteService uses VITE_API_URL if provided', () => {
       vi.stubEnv('VITE_API_URL', 'http://custom-api.com');

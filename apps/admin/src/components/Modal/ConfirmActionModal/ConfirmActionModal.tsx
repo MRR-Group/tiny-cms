@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Button } from '@/components/Button/Button';
 
 interface ConfirmActionModalProps {
@@ -38,8 +39,8 @@ export const ConfirmActionModal: React.FC<ConfirmActionModalProps> = ({
     }
   };
 
-  return (
-    <div className="fixed inset-0 bg-gray-600/50 backdrop-blur-sm overflow-y-auto h-full w-full flex items-center justify-center z-50">
+  return createPortal(
+    <div className="fixed inset-0 bg-gray-600/50 backdrop-blur-sm overflow-y-auto h-full w-full flex items-center justify-center z-[70]">
       <div className="relative p-8 border w-96 shadow-xl rounded-2xl bg-white animate-in fade-in zoom-in-95 duration-200">
         <div className="text-center">
           <h3 className="text-xl font-bold text-gray-900 mb-4">{title}</h3>
@@ -59,6 +60,7 @@ export const ConfirmActionModal: React.FC<ConfirmActionModalProps> = ({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

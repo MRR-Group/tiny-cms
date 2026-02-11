@@ -6,17 +6,29 @@ namespace Tests\Unit\Delivery\Http\Controller\Admin;
 
 use App\Application\Site\Command\AssignUserToSiteCommand;
 use App\Application\Site\Command\CreateSiteCommand;
+use App\Application\Site\Command\ReorderSiteSectionsCommand;
 use App\Application\Site\Command\UnassignUserFromSiteCommand;
+use App\Application\Site\Handler\AddSiteSectionHandler;
+use App\Application\Site\Handler\AddSiteSectionItemHandler;
 use App\Application\Site\Handler\AssignUserToSiteHandler;
 use App\Application\Site\Handler\CreateSiteHandler;
 use App\Application\Site\Handler\DeleteSiteHandler;
+use App\Application\Site\Handler\DeleteSiteSectionHandler;
+use App\Application\Site\Handler\DeleteSiteSectionItemHandler;
 use App\Application\Site\Handler\GetSiteHandler;
+use App\Application\Site\Handler\ListSiteSectionItemsHandler;
+use App\Application\Site\Handler\ListSiteSectionsHandler;
 use App\Application\Site\Handler\ListSitesHandler;
+use App\Application\Site\Handler\ReorderSiteSectionsHandler;
 use App\Application\Site\Handler\UnassignUserFromSiteHandler;
 use App\Application\Site\Handler\UpdateSiteHandler;
+use App\Application\Site\Handler\UpdateSiteSectionHandler;
+use App\Application\Site\Handler\UpdateSiteSectionItemHandler;
 use App\Application\Site\Query\GetSiteQuery;
+use App\Application\Site\Query\ListSiteSectionsQuery;
 use App\Application\Site\Query\ListSitesQuery;
 use App\Delivery\Http\Controller\Admin\SiteController;
+use App\Delivery\Http\Controller\Admin\SiteSectionActionHandlers;
 use App\Domain\Auth\Entity\User;
 use App\Domain\Auth\ValueObject\Email;
 use App\Domain\Auth\ValueObject\Role;
@@ -39,6 +51,15 @@ class SiteControllerTest extends TestCase
     private UnassignUserFromSiteHandler&MockObject $unassignHandler;
     private UpdateSiteHandler&MockObject $updateHandler;
     private DeleteSiteHandler&MockObject $deleteHandler;
+    private ListSiteSectionsHandler&MockObject $listSectionsHandler;
+    private AddSiteSectionHandler&MockObject $addSectionHandler;
+    private AddSiteSectionItemHandler&MockObject $addSectionItemHandler;
+    private ReorderSiteSectionsHandler&MockObject $reorderSectionsHandler;
+    private UpdateSiteSectionHandler&MockObject $updateSectionHandler;
+    private DeleteSiteSectionHandler&MockObject $deleteSectionHandler;
+    private ListSiteSectionItemsHandler&MockObject $listSectionItemsHandler;
+    private UpdateSiteSectionItemHandler&MockObject $updateSectionItemHandler;
+    private DeleteSiteSectionItemHandler&MockObject $deleteSectionItemHandler;
     private SiteController $controller;
 
     protected function setUp(): void
@@ -50,6 +71,15 @@ class SiteControllerTest extends TestCase
         $this->unassignHandler = $this->createMock(UnassignUserFromSiteHandler::class);
         $this->updateHandler = $this->createMock(UpdateSiteHandler::class);
         $this->deleteHandler = $this->createMock(DeleteSiteHandler::class);
+        $this->listSectionsHandler = $this->createMock(ListSiteSectionsHandler::class);
+        $this->addSectionHandler = $this->createMock(AddSiteSectionHandler::class);
+        $this->addSectionItemHandler = $this->createMock(AddSiteSectionItemHandler::class);
+        $this->reorderSectionsHandler = $this->createMock(ReorderSiteSectionsHandler::class);
+        $this->updateSectionHandler = $this->createMock(UpdateSiteSectionHandler::class);
+        $this->deleteSectionHandler = $this->createMock(DeleteSiteSectionHandler::class);
+        $this->listSectionItemsHandler = $this->createMock(ListSiteSectionItemsHandler::class);
+        $this->updateSectionItemHandler = $this->createMock(UpdateSiteSectionItemHandler::class);
+        $this->deleteSectionItemHandler = $this->createMock(DeleteSiteSectionItemHandler::class);
 
         $this->controller = new SiteController(
             $this->createHandler,
@@ -59,7 +89,54 @@ class SiteControllerTest extends TestCase
             $this->unassignHandler,
             $this->updateHandler,
             $this->deleteHandler,
+            new SiteSectionActionHandlers(
+                $this->listSectionsHandler,
+                $this->addSectionHandler,
+                $this->reorderSectionsHandler,
+                $this->updateSectionHandler,
+                $this->deleteSectionHandler,
+                $this->listSectionItemsHandler,
+                $this->addSectionItemHandler,
+                $this->updateSectionItemHandler,
+                $this->deleteSectionItemHandler,
+            ),
         );
+    }
+
+    public function testListSectionsReturns200(): void
+    {
+        $siteId = SiteId::generate()->toString();
+        $request = (new ServerRequestFactory())->createServerRequest("GET", "/admin/sites/{$siteId}/sections")
+            ->withAttribute("id", $siteId);
+        $response = (new ResponseFactory())->createResponse();
+
+        $this->listSectionsHandler->expects($this->once())
+            ->method("handle")
+            ->with($this->isInstanceOf(ListSiteSectionsQuery::class))
+            ->willReturn([
+                ["id" => "sec-1", "type" => "text", "title" => "Intro", "position" => 0],
+            ]);
+
+        $result = $this->controller->listSections($request, $response);
+
+        $this->assertEquals(200, $result->getStatusCode());
+    }
+
+    public function testReorderSectionsReturns204(): void
+    {
+        $siteId = SiteId::generate()->toString();
+        $request = (new ServerRequestFactory())->createServerRequest("PUT", "/admin/sites/{$siteId}/sections/order")
+            ->withAttribute("id", $siteId)
+            ->withParsedBody(["sectionIds" => ["sec-2", "sec-1"]]);
+        $response = (new ResponseFactory())->createResponse();
+
+        $this->reorderSectionsHandler->expects($this->once())
+            ->method("handle")
+            ->with($this->isInstanceOf(ReorderSiteSectionsCommand::class));
+
+        $result = $this->controller->reorderSections($request, $response);
+
+        $this->assertEquals(204, $result->getStatusCode());
     }
 
     public function testCreateSiteReturns201(): void
@@ -125,7 +202,6 @@ class SiteControllerTest extends TestCase
         $this->assertEquals(200, $result->getStatusCode());
         $body = json_decode((string)$result->getBody(), true);
         $this->assertCount(1, $body);
-        $this->assertEquals("original", "original");
     }
 
     public function testAssignUserReturns204(): void

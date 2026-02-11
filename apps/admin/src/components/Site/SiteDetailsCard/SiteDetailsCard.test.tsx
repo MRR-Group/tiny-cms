@@ -8,6 +8,7 @@ describe('SiteDetailsCard', () => {
     name: 'Test Site',
     url: 'https://test.com',
     type: 'static' as const,
+    editorCount: 0,
     createdAt: '2024-01-01T12:00:00Z',
   };
 

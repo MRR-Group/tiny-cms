@@ -5,7 +5,7 @@ import DocumentIcon from '@/assets/icons/document.svg?react';
 import UsersIcon from '@/assets/icons/users.svg?react';
 import ChevronLeftIcon from '@/assets/icons/chevron-left.svg?react';
 import { createAuthService } from '@/domain/auth';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Logo } from '@/components/Logo/Logo';
 import { SideMenuItem } from '@/components/SideMenuItem/SideMenuItem';
 

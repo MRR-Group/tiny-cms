@@ -89,9 +89,9 @@ tasks:
   open:
     desc: "Open all services in the default browser (Linux only)"
     cmds:
-      - 'xdg-open http://localhost:5180'
-      - 'xdg-open http://localhost:8025'
-      - 'xdg-open http://localhost:6006'
+      - "xdg-open http://localhost:5180"
+      - "xdg-open http://localhost:8025"
+      - "xdg-open http://localhost:6006"
 
   # === Backend (API) ===
   api:shell:
@@ -227,9 +227,3 @@ tasks:
       - task: admin:lint
       - task: admin:test
       - task: admin:build
-
-  fix:
-    desc: "Fix all projects (backend and frontend)"
-    cmds:
-      - task: api:cs:fix
-      - task: admin:fix

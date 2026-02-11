@@ -31,6 +31,24 @@ export interface SetNewPasswordRequest {
 export class AuthService {
   constructor(private readonly baseUrl: string) {}
 
+  private decodeTokenPayload(): Record<string, unknown> | null {
+    const token = this.getToken();
+    if (!token) return null;
+
+    const parts = token.split('.');
+    if (parts.length < 2) return null;
+
+    const encodedPayload = parts[1];
+    const base64 = encodedPayload.replace(/-/g, '+').replace(/_/g, '/');
+    const padded = base64.padEnd(Math.ceil(base64.length / 4) * 4, '=');
+
+    try {
+      return JSON.parse(atob(padded)) as Record<string, unknown>;
+    } catch {
+      return null;
+    }
+  }
+
   private async request<T>(endpoint: string, options: RequestInit): Promise<T> {
     const token = localStorage.getItem('authToken');
 
@@ -112,18 +130,20 @@ export class AuthService {
   }
 
   getUserRole(): string | null {
-    const token = this.getToken();
-    if (!token) return null;
-
-    const parts = token.split('.');
-
-    try {
-      // Decode JWT payload (middle part between dots)
-      const payload = parts[1];
-      const decoded = JSON.parse(atob(payload));
-      return decoded.role || null;
-    } catch {
+    const payload = this.decodeTokenPayload();
+    if (payload === null) {
       return null;
     }
+
+    return typeof payload.role === 'string' ? payload.role : null;
+  }
+
+  getUserId(): string | null {
+    const payload = this.decodeTokenPayload();
+    if (payload === null) {
+      return null;
+    }
+
+    return typeof payload.sub === 'string' ? payload.sub : null;
   }
 }

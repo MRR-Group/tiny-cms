@@ -27,7 +27,13 @@ RUN corepack enable && \
         libcairo2 \
         libasound2 \
         libatspi2.0-0 \
-        libwayland-client0 && \
+        libwayland-client0 \
+        libx11-xcb1 \
+        libxcursor1 \
+        libgtk-3-0 \
+        libpangocairo-1.0-0 \
+        libcairo-gobject2 \
+        libgdk-pixbuf-2.0-0 && \
     rm -rf /var/lib/apt/lists/*
 
 # Create user with matching host UID/GID

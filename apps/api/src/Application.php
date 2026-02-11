@@ -16,6 +16,7 @@ use App\Delivery\Http\Controller\User\SiteController as UserSiteController;
 use App\Delivery\Http\Middleware\DomainExceptionHandler;
 use App\Delivery\Http\Middleware\JwtAuthMiddleware;
 use App\Delivery\Http\Middleware\RoleMiddleware;
+use App\Delivery\Http\Middleware\SiteAccessMiddleware;
 use DI\ContainerBuilder;
 use Slim\App as SlimApp;
 use Slim\Factory\AppFactory;
@@ -70,9 +71,29 @@ final class Application
             $group->get("/sites/{id}", [AdminSiteController::class, "get"]);
             $group->put("/sites/{id}", [AdminSiteController::class, "update"]);
             $group->delete("/sites/{id}", [AdminSiteController::class, "delete"]);
+            $group->post("/sites/{id}/sections", [AdminSiteController::class, "createSection"]);
+            $group->put("/sites/{id}/sections/order", [AdminSiteController::class, "reorderSections"]);
+            $group->put("/sites/{id}/sections/{sectionId}", [AdminSiteController::class, "updateSection"]);
+            $group->delete("/sites/{id}/sections/{sectionId}", [AdminSiteController::class, "deleteSection"]);
             $group->post("/sites/assign", [AdminSiteController::class, "assignUser"]);
             $group->delete("/sites/{id}/users/{userId}", [AdminSiteController::class, "unassignUser"]);
         })->add(new RoleMiddleware("admin"))
+            ->add(JwtAuthMiddleware::class);
+
+        $app->get("/sites/{id}/sections", [AdminSiteController::class, "listSections"])
+            ->add(SiteAccessMiddleware::class)
+            ->add(JwtAuthMiddleware::class);
+        $app->get("/sites/{id}/sections/{sectionId}/items", [AdminSiteController::class, "listSectionItems"])
+            ->add(SiteAccessMiddleware::class)
+            ->add(JwtAuthMiddleware::class);
+        $app->post("/sites/{id}/sections/{sectionId}/items", [AdminSiteController::class, "createSectionItem"])
+            ->add(SiteAccessMiddleware::class)
+            ->add(JwtAuthMiddleware::class);
+        $app->put("/sites/{id}/sections/{sectionId}/items/{itemId}", [AdminSiteController::class, "updateSectionItem"])
+            ->add(SiteAccessMiddleware::class)
+            ->add(JwtAuthMiddleware::class);
+        $app->delete("/sites/{id}/sections/{sectionId}/items/{itemId}", [AdminSiteController::class, "deleteSectionItem"])
+            ->add(SiteAccessMiddleware::class)
             ->add(JwtAuthMiddleware::class);
 
         $app->get("/sites", [UserSiteController::class, "listAssigned"])

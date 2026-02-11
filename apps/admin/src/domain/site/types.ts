@@ -8,6 +8,33 @@ export interface Site {
   editorCount: number;
   createdAt: string;
   editors?: User[];
+  sections?: SiteSection[];
+}
+
+export type SiteSectionType = 'text' | 'contact' | 'social' | 'news' | 'product' | 'poem';
+
+export interface SiteSectionContact {
+  type: string;
+  value: string;
+}
+
+export interface SiteSection {
+  id: string;
+  type: SiteSectionType | string;
+  title: string;
+  data: Record<string, unknown>;
+  position: number;
+  createdAt: string;
+}
+
+export interface CreateSiteSectionRequest {
+  type: SiteSectionType | string;
+  title: string;
+}
+
+export interface UpdateSiteSectionRequest {
+  title: string;
+  data: Record<string, unknown>;
 }
 
 export interface CreateSiteRequest {

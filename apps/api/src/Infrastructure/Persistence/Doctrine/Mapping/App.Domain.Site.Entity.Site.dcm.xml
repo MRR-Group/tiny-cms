@@ -10,6 +10,8 @@
         <field name="url" type="string" column="url" length="255" />
         <field name="type" type="site_type" column="type" length="50" />
         <field name="createdAt" type="datetime_immutable" column="created_at" />
+        <field name="version" type="integer" column="version" version="true" />
+        <field name="sections" type="json" column="sections" />
 
         <many-to-many field="users" target-entity="App\Domain\Auth\Entity\User" mapped-by="sites" />
     </entity>

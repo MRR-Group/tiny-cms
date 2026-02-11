@@ -34,6 +34,7 @@ class SiteResource
             "email" => (string)$user->getEmail(),
             "role" => $user->getRole()->toString(),
         ], $site->getUsers()->toArray());
+        $data["sections"] = SiteSectionResource::collectionToArray($site->getSections());
 
         return $data;
     }

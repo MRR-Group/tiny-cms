@@ -254,5 +254,76 @@ describe('authService', () => {
 
       expect(authService.getUserRole()).toBeNull();
     });
+
+    it('decodes url-safe payloads without padding', () => {
+      const encodedPayload = btoa(JSON.stringify({ role: 'editor' }))
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/g, '');
+      const token = `header.${encodedPayload}.signature`;
+      localStorage.setItem('authToken', token);
+
+      expect(authService.getUserRole()).toBe('editor');
+    });
+
+    it('does not decode malformed token without payload part', () => {
+      const atobSpy = vi.spyOn(globalThis, 'atob');
+      localStorage.setItem('authToken', 'malformed-token');
+
+      expect(authService.getUserRole()).toBeNull();
+      expect(atobSpy).not.toHaveBeenCalled();
+    });
+
+    it('decodes token with only two parts', () => {
+      const payload = btoa(JSON.stringify({ role: 'admin' }));
+      const token = `header.${payload}`;
+      localStorage.setItem('authToken', token);
+
+      expect(authService.getUserRole()).toBe('admin');
+    });
+
+    it('normalizes base64url payload before decoding', () => {
+      const base64Payload = 'eyJyb2xlIjoiYWRtaW4iLCJzdWIiOiJ1IiwieCI6Is+uw5/IlyJ9';
+      const base64UrlPayload = base64Payload.replace(/\+/g, '-').replace(/\//g, '_').slice(0, -1);
+      const expectedDecodedPayload = `${base64Payload.slice(0, -1)}=`;
+      const atobSpy = vi.spyOn(globalThis, 'atob').mockReturnValueOnce(JSON.stringify({ role: 'admin' }));
+
+      localStorage.setItem('authToken', `header.${base64UrlPayload}.signature`);
+
+      expect(authService.getUserRole()).toBe('admin');
+      expect(atobSpy).toHaveBeenCalledWith(expectedDecodedPayload);
+    });
+  });
+
+  describe('getUserId', () => {
+    it('returns null when token is missing', () => {
+      localStorage.removeItem('authToken');
+
+      expect(authService.getUserId()).toBeNull();
+    });
+
+    it('returns sub from valid token', () => {
+      const payload = btoa(JSON.stringify({ sub: 'user-123' }));
+      const token = `header.${payload}.signature`;
+      localStorage.setItem('authToken', token);
+
+      expect(authService.getUserId()).toBe('user-123');
+    });
+
+    it('returns null when sub is missing', () => {
+      const payload = btoa(JSON.stringify({ role: 'admin' }));
+      const token = `header.${payload}.signature`;
+      localStorage.setItem('authToken', token);
+
+      expect(authService.getUserId()).toBeNull();
+    });
+
+    it('returns null when sub is not a string', () => {
+      const payload = btoa(JSON.stringify({ sub: 123 }));
+      const token = `header.${payload}.signature`;
+      localStorage.setItem('authToken', token);
+
+      expect(authService.getUserId()).toBeNull();
+    });
   });
 });
